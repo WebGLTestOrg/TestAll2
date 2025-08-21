@@ -1,1 +1,96 @@
-{"importBase":"import","nativeBase":"native","name":"main","deps":["internal"],"uuids":["01b89499c","0699aaa4c","09cf242b8","0aadb2cb4","a2RvpUnzdBxbHWYoVJDWsF","baIUdvKGZPgZxNbjWTFuRI","6fAc9/gb9Kfr1dCvwZaWSA@b47c0","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@40c10","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@74afd","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@7d38f","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@8fd34","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@bb97f","6fAc9/gb9Kfr1dCvwZaWSA@b47c0@e9a6d","727r/Bb5hBCK0inzA9KLZP@08d7c","727r/Bb5hBCK0inzA9KLZP@2f786","87WSJh4UBIaoz5llTuOdfM","d0MqyYBeFAkIi762QNy1/B@b47c0","d0MqyYBeFAkIi762QNy1/B@b47c0@40c10","d0MqyYBeFAkIi762QNy1/B@b47c0@74afd","d0MqyYBeFAkIi762QNy1/B@b47c0@7d38f","d0MqyYBeFAkIi762QNy1/B@b47c0@8fd34","d0MqyYBeFAkIi762QNy1/B@b47c0@bb97f","d0MqyYBeFAkIi762QNy1/B@b47c0@e9a6d","f6SJZOjTJB/JrJeh5xTdF7","fdjsU2o1RKF5x0TziDw3jI"],"paths":{"4":["db:/assets/Scenes/scene",0,1],"5":["db:/internal/physics/default-physics-material",2,1],"24":["db:/internal/default_renderpipeline/builtin-forward",1,1]},"scenes":{"db://assets/Scenes/scene.scene":4},"packs":{"01b89499c":[4,16,17,18,19,20,21,22],"0699aaa4c":[6,7,8,9,10,11,12],"09cf242b8":[14,15],"0aadb2cb4":[13,23]},"versions":{"import":[],"native":[]},"redirect":[5,"0"],"debug":false,"extensionMap":{},"hasPreloadScript":true,"dependencyRelationships":{},"types":["cc.SceneAsset","cc.RenderPipeline","cc.PhysicsMaterial"]}
+{
+    "importBase": "import",
+    "nativeBase": "native",
+    "name": "main",
+    "deps": [
+        "internal"
+    ],
+    "uuids": [
+        "01b89499c",
+        "0699aaa4c",
+        "09cf242b8",
+        "0aadb2cb4",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@40c10",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@74afd",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@7d38f",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@8fd34",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@bb97f",
+        "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@e9a6d",
+        "72eebfc1-6f98-4108-ad22-9f303d28b64f@08d7c",
+        "72eebfc1-6f98-4108-ad22-9f303d28b64f@2f786",
+        "87592261-e140-486a-8cf9-9654ee39d7cc",
+        "a246fa54-9f37-41c5-b1d6-6285490d6b05",
+        "ba21476f-2866-4f81-9c4d-6e359316e448",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@40c10",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@74afd",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@7d38f",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@8fd34",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@bb97f",
+        "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@e9a6d",
+        "f648964e-8d32-41fc-9ac9-7a1e714dd17b",
+        "fd8ec536-a354-4a17-9c74-4f3883c378c8"
+    ],
+    "paths": {
+        "a246fa54-9f37-41c5-b1d6-6285490d6b05": [
+            "db:/assets/Scenes/scene",
+            "cc.SceneAsset",
+            1
+        ],
+        "fd8ec536-a354-4a17-9c74-4f3883c378c8": [
+            "db:/internal/default_renderpipeline/builtin-forward",
+            "cc.RenderPipeline",
+            1
+        ],
+        "ba21476f-2866-4f81-9c4d-6e359316e448": [
+            "db:/internal/physics/default-physics-material",
+            "cc.PhysicsMaterial",
+            1
+        ]
+    },
+    "scenes": {
+        "db://assets/Scenes/scene.scene": "a246fa54-9f37-41c5-b1d6-6285490d6b05"
+    },
+    "packs": {
+        "0699aaa4c": [
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@40c10",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@74afd",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@7d38f",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@8fd34",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@bb97f",
+            "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0@e9a6d"
+        ],
+        "0aadb2cb4": [
+            "72eebfc1-6f98-4108-ad22-9f303d28b64f@08d7c",
+            "f648964e-8d32-41fc-9ac9-7a1e714dd17b"
+        ],
+        "09cf242b8": [
+            "72eebfc1-6f98-4108-ad22-9f303d28b64f@2f786",
+            "87592261-e140-486a-8cf9-9654ee39d7cc"
+        ],
+        "01b89499c": [
+            "a246fa54-9f37-41c5-b1d6-6285490d6b05",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@40c10",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@74afd",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@7d38f",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@8fd34",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@bb97f",
+            "d032ac98-05e1-4090-88bb-eb640dcb5fc1@b47c0@e9a6d"
+        ]
+    },
+    "versions": {
+        "import": [],
+        "native": []
+    },
+    "redirect": [
+        "ba21476f-2866-4f81-9c4d-6e359316e448",
+        "0"
+    ],
+    "debug": true,
+    "extensionMap": {},
+    "hasPreloadScript": true,
+    "dependencyRelationships": {}
+}
