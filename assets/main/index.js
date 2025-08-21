@@ -207,9 +207,9 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
   };
 });
 
-System.register("chunks:///_virtual/main", ['./FreeCamera.ts', './PieceSpawner.ts', './RotateYByKeys.ts'], function () {
+System.register("chunks:///_virtual/main", ['./FreeCamera.ts', './PieceSpawner.ts', './RotateYByKeys.ts', './StartApp.ts'], function () {
   return {
-    setters: [null, null, null],
+    setters: [null, null, null, null],
     execute: function () {}
   };
 });
@@ -384,6 +384,39 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           return 90;
         }
       }), _class2)) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/StartApp.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, game, Component;
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      game = module.game;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+      cclegacy._RF.push({}, "03b4cr8mr5ANqGQ5koPtIAX", "StartApp", undefined);
+      var ccclass = _decorator.ccclass;
+      var UncapFPS = exports('UncapFPS', (_dec = ccclass('UncapFPS'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(UncapFPS, _Component);
+        function UncapFPS() {
+          return _Component.apply(this, arguments) || this;
+        }
+        var _proto = UncapFPS.prototype;
+        _proto.start = function start() {
+          // ������ 240 fps (������� "��������")
+          // ������ ���������� �������� �� ����������� ��������� ������� �������
+          game.setFrameRate(240);
+        };
+        return UncapFPS;
+      }(Component)) || _class));
       cclegacy._RF.pop();
     }
   };
