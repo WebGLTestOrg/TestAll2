@@ -17,29 +17,31 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
       Component = module.Component;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11;
       cclegacy._RF.push({}, "15f6cp12VhM7IGhUEx42YWM", "FreeCamera", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
       var VerticalZoomAroundTargetXZ = exports('VerticalZoomAroundTargetXZ', (_dec = ccclass('VerticalZoomAroundTargetXZ'), _dec2 = property({
         type: Node,
-        tooltip: 'Необязательная нода-таргет. Если не задана — используются координаты targetPos.'
+        tooltip: 'Таргет: и вертикаль (Y), и точка зума (XZ).'
       }), _dec3 = property({
-        tooltip: 'Координаты цели, если targetNode не задан.'
+        tooltip: 'Стартовая высота камеры над таргетом.'
       }), _dec4 = property({
-        tooltip: 'Азимут (yaw) вокруг цели в градусах. 0° = на +Z, 90° = на +X.'
+        tooltip: 'Азимут (yaw) вокруг таргета в градусах. 0° = +Z, 90° = +X.'
       }), _dec5 = property({
-        tooltip: 'Начальная дистанция до цели (по XZ).'
+        tooltip: 'Начальная дистанция до таргета (XZ).'
       }), _dec6 = property({
         tooltip: 'Пределы дистанции (зум).'
       }), _dec7 = property({
-        tooltip: 'Шаг зума от колёсика (чем больше — сильнее).'
+        tooltip: 'Шаг зума от колёсика.'
       }), _dec8 = property({
-        tooltip: 'Плавность зума (сек). Меньше — резче.'
+        tooltip: 'Инвертировать колесо: к себе — приближение.'
       }), _dec9 = property({
-        tooltip: 'Макс. скорость вертикали (ед/сек).'
+        tooltip: 'Макс. скорость по вертикали (ед/сек).'
       }), _dec10 = property({
         tooltip: 'Плавность вертикали (сек). Меньше — резче.'
+      }), _dec11 = property({
+        tooltip: 'Плавность зума (сек). Меньше — резче.'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(VerticalZoomAroundTargetXZ, _Component);
         function VerticalZoomAroundTargetXZ() {
@@ -48,25 +50,22 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
             args[_key] = arguments[_key];
           }
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-          _initializerDefineProperty(_this, "targetNode", _descriptor, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "targetPos", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "target", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "startHeight", _descriptor2, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "yawDeg", _descriptor3, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "distance", _descriptor4, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "minDistance", _descriptor5, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "maxDistance", _descriptor6, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "zoomStep", _descriptor7, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "zoomSmoothTime", _descriptor8, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertWheel", _descriptor8, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "maxSpeed", _descriptor9, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "moveSmoothTime", _descriptor10, _assertThisInitialized(_this));
-          // внутреннее состояние
+          _initializerDefineProperty(_this, "zoomSmoothTime", _descriptor11, _assertThisInitialized(_this));
           _this.dirY = 0;
-          // -1..1 (S/W)
           _this.velY = 0;
-          // текущая скорость по Y
           _this.baseYOffset = 0;
-          // стартовое смещение камеры по Y относительно цели
-          _this.targetDistance = 10;
-          _this.currentDistance = 10;
+          _this.targetDistance = 0;
+          _this.currentDistance = 0;
           return _this;
         }
         var _proto = VerticalZoomAroundTargetXZ.prototype;
@@ -81,13 +80,21 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
           input.off(Input.EventType.MOUSE_WHEEL, this.onMouseWheel, this);
         };
         _proto.start = function start() {
-          var tgt = this.getTargetWorld();
-          this.baseYOffset = this.node.worldPosition.y - tgt.y; // запоминаем стартовую высоту над целью
+          if (!this.target) {
+            console.error('[VerticalZoom] Target не задан!');
+            return;
+          }
+
+          // стартовая высота
+          this.baseYOffset = this.startHeight;
+
+          // дистанция берём из инспектора
           this.targetDistance = this.distance;
           this.currentDistance = this.distance;
-          this.applyTransform(0); // выставим корректно позицию/направление
-        };
 
+          // сразу выставим камеру
+          this.applyTransform(0);
+        };
         _proto.onKeyDown = function onKeyDown(e) {
           if (e.keyCode === KeyCode.KEY_W) this.dirY = 1;else if (e.keyCode === KeyCode.KEY_S) this.dirY = -1;
         };
@@ -96,54 +103,50 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
           if (e.keyCode === KeyCode.KEY_S && this.dirY === -1) this.dirY = 0;
         };
         _proto.onMouseWheel = function onMouseWheel(e) {
-          this.targetDistance += e.getScrollY() * this.zoomStep * 0.1; // мягкий инкремент
+          var sign = this.invertWheel ? -1 : 1;
+          this.targetDistance += sign * e.getScrollY() * this.zoomStep * 0.1;
           this.targetDistance = Math.max(this.minDistance, Math.min(this.maxDistance, this.targetDistance));
         };
         _proto.update = function update(dt) {
-          // сглажённая вертикальная скорость
+          if (!this.target) return;
+
+          // вертикаль
           var targetVel = this.dirY * this.maxSpeed;
           var mv = this.moveSmoothTime > 0 ? 1 - Math.exp(-dt / this.moveSmoothTime) : 1;
           this.velY += (targetVel - this.velY) * mv;
           if (Math.abs(this.velY) < 1e-4 && this.dirY === 0) this.velY = 0;
           this.baseYOffset += this.velY * dt;
 
-          // сглажённая дистанция (зум вокруг цели)
+          // зум
           var zv = this.zoomSmoothTime > 0 ? 1 - Math.exp(-dt / this.zoomSmoothTime) : 1;
           this.currentDistance += (this.targetDistance - this.currentDistance) * zv;
           this.applyTransform(dt);
         };
-        _proto.getTargetWorld = function getTargetWorld() {
-          return this.targetNode ? this.targetNode.worldPosition.clone() : this.targetPos.clone();
-        };
         _proto.applyTransform = function applyTransform(_dt) {
-          var tgt = this.getTargetWorld();
-
-          // оффсет по XZ на окружности вокруг цели согласно yaw и текущей дистанции
+          var tgt = this.target.worldPosition;
           var yaw = this.yawDeg * Math.PI / 180;
           var offX = Math.sin(yaw) * this.currentDistance;
           var offZ = Math.cos(yaw) * this.currentDistance;
-
-          // итоговая позиция камеры: XZ — вокруг цели, Y — стартовая высота + вертикальное смещение
           var camPos = new Vec3(tgt.x + offX, tgt.y + this.baseYOffset, tgt.z + offZ);
           this.node.setWorldPosition(camPos);
 
-          // смотрим на цель ТОЛЬКО по XZ: фиксируем Y точки взгляда на высоте камеры
+          // смотрим в таргет (XZ), Y берём от камеры
           this.node.lookAt(new Vec3(tgt.x, camPos.y, tgt.z));
         };
         return VerticalZoomAroundTargetXZ;
-      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "targetNode", [_dec2], {
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "target", [_dec2], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "targetPos", [_dec3], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "startHeight", [_dec3], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return new Vec3(0, 0, 0);
+          return 2;
         }
       }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "yawDeg", [_dec4], {
         configurable: true,
@@ -180,12 +183,12 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "zoomSmoothTime", [_dec8], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "invertWheel", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return 0.15;
+          return true;
         }
       }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "maxSpeed", [_dec9], {
         configurable: true,
@@ -200,6 +203,13 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
         writable: true,
         initializer: function initializer() {
           return 0.12;
+        }
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "zoomSmoothTime", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.15;
         }
       })), _class2)) || _class));
       cclegacy._RF.pop();
@@ -231,7 +241,7 @@ System.register("chunks:///_virtual/PieceSpawner.ts", ['./rollupPluginModLoBabel
       Component = module.Component;
     }],
     execute: function () {
-      var _dec, _dec2, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+      var _dec, _dec2, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
       cclegacy._RF.push({}, "afb06F8c6dL7IKM2pPDv/LO", "PieceSpawner", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -248,35 +258,62 @@ System.register("chunks:///_virtual/PieceSpawner.ts", ['./rollupPluginModLoBabel
           _initializerDefineProperty(_this, "prefab", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "totalObjects", _descriptor2, _assertThisInitialized(_this));
           // ������� ����� �������� ����������
-          _initializerDefineProperty(_this, "yStep", _descriptor3, _assertThisInitialized(_this));
-          // �� ������� ����������� ����� ������ 8 ��������
+          _initializerDefineProperty(_this, "objectsPerLevel", _descriptor3, _assertThisInitialized(_this));
+          // ������� �������� �� �������
           _initializerDefineProperty(_this, "angleStep", _descriptor4, _assertThisInitialized(_this));
+          // �� ������� ������������ ������ ����� ������
+          _initializerDefineProperty(_this, "baseScale", _descriptor5, _assertThisInitialized(_this));
+          // ��������� ����� ������� ������
+          _initializerDefineProperty(_this, "levelScaleFactor", _descriptor6, _assertThisInitialized(_this));
+          // �� ������� ��� ��������� ����� �� ������ ������ (0.9 = ����� 10%)
+          _initializerDefineProperty(_this, "baseHeight", _descriptor7, _assertThisInitialized(_this));
+          // ������������������ ������ ������� (��� scale = 1). ����� ��� ���� ������.
+          _initializerDefineProperty(_this, "levelPadding", _descriptor8, _assertThisInitialized(_this));
           return _this;
         }
         var _proto = PieceSpawner.prototype;
-        // �� ������� ������������ ������ ����� ������
+        // ���. ����� ����� �������� (�� ������� �� ������)
         _proto.start = function start() {
           this.spawnObjects();
+        }
+
+        /** ����� ����� ���������� ������� � ������ ������ (�������������� ����������) */;
+        _proto.levelYOffset = function levelYOffset(level) {
+          if (level <= 0) return 0;
+          var H0 = this.baseHeight * this.baseScale; // ������ ������� ������
+          var f = this.levelScaleFactor;
+          var sumHeights = 0;
+          if (Math.abs(1 - f) < 1e-6) {
+            // ��� ����������: ������ level * H0
+            sumHeights = level * H0;
+          } else {
+            // ����� H0 + H0*f + ... + H0*f^(level-1)
+            sumHeights = H0 * (1 - Math.pow(f, level)) / (1 - f);
+          }
+
+          // ���� ������������� ����� ����� ��������
+          return sumHeights + level * this.levelPadding;
         };
         _proto.spawnObjects = function spawnObjects() {
           if (!this.prefab) {
-            console.warn("Prefab �� ��������!");
+            console.warn('Prefab �� ��������!');
             return;
           }
-          var currentY = 0;
           for (var i = 0; i < this.totalObjects; i++) {
-            // ������ 8 �������� � ����� �������
-            if (i > 0 && i % 8 === 0) {
-              currentY += this.yStep;
-            }
+            var level = Math.floor(i / this.objectsPerLevel);
+            var scale = this.baseScale * Math.pow(this.levelScaleFactor, level);
             var obj = instantiate(this.prefab);
             obj.setParent(this.node);
 
-            // ������� ������ (0, y, 0)
-            obj.setPosition(new Vec3(0, currentY, 0));
+            // �������: (0, y(level), 0) � y ������� �� ��������� ������ ���������� �������
+            var y = this.levelYOffset(level);
+            obj.setPosition(new Vec3(0, y, 0));
 
-            // ���� ��������: i * angleStep
+            // ���� �������� � �������� ������
             obj.setRotationFromEuler(new Vec3(0, i * this.angleStep, 0));
+
+            // ����� ������
+            obj.setScale(scale, scale, scale);
           }
         };
         return PieceSpawner;
@@ -294,12 +331,12 @@ System.register("chunks:///_virtual/PieceSpawner.ts", ['./rollupPluginModLoBabel
         initializer: function initializer() {
           return 24;
         }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "yStep", [property], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "objectsPerLevel", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return 2;
+          return 8;
         }
       }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "angleStep", [property], {
         configurable: true,
@@ -307,6 +344,34 @@ System.register("chunks:///_virtual/PieceSpawner.ts", ['./rollupPluginModLoBabel
         writable: true,
         initializer: function initializer() {
           return 45;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "baseScale", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1;
+        }
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "levelScaleFactor", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.9;
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "baseHeight", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 2;
+        }
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "levelPadding", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0;
         }
       })), _class2)) || _class));
       cclegacy._RF.pop();
