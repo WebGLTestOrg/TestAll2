@@ -1,3 +1,95 @@
+System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, Tween, Vec3, tween, easing, Component;
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      Tween = module.Tween;
+      Vec3 = module.Vec3;
+      tween = module.tween;
+      easing = module.easing;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _class, _class2, _descriptor;
+      cclegacy._RF.push({}, "06269Z0iQNODJORRQsOuBPu", "ClickMoveBinding", undefined);
+      var ccclass = _decorator.ccclass,
+        property = _decorator.property;
+      var ClickMoveBinding = exports('ClickMoveBinding', (_dec = ccclass('ClickMoveBinding'), _dec2 = property({
+        type: Node,
+        tooltip: '��� ������� ��� ����� �� ����� �������'
+      }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(ClickMoveBinding, _Component);
+        function ClickMoveBinding() {
+          var _this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          _initializerDefineProperty(_this, "target", _descriptor, _assertThisInitialized(_this));
+          _this.startPos = null;
+          _this.toggled = false;
+          return _this;
+        }
+        var _proto = ClickMoveBinding.prototype;
+        _proto.onEnable = function onEnable() {
+          this.captureStartPos(); // ���� target �������� � ���������� � ������
+        };
+
+        _proto.captureStartPos = function captureStartPos() {
+          if (!this.startPos && this.target) {
+            this.startPos = this.target.getPosition().clone(); // ��������� ���������� ��������
+          }
+        }
+
+        /** ���������� ����������: 1-� ���� � �����, 2-� � ����� � ����� */;
+        _proto.performMove = function performMove(globalDistanceX, globalDuration) {
+          if (!this.target) {
+            console.warn('[ClickMoveBinding] Target �� �������� ��', this.node.name);
+            return;
+          }
+
+          // ������ ����������� ����� �� ������ ������
+          if (!this.startPos) this.captureStartPos();
+          if (!this.startPos) {
+            console.warn('[ClickMoveBinding] ��� startPos �', this.node.name);
+            return;
+          }
+
+          // ������� ��� ���������� ����� ����� target � ����� �� �������������
+          Tween.stopAllByTarget(this.target);
+
+          // ���� ����?
+          var to = this.toggled ? this.startPos.clone() // ����� � �����
+          : new Vec3(this.startPos.x + globalDistanceX, this.startPos.y, this.startPos.z); // ����� �� ������
+
+          this.toggled = !this.toggled;
+          tween(this.target).to(globalDuration, {
+            position: to
+          }, {
+            easing: easing.quadOut
+          }).start();
+        };
+        return ClickMoveBinding;
+      }(Component), _descriptor = _applyDecoratedDescriptor(_class2.prototype, "target", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _class2)) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
   var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, input, Input, KeyCode, Vec3, Component;
   return {
@@ -217,9 +309,108 @@ System.register("chunks:///_virtual/FreeCamera.ts", ['./rollupPluginModLoBabelHe
   };
 });
 
-System.register("chunks:///_virtual/main", ['./FreeCamera.ts', './PieceSpawner.ts', './RotateYByKeys.ts', './StartApp.ts'], function () {
+System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Camera, input, Input, geometry, PhysicsSystem, Component, ClickMoveBinding;
   return {
-    setters: [null, null, null, null],
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Camera = module.Camera;
+      input = module.input;
+      Input = module.Input;
+      geometry = module.geometry;
+      PhysicsSystem = module.PhysicsSystem;
+      Component = module.Component;
+    }, function (module) {
+      ClickMoveBinding = module.ClickMoveBinding;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
+      cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
+      var ccclass = _decorator.ccclass,
+        property = _decorator.property;
+      var GlobalClickManager3D = exports('GlobalClickManager3D', (_dec = ccclass('GlobalClickManager3D'), _dec2 = property({
+        type: Camera,
+        tooltip: '������ ����� ��� raycast'
+      }), _dec3 = property({
+        tooltip: '����� �������� �� X'
+      }), _dec4 = property({
+        tooltip: '����� ������������ (���)'
+      }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(GlobalClickManager3D, _Component);
+        function GlobalClickManager3D() {
+          var _this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          _initializerDefineProperty(_this, "sceneCamera", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "distanceX", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "duration", _descriptor3, _assertThisInitialized(_this));
+          return _this;
+        }
+        var _proto = GlobalClickManager3D.prototype;
+        _proto.onEnable = function onEnable() {
+          // �����: ������ ���� �������, ����� �� ���� ��������� ������
+          input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        };
+        _proto.onDisable = function onDisable() {
+          input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        };
+        _proto.onTouchEnd = function onTouchEnd(e) {
+          if (!this.sceneCamera) return;
+          var p = e.getLocation();
+          var ray = new geometry.Ray();
+          this.sceneCamera.screenPointToRay(p.x, p.y, ray);
+          if (PhysicsSystem.instance.raycastClosest(ray)) {
+            var hit = PhysicsSystem.instance.raycastClosestResult;
+            var n = hit.collider.node;
+            while (n) {
+              var b = n.getComponent(ClickMoveBinding);
+              if (b && b.enabledInHierarchy) {
+                b.performMove(this.distanceX, this.duration);
+                return;
+              }
+              n = n.parent;
+            }
+          }
+        };
+        return GlobalClickManager3D;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "sceneCamera", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "distanceX", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "duration", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.25;
+        }
+      })), _class2)) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/main", ['./ClickMoveBinding.ts', './FreeCamera.ts', './GlobalClickManager.ts', './PieceSpawner.ts', './RotateYByKeys.ts', './StartApp.ts'], function () {
+  return {
+    setters: [null, null, null, null, null, null],
     execute: function () {}
   };
 });
