@@ -1,4 +1,16 @@
 html {
+  /* важный момент — корневой элемент тоже прозрачный */
+  background: transparent !important;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html {
   -ms-touch-action: none;
 }
 
@@ -18,9 +30,8 @@ body, canvas, div {
 /* Remove spin of input type number */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 body {
@@ -35,7 +46,9 @@ body {
 
   cursor: default;
   color: #888;
-  background-color: #333;
+
+  /* БЫЛО: background-color: #333; */
+  background: transparent !important; /* делаем сайт под iframe видимым */
 
   text-align: center;
   font-family: Helvetica, Verdana, Arial, sans-serif;
@@ -45,7 +58,8 @@ body {
 }
 
 canvas {
-  background-color: rgba(0, 0, 0, 0);
+  /* канвас тоже без фона */
+  background-color: transparent !important;
 }
 
 #GameDiv, #Cocos3dGameContainer, #GameCanvas {
