@@ -3494,12 +3494,6 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
       cclegacy._RF.push({}, "3f79avZs1VNjqUdXTzvv1Oa", "TowerQueriesTester", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
-
-      /**
-       * Мост для parent ↔ iframe через postMessage.
-       * Принимает OPEN_RANDOM и OPEN_BY_USER, выполняет полноценное открытие (как при клике).
-       * Отдаёт события: IFRAME_READY, BUSY_STATE, INFO, OPEN_RESULT.
-       */
       var OpenPieceBridge = exports('OpenPieceBridge', (_dec = ccclass('OpenPieceBridge'), _dec2 = property({
         type: TowerLayoutController
       }), _dec3 = property({
@@ -3514,13 +3508,14 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "layoutCtrl", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "clickMgr", _descriptor2, _assertThisInitialized(_this));
-          /** Разрешённые origin-ы родителей. Оставьте пустым set — будет принимать от любых (на свой риск). */
+          // Разрешённые origin родителя (оставь пустым Set — принимать от любого на свой риск)
           _this.allowedParents = new Set([
             // 'https://taduar2001.github.io',
           ]);
+          _this.lastBusy = null;
           // ===== message handler =====
           _this.onMessage = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-            var data, type, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _data$payload$userId, _data$payload, userId, _ok;
+            var data, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _data$payload$userId, _data$payload, userId, _ok, _ok2;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
@@ -3531,44 +3526,52 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   return _context.abrupt("return");
                 case 2:
                   data = e.data || {};
-                  type = data.type;
-                  _context.t0 = type;
-                  _context.next = _context.t0 === 'QUERY_BUSY' ? 7 : _context.t0 === 'QUERY_INFO' ? 9 : _context.t0 === 'OPEN_RANDOM' ? 12 : _context.t0 === 'OPEN_BY_USER' ? 17 : 23;
+                  _context.t0 = data.type;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 6 : _context.t0 === 'QUERY_INFO' ? 8 : _context.t0 === 'OPEN_RANDOM' ? 11 : _context.t0 === 'OPEN_BY_USER' ? 16 : _context.t0 === 'CLOSE_OPENED' ? 22 : 27;
                   break;
-                case 7:
+                case 6:
                   _this.reply(e, 'BUSY_STATE', {
                     busy: _this.isBusy()
                   });
-                  return _context.abrupt("break", 23);
-                case 9:
+                  return _context.abrupt("break", 27);
+                case 8:
                   count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
                   _this.reply(e, 'INFO', {
                     piecesCount: count
                   });
-                  return _context.abrupt("break", 23);
-                case 12:
-                  _context.next = 14;
+                  return _context.abrupt("break", 27);
+                case 11:
+                  _context.next = 13;
                   return _this.openRandom();
-                case 14:
+                case 13:
                   ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: ok,
                     mode: 'random'
                   });
-                  return _context.abrupt("break", 23);
-                case 17:
+                  return _context.abrupt("break", 27);
+                case 16:
                   userId = (_data$payload$userId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.userId) != null ? _data$payload$userId : '';
-                  _context.next = 20;
+                  _context.next = 19;
                   return _this.openByUserId(userId);
-                case 20:
+                case 19:
                   _ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok,
                     mode: 'byUser',
                     userId: userId
                   });
-                  return _context.abrupt("break", 23);
-                case 23:
+                  return _context.abrupt("break", 27);
+                case 22:
+                  _context.next = 24;
+                  return _this.closeOpened();
+                case 24:
+                  _ok2 = _context.sent;
+                  _this.reply(e, 'CLOSE_RESULT', {
+                    ok: _ok2
+                  });
+                  return _context.abrupt("break", 27);
+                case 27:
                 case "end":
                   return _context.stop();
               }
@@ -3577,8 +3580,8 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           return _this;
         }
         var _proto = OpenPieceBridge.prototype;
+        // чтобы отсылать BUSY_STATE только при изменении
         _proto.onEnable = function onEnable() {
-          // Сообщаем родителю, что iframe готов слушать команды
           this.safePostToParent({
             type: 'IFRAME_READY'
           });
@@ -3586,6 +3589,22 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         };
         _proto.onDisable = function onDisable() {
           window.removeEventListener('message', this.onMessage);
+        }
+
+        // === notify parent on BUSY changes ===
+        ;
+
+        _proto.update = function update() {
+          var busy = this.isBusy();
+          if (busy !== this.lastBusy) {
+            this.lastBusy = busy;
+            this.safePostToParent({
+              type: 'BUSY_STATE',
+              payload: {
+                busy: busy
+              }
+            });
+          }
         }
 
         // ===== postMessage helpers =====
@@ -3609,13 +3628,12 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         // ===== state helpers =====
         _proto.isBusy = function isBusy() {
           var cm = this.clickMgr;
-          // считем занято, если нет зависимостей или FSM не Idle
           return !cm || cm.fsm !== 'Idle';
         }
 
         // ===== actions =====
+        ;
 
-        /** Открыть случайный кусок. user_id НЕ используется. */;
         _proto.openRandom = /*#__PURE__*/
         function () {
           var _openRandom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
@@ -3664,9 +3682,8 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _openRandom.apply(this, arguments);
           }
           return openRandom;
-        }() /** Открыть по user_id. Вернёт false, если такого user_id нет в данных. */;
-        _proto.openByUserId = /*#__PURE__*/
-        function () {
+        }();
+        _proto.openByUserId = /*#__PURE__*/function () {
           var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(userId) {
             var lc, cm, q, hit;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
@@ -3701,7 +3718,6 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   console.warn('[OpenPieceBridge] user_id не найден:', q);
                   return _context3.abrupt("return", false);
                 case 13:
-                  // мягкий предварительный скролл к уровню
                   lc.scrollToLevel(hit.level, {
                     duration: cm.heightCenterDuration,
                     easing: 'quadOut',
@@ -3721,9 +3737,8 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _openByUserId.apply(this, arguments);
           }
           return openByUserId;
-        }() /** Полный сценарий открытия — как при клике: центрирование → поворот → выезд → бортик → поворот модели → LockedOut */;
-        _proto.openAt = /*#__PURE__*/
-        function () {
+        }();
+        _proto.openAt = /*#__PURE__*/function () {
           var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(level, slot) {
             var lc, cm, bias, step, targetHeight, owner, binding;
             return _regeneratorRuntime().wrap(function _callee4$(_context4) {
@@ -3737,7 +3752,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   cm.clickedSlot = slot;
                   cm.fsm = 'Aligning';
 
-                  // 1) Центровка по высоте (с bias)
+                  // 1) центрирование по высоте
                   bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
                   step = lc.getLevelStep();
                   targetHeight = (level + bias) * step;
@@ -3747,7 +3762,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   _context4.next = 14;
                   return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
                 case 14:
-                  // 3) Получить актуальный узел и биндинг (с учётом рециклинга)
+                  // 3) актуальный узел + биндинг
                   owner = lc.findNodeByLevelSlot(level, slot);
                   if (owner) {
                     _context4.next = 19;
@@ -3761,7 +3776,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   cm.currentPiece = owner;
                   cm.currentBinding = binding;
 
-                  // 4) Выезд + бортик + поворот модели
+                  // 4) выезд + бортик + поворот модели
                   _context4.next = 24;
                   return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
                 case 24:
@@ -3790,6 +3805,40 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _openAt.apply(this, arguments);
           }
           return openAt;
+        }();
+        _proto.closeOpened = /*#__PURE__*/function () {
+          var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+            var cm;
+            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+              while (1) switch (_context5.prev = _context5.next) {
+                case 0:
+                  cm = this.clickMgr;
+                  if (cm) {
+                    _context5.next = 3;
+                    break;
+                  }
+                  return _context5.abrupt("return", false);
+                case 3:
+                  if (!(cm.fsm === 'LockedOut')) {
+                    _context5.next = 7;
+                    break;
+                  }
+                  _context5.next = 6;
+                  return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
+                case 6:
+                  return _context5.abrupt("return", true);
+                case 7:
+                  return _context5.abrupt("return", false);
+                case 8:
+                case "end":
+                  return _context5.stop();
+              }
+            }, _callee5, this);
+          }));
+          function closeOpened() {
+            return _closeOpened.apply(this, arguments);
+          }
+          return closeOpened;
         }();
         return OpenPieceBridge;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "layoutCtrl", [_dec2], {
