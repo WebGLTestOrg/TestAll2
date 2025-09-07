@@ -3495,14 +3495,18 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
 
-      /** Построен на основе OpenByUserIdAPI + postMessage мост. */
-      var OpenByUserIdBridge = exports('OpenByUserIdBridge', (_dec = ccclass('OpenByUserIdBridge'), _dec2 = property({
+      /**
+       * Мост для parent ↔ iframe через postMessage.
+       * Принимает OPEN_RANDOM и OPEN_BY_USER, выполняет полноценное открытие (как при клике).
+       * Отдаёт события: IFRAME_READY, BUSY_STATE, INFO, OPEN_RESULT.
+       */
+      var OpenPieceBridge = exports('OpenPieceBridge', (_dec = ccclass('OpenPieceBridge'), _dec2 = property({
         type: TowerLayoutController
       }), _dec3 = property({
         type: GlobalClickManager3D
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(OpenByUserIdBridge, _Component);
-        function OpenByUserIdBridge() {
+        _inheritsLoose(OpenPieceBridge, _Component);
+        function OpenPieceBridge() {
           var _this;
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
@@ -3510,12 +3514,13 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "layoutCtrl", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "clickMgr", _descriptor2, _assertThisInitialized(_this));
-          /** Разрешённые origin-ы родителей. Оставь пустым, чтобы принимать от любого (не рекомендуется). */
+          /** Разрешённые origin-ы родителей. Оставьте пустым set — будет принимать от любых (на свой риск). */
           _this.allowedParents = new Set([
-            // 'https://taduar2001.github.io', // добавь при деплое
+            // 'https://taduar2001.github.io',
           ]);
+          // ===== message handler =====
           _this.onMessage = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-            var data, busy, _window$parent, _data$payload, userId, _window$parent2, ok, _window$parent3;
+            var data, type, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _data$payload$userId, _data$payload, userId, _ok;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
@@ -3526,63 +3531,44 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   return _context.abrupt("return");
                 case 2:
                   data = e.data || {};
-                  _this.clickMgr;
-                  if (!(data.type === 'QUERY_BUSY')) {
-                    _context.next = 8;
-                    break;
-                  }
-                  busy = _this.isBusy();
-                  try {
-                    (_window$parent = window.parent) == null || _window$parent.postMessage({
-                      type: 'BUSY_STATE',
-                      payload: {
-                        busy: busy
-                      }
-                    }, e.origin || '*');
-                  } catch (_unused) {}
-                  return _context.abrupt("return");
-                case 8:
-                  if (!(data.type === 'OPEN_BY_USER')) {
-                    _context.next = 19;
-                    break;
-                  }
-                  userId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.userId;
-                  if (userId) {
-                    _context.next = 12;
-                    break;
-                  }
-                  return _context.abrupt("return");
+                  type = data.type;
+                  _context.t0 = type;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 7 : _context.t0 === 'QUERY_INFO' ? 9 : _context.t0 === 'OPEN_RANDOM' ? 12 : _context.t0 === 'OPEN_BY_USER' ? 17 : 23;
+                  break;
+                case 7:
+                  _this.reply(e, 'BUSY_STATE', {
+                    busy: _this.isBusy()
+                  });
+                  return _context.abrupt("break", 23);
+                case 9:
+                  count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
+                  _this.reply(e, 'INFO', {
+                    piecesCount: count
+                  });
+                  return _context.abrupt("break", 23);
                 case 12:
-                  if (!_this.isBusy()) {
-                    _context.next = 15;
-                    break;
-                  }
-                  // Можно уведомить, что заняты
-                  try {
-                    (_window$parent2 = window.parent) == null || _window$parent2.postMessage({
-                      type: 'BUSY_STATE',
-                      payload: {
-                        busy: true
-                      }
-                    }, e.origin || '*');
-                  } catch (_unused2) {}
-                  return _context.abrupt("return");
-                case 15:
-                  _context.next = 17;
-                  return _this.openByUserId(userId);
-                case 17:
+                  _context.next = 14;
+                  return _this.openRandom();
+                case 14:
                   ok = _context.sent;
-                  // (опционально) отчитаться об успехе
-                  try {
-                    (_window$parent3 = window.parent) == null || _window$parent3.postMessage({
-                      type: 'OPEN_RESULT',
-                      payload: {
-                        ok: ok,
-                        userId: userId
-                      }
-                    }, e.origin || '*');
-                  } catch (_unused3) {}
-                case 19:
+                  _this.reply(e, 'OPEN_RESULT', {
+                    ok: ok,
+                    mode: 'random'
+                  });
+                  return _context.abrupt("break", 23);
+                case 17:
+                  userId = (_data$payload$userId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.userId) != null ? _data$payload$userId : '';
+                  _context.next = 20;
+                  return _this.openByUserId(userId);
+                case 20:
+                  _ok = _context.sent;
+                  _this.reply(e, 'OPEN_RESULT', {
+                    ok: _ok,
+                    mode: 'byUser',
+                    userId: userId
+                  });
+                  return _context.abrupt("break", 23);
+                case 23:
                 case "end":
                   return _context.stop();
               }
@@ -3590,119 +3576,222 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           }));
           return _this;
         }
-        var _proto = OpenByUserIdBridge.prototype;
+        var _proto = OpenPieceBridge.prototype;
         _proto.onEnable = function onEnable() {
-          // Сообщаем родителю, что iframe готов принимать команды
-          try {
-            var _window$parent4;
-            (_window$parent4 = window.parent) == null || _window$parent4.postMessage({
-              type: 'IFRAME_READY'
-            }, '*');
-          } catch (_unused4) {}
+          // Сообщаем родителю, что iframe готов слушать команды
+          this.safePostToParent({
+            type: 'IFRAME_READY'
+          });
           window.addEventListener('message', this.onMessage);
         };
         _proto.onDisable = function onDisable() {
           window.removeEventListener('message', this.onMessage);
+        }
+
+        // ===== postMessage helpers =====
+        ;
+
+        _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
+          if (targetOrigin === void 0) {
+            targetOrigin = '*';
+          }
+          try {
+            var _window$parent;
+            (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
+          } catch (_unused) {}
         };
+        _proto.reply = function reply(e, type, payload) {
+          this.safePostToParent({
+            type: type,
+            payload: payload
+          }, e.origin || '*');
+        };
+        // ===== state helpers =====
         _proto.isBusy = function isBusy() {
           var cm = this.clickMgr;
+          // считем занято, если нет зависимостей или FSM не Idle
           return !cm || cm.fsm !== 'Idle';
         }
 
-        /** Полный сценарий открытия по userId — как при клике. */;
-        _proto.openByUserId = /*#__PURE__*/
+        // ===== actions =====
+
+        /** Открыть случайный кусок. user_id НЕ используется. */;
+        _proto.openRandom = /*#__PURE__*/
         function () {
-          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(userId) {
-            var lc, cm, q, hit, bias, step, targetHeight, owner, binding;
+          var _openRandom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+            var lc, cm, seed, rnd;
             return _regeneratorRuntime().wrap(function _callee2$(_context2) {
               while (1) switch (_context2.prev = _context2.next) {
                 case 0:
                   lc = this.layoutCtrl;
                   cm = this.clickMgr;
                   if (!(!lc || !cm || !cm.scrollCtrl || !cm.rotatingRoot || !cm.sceneCamera)) {
-                    _context2.next = 5;
+                    _context2.next = 4;
                     break;
                   }
-                  console.warn('[OpenByUserIdBridge] Зависимости не настроены.');
                   return _context2.abrupt("return", false);
-                case 5:
+                case 4:
                   if (!(cm.fsm !== 'Idle')) {
-                    _context2.next = 7;
+                    _context2.next = 6;
                     break;
                   }
                   return _context2.abrupt("return", false);
-                case 7:
-                  q = (userId != null ? userId : '').trim();
-                  if (q) {
+                case 6:
+                  seed = Math.random() * 0xFFFFFFFF >>> 0;
+                  rnd = lc.scrollToRandomPiece({
+                    duration: cm.heightCenterDuration,
+                    easing: 'quadOut',
+                    clamp: true,
+                    seed: seed
+                  });
+                  if (rnd) {
                     _context2.next = 10;
                     break;
                   }
                   return _context2.abrupt("return", false);
                 case 10:
-                  hit = lc.findLevelSlotByUserId(q);
-                  if (hit) {
-                    _context2.next = 14;
-                    break;
-                  }
-                  console.warn('[OpenByUserIdBridge] user_id не найден:', q);
-                  return _context2.abrupt("return", false);
-                case 14:
-                  _context2.prev = 14;
-                  cm.lockControls == null || cm.lockControls();
-                  cm.clickedLevel = hit.level;
-                  cm.clickedSlot = hit.slot;
-                  cm.fsm = 'Aligning';
-                  bias = hit.level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
-                  step = lc.getLevelStep();
-                  targetHeight = (hit.level + bias) * step;
-                  _context2.next = 24;
-                  return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
-                case 24:
-                  _context2.next = 26;
-                  return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(hit.slot);
-                case 26:
-                  owner = lc.findNodeByLevelSlot(hit.level, hit.slot);
-                  if (owner) {
-                    _context2.next = 31;
-                    break;
-                  }
-                  cm.unlockControls == null || cm.unlockControls();
-                  cm.fsm = 'Idle';
-                  return _context2.abrupt("return", false);
-                case 31:
-                  binding = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding);
-                  cm.currentPiece = owner;
-                  cm.currentBinding = binding;
-                  _context2.next = 36;
-                  return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
-                case 36:
-                  cm.setRimActive == null || cm.setRimActive(true);
-                  _context2.next = 39;
-                  return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
-                case 39:
-                  cm.fsm = 'LockedOut';
-                  return _context2.abrupt("return", true);
-                case 43:
-                  _context2.prev = 43;
-                  _context2.t0 = _context2["catch"](14);
-                  console.warn('[OpenByUserIdBridge] Ошибка:', _context2.t0);
-                  try {
-                    cm.unlockControls == null || cm.unlockControls();
-                  } catch (_unused5) {}
-                  cm.fsm = 'Idle';
-                  return _context2.abrupt("return", false);
-                case 49:
+                  _context2.next = 12;
+                  return this.openAt(rnd.level, rnd.slot);
+                case 12:
+                  return _context2.abrupt("return", _context2.sent);
+                case 13:
                 case "end":
                   return _context2.stop();
               }
-            }, _callee2, this, [[14, 43]]);
+            }, _callee2, this);
+          }));
+          function openRandom() {
+            return _openRandom.apply(this, arguments);
+          }
+          return openRandom;
+        }() /** Открыть по user_id. Вернёт false, если такого user_id нет в данных. */;
+        _proto.openByUserId = /*#__PURE__*/
+        function () {
+          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(userId) {
+            var lc, cm, q, hit;
+            return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+              while (1) switch (_context3.prev = _context3.next) {
+                case 0:
+                  lc = this.layoutCtrl;
+                  cm = this.clickMgr;
+                  if (!(!lc || !cm || !cm.scrollCtrl || !cm.rotatingRoot || !cm.sceneCamera)) {
+                    _context3.next = 4;
+                    break;
+                  }
+                  return _context3.abrupt("return", false);
+                case 4:
+                  if (!(cm.fsm !== 'Idle')) {
+                    _context3.next = 6;
+                    break;
+                  }
+                  return _context3.abrupt("return", false);
+                case 6:
+                  q = (userId != null ? userId : '').trim();
+                  if (q) {
+                    _context3.next = 9;
+                    break;
+                  }
+                  return _context3.abrupt("return", false);
+                case 9:
+                  hit = lc.findLevelSlotByUserId(q);
+                  if (hit) {
+                    _context3.next = 13;
+                    break;
+                  }
+                  console.warn('[OpenPieceBridge] user_id не найден:', q);
+                  return _context3.abrupt("return", false);
+                case 13:
+                  // мягкий предварительный скролл к уровню
+                  lc.scrollToLevel(hit.level, {
+                    duration: cm.heightCenterDuration,
+                    easing: 'quadOut',
+                    clamp: true
+                  });
+                  _context3.next = 16;
+                  return this.openAt(hit.level, hit.slot);
+                case 16:
+                  return _context3.abrupt("return", _context3.sent);
+                case 17:
+                case "end":
+                  return _context3.stop();
+              }
+            }, _callee3, this);
           }));
           function openByUserId(_x2) {
             return _openByUserId.apply(this, arguments);
           }
           return openByUserId;
+        }() /** Полный сценарий открытия — как при клике: центрирование → поворот → выезд → бортик → поворот модели → LockedOut */;
+        _proto.openAt = /*#__PURE__*/
+        function () {
+          var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(level, slot) {
+            var lc, cm, bias, step, targetHeight, owner, binding;
+            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+              while (1) switch (_context4.prev = _context4.next) {
+                case 0:
+                  lc = this.layoutCtrl;
+                  cm = this.clickMgr;
+                  _context4.prev = 2;
+                  cm.lockControls == null || cm.lockControls();
+                  cm.clickedLevel = level;
+                  cm.clickedSlot = slot;
+                  cm.fsm = 'Aligning';
+
+                  // 1) Центровка по высоте (с bias)
+                  bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
+                  step = lc.getLevelStep();
+                  targetHeight = (level + bias) * step;
+                  _context4.next = 12;
+                  return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
+                case 12:
+                  _context4.next = 14;
+                  return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
+                case 14:
+                  // 3) Получить актуальный узел и биндинг (с учётом рециклинга)
+                  owner = lc.findNodeByLevelSlot(level, slot);
+                  if (owner) {
+                    _context4.next = 19;
+                    break;
+                  }
+                  cm.unlockControls == null || cm.unlockControls();
+                  cm.fsm = 'Idle';
+                  return _context4.abrupt("return", false);
+                case 19:
+                  binding = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding);
+                  cm.currentPiece = owner;
+                  cm.currentBinding = binding;
+
+                  // 4) Выезд + бортик + поворот модели
+                  _context4.next = 24;
+                  return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
+                case 24:
+                  cm.setRimActive == null || cm.setRimActive(true);
+                  _context4.next = 27;
+                  return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
+                case 27:
+                  cm.fsm = 'LockedOut';
+                  return _context4.abrupt("return", true);
+                case 31:
+                  _context4.prev = 31;
+                  _context4.t0 = _context4["catch"](2);
+                  console.warn('[OpenPieceBridge] ошибка открытия:', _context4.t0);
+                  try {
+                    cm.unlockControls == null || cm.unlockControls();
+                  } catch (_unused2) {}
+                  cm.fsm = 'Idle';
+                  return _context4.abrupt("return", false);
+                case 37:
+                case "end":
+                  return _context4.stop();
+              }
+            }, _callee4, this, [[2, 31]]);
+          }));
+          function openAt(_x3, _x4) {
+            return _openAt.apply(this, arguments);
+          }
+          return openAt;
         }();
-        return OpenByUserIdBridge;
+        return OpenPieceBridge;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "layoutCtrl", [_dec2], {
         configurable: true,
         enumerable: true,
