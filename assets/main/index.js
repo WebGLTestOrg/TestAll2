@@ -790,6 +790,27 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           mat.setProperty('tintColor', color);
           mat.setProperty('softness', this.msdfSoftness);
           mat.setProperty('alphaClip', this.alphaClip);
+        }
+
+        // внутри ArcTextMSDFTwoLinesSubmesh
+
+        /** Установить текст 1-й строки */;
+        _proto.setText1 = function setText1(text) {
+          this.text1 = text && text.trim() ? text : '';
+          this._rebuild();
+        }
+
+        /** Установить текст 2-й строки */;
+        _proto.setText2 = function setText2(text) {
+          this.text2 = text && text.trim() ? text : '';
+          this._rebuild();
+        }
+
+        /** Применить данные из API: title → text1, name → text2 */;
+        _proto.applyApiData = function applyApiData(data) {
+          this.text1 = data.title && data.title.trim() ? data.title : '';
+          this.text2 = data.name && data.name.trim() ? data.name : '';
+          this._rebuild();
         };
         _createClass(ArcTextMSDFTwoLinesSubmesh, [{
           key: "Force_Rebuild",
@@ -1426,8 +1447,8 @@ System.register("chunks:///_virtual/CakeApiExample.ts", ['./rollupPluginModLoBab
   };
 });
 
-System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, MeshRenderer, Tween, Vec3, tween, easing, Component;
+System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ArcTextMesh.ts'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, MeshRenderer, Component, ArcTextMSDFTwoLinesSubmesh;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -1439,14 +1460,12 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       _decorator = module._decorator;
       Node = module.Node;
       MeshRenderer = module.MeshRenderer;
-      Tween = module.Tween;
-      Vec3 = module.Vec3;
-      tween = module.tween;
-      easing = module.easing;
       Component = module.Component;
+    }, function (module) {
+      ArcTextMSDFTwoLinesSubmesh = module.ArcTextMSDFTwoLinesSubmesh;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5;
       cclegacy._RF.push({}, "a3b9f30vchC9aP2MSuw/5Bg", "ClickMoveBinding", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -1462,6 +1481,9 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       }), _dec5 = property({
         type: Node,
         tooltip: '�������: ���������� ��� ��������, ����������� ��� ��������'
+      }), _dec6 = property({
+        type: ArcTextMSDFTwoLinesSubmesh,
+        tooltip: '��������� ������ (2 ������)'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(ClickMoveBinding, _Component);
         function ClickMoveBinding() {
@@ -1474,6 +1496,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
           _initializerDefineProperty(_this, "meshRenderer", _descriptor2, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "model", _descriptor3, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "rim", _descriptor4, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "arcText", _descriptor5, _assertThisInitialized(_this));
           // --- ����������� ��������� ���������� ---
           _this._startTargetPos = null;
           // ��������� ������� target
@@ -1497,16 +1520,11 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
             this._startModelEuler = this.model.eulerAngles.clone();
           }
           this._captured = !!this.target; // ������� �����������, ���� ���� ���� �������
-        }
+        };
 
-        /** Ƹ���� ������� target � model � ����� (��� ��������) */;
-        _proto.resetToStartImmediate = function resetToStartImmediate() {
-          this.ensureCaptured();
-          if (this.target && this._startTargetPos) {
-            this.target.setPosition(this._startTargetPos);
-          }
-          if (this.model && this._startModelEuler) {
-            this.model.setRotationFromEuler(this._startModelEuler.x, this._startModelEuler.y, this._startModelEuler.z);
+        _proto.updateFromApi = function updateFromApi(apiData) {
+          if (this.arcText) {
+            this.arcText.applyApiData(apiData);
           }
         }
 
@@ -1518,67 +1536,6 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
           if (this.model) {
             console.log("[" + label + "] model  world pos=", this.model.worldPosition.clone(), 'euler=', this.model.eulerAngles.clone());
           }
-        }
-
-        /** ����� �� ��������� ������� �� ��������� X = distance (��������) */;
-        _proto.moveOut = function moveOut(distanceLocalX, duration) {
-          if (!this.target) {
-            console.warn('[ClickMoveBinding] Target �� �������� ��', this.node.name);
-            return;
-          }
-          this.ensureCaptured();
-          if (!this._startTargetPos) this._startTargetPos = this.target.getPosition().clone();
-          Tween.stopAllByTarget(this.target);
-          var to = new Vec3(this._startTargetPos.x + distanceLocalX, this._startTargetPos.y, this._startTargetPos.z);
-          tween(this.target).to(duration, {
-            position: to
-          }, {
-            easing: easing.quadOut
-          }).start();
-        }
-
-        /** ������� ����� � ��������� ������� (��������) */;
-        _proto.moveIn = function moveIn(duration) {
-          if (!this.target || !this._startTargetPos) return;
-          Tween.stopAllByTarget(this.target);
-          tween(this.target).to(duration, {
-            position: this._startTargetPos.clone()
-          }, {
-            easing: easing.quadOut
-          }).start();
-        }
-
-        /** ������ ������� ������ � ��������� ������� (��������) */;
-        _proto.rotateModelToStart = function rotateModelToStart(duration, easingName) {
-          var _this2 = this;
-          return new Promise(function (resolve) {
-            if (!_this2.model || !_this2._startModelEuler) {
-              resolve();
-              return;
-            }
-            if (duration <= 0) {
-              _this2.model.setRotationFromEuler(_this2._startModelEuler.x, _this2._startModelEuler.y, _this2._startModelEuler.z);
-              resolve();
-              return;
-            }
-            var start = _this2.model.eulerAngles.clone();
-            var end = _this2._startModelEuler.clone();
-            var driver = {
-              t: 0
-            };
-            tween(driver).to(duration, {
-              t: 1
-            }, {
-              easing: easingName,
-              onUpdate: function onUpdate() {
-                // ���������� ������ Y, ����� ��������� ������������� ������������ X/Z, ���� ��� �� ��������.
-                var y = start.y + (end.y - start.y) * driver.t;
-                _this2.model.setRotationFromEuler(start.x, y, start.z);
-              }
-            }).call(function () {
-              return resolve();
-            }).start();
-          });
         };
         return ClickMoveBinding;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "target", [_dec2], {
@@ -1603,6 +1560,13 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
           return null;
         }
       }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "rim", [_dec5], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "arcText", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -1967,6 +1931,59 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
   };
 });
 
+System.register("chunks:///_virtual/DebugPanelToggle.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _inheritsLoose, cclegacy, _decorator, setDisplayStats, systemEvent, SystemEvent, KeyCode, Component;
+  return {
+    setters: [function (module) {
+      _inheritsLoose = module.inheritsLoose;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      setDisplayStats = module.setDisplayStats;
+      systemEvent = module.systemEvent;
+      SystemEvent = module.SystemEvent;
+      KeyCode = module.KeyCode;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _class;
+      cclegacy._RF.push({}, "cfda1+1JjNMa47nVqaXXSGs", "DebugPanelToggle", undefined);
+      var ccclass = _decorator.ccclass;
+      var DebugPanelToggle3x = exports('DebugPanelToggle3x', (_dec = ccclass('DebugPanelToggle3x'), _dec(_class = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(DebugPanelToggle3x, _Component);
+        function DebugPanelToggle3x() {
+          var _this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          _this._debugVisible = false;
+          return _this;
+        }
+        var _proto = DebugPanelToggle3x.prototype;
+        _proto.start = function start() {
+          // �� ��������� ��������� ������
+          setDisplayStats(false);
+
+          // ������� ������� P
+          systemEvent.on(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        };
+        _proto.onKeyDown = function onKeyDown(event) {
+          if (event.keyCode === KeyCode.KEY_P) {
+            this._debugVisible = !this._debugVisible;
+            setDisplayStats(this._debugVisible);
+          }
+        };
+        _proto.onDestroy = function onDestroy() {
+          systemEvent.off(SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
+        };
+        return DebugPanelToggle3x;
+      }(Component)) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts'], function (exports) {
   var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Camera, Node, input, Input, geometry, PhysicsSystem, Vec3, tween, Component, ClickMoveBinding, InteractionState, MOUSE_ID, RotateYByKeys, TowerLayoutController, TowerScrollController;
   return {
@@ -2003,7 +2020,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20;
       cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -2034,6 +2051,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       }), _dec6 = property({
         type: TowerScrollController
       }), _dec7 = property({
+        type: Node
+      }), _dec8 = property({
         tooltip: 'Мировое расстояние выезда (ед.), одинаковое для всех уровней'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(GlobalClickManager3D, _Component);
@@ -2049,29 +2068,30 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           _initializerDefineProperty(_this, "rotator", _descriptor3, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "layoutCtrl", _descriptor4, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "scrollCtrl", _descriptor5, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bloor", _descriptor6, _assertThisInitialized(_this));
           // timings
-          _initializerDefineProperty(_this, "heightCenterDuration", _descriptor6, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "heightNudgeDuration", _descriptor7, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "rotateDuration", _descriptor8, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "heightCenterDuration", _descriptor7, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "heightNudgeDuration", _descriptor8, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "rotateDuration", _descriptor9, _assertThisInitialized(_this));
           // bias per level group
-          _initializerDefineProperty(_this, "levelBiasTop", _descriptor9, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasTop", _descriptor10, _assertThisInitialized(_this));
           // уровни 0..1
-          _initializerDefineProperty(_this, "levelBiasRest", _descriptor10, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasRest", _descriptor11, _assertThisInitialized(_this));
           // уровни ≥2
           // slide (компенсируем скейл)
-          _initializerDefineProperty(_this, "openWorldDistance", _descriptor11, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideEasing", _descriptor12, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideDuration", _descriptor13, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldDistance", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideEasing", _descriptor13, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideDuration", _descriptor14, _assertThisInitialized(_this));
           // поворот корня по слоту
-          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor15, _assertThisInitialized(_this));
           // 0=лицо по +Z, 90=по +X
-          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor16, _assertThisInitialized(_this));
           // +180°
-          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor16, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor17, _assertThisInitialized(_this));
           // поворот МОДЕЛИ при открытии/закрытии
-          _initializerDefineProperty(_this, "modelRotateDeg", _descriptor17, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor18, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDeg", _descriptor18, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor20, _assertThisInitialized(_this));
           // state
           _this.fsm = State.Idle;
           _this.clickedLevel = 0;
@@ -2198,8 +2218,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   _context.next = 33;
                   return this.rotateModelOpen();
                 case 33:
+                  this.bloor.active = true;
                   this.fsm = State.LockedOut;
-                case 34:
+                case 35:
                 case "end":
                   return _context.stop();
               }
@@ -2346,29 +2367,29 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   return _context3.abrupt("return");
                 case 2:
                   this.fsm = State.SlideIn;
-
+                  this.bloor.active = false;
                   // 1) вернуть модель в базовый угол
-                  _context3.next = 5;
+                  _context3.next = 6;
                   return this.rotateModelClose();
-                case 5:
+                case 6:
                   // 2) выключить “бортик”
                   this.setRimActive(false);
 
                   // 3) задвинуть назад
                   if (!(this.currentPiece && this.currentBinding)) {
-                    _context3.next = 11;
+                    _context3.next = 12;
                     break;
                   }
                   target = (_this$currentBinding$2 = this.currentBinding.target) != null ? _this$currentBinding$2 : this.currentPiece;
                   baseX = (_this$baseLocalX$get = this.baseLocalX.get(target)) != null ? _this$baseLocalX$get : target.position.x;
-                  _context3.next = 11;
+                  _context3.next = 12;
                   return this.tweenLocalX(target, baseX, this.slideDuration, this.slideEasing);
-                case 11:
+                case 12:
                   this.unlockControls();
                   this.currentPiece = null;
                   this.currentBinding = null;
                   this.fsm = State.Idle;
-                case 15:
+                case 16:
                 case "end":
                   return _context3.stop();
               }
@@ -2565,98 +2586,105 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "heightCenterDuration", [property], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "bloor", [_dec7], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "heightCenterDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.35;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "heightNudgeDuration", [property], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "heightNudgeDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.10;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "rotateDuration", [property], {
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "rotateDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.35;
         }
-      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTop", [property], {
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTop", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -3;
         }
-      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRest", [property], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRest", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -4;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistance", [_dec7], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistance", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [property], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [property], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [property], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [property], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [property], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDeg", [property], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 90;
         }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [property], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [property], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -2803,9 +2831,9 @@ System.register("chunks:///_virtual/InteractionState.ts", ['cc'], function (expo
   };
 });
 
-System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
+System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './DebugPanelToggle.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
   return {
-    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     execute: function () {}
   };
 });
@@ -5425,12 +5453,18 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
         /* ========================== Тексты в префаб ========================== */;
         _proto.applyPieceToNode = function applyPieceToNode(root, piece) {
-          var _piece$title, _piece$name, _piece$greeting_text;
           root.__piece = piece != null ? piece : null;
           if (!piece) return;
-          this.setLabelByChildName(root, 'Title', (_piece$title = piece.title) != null ? _piece$title : '');
-          this.setLabelByChildName(root, 'Name', (_piece$name = piece.name) != null ? _piece$name : '');
-          this.setLabelByChildName(root, 'Greeting', (_piece$greeting_text = piece.greeting_text) != null ? _piece$greeting_text : '');
+
+          // передаём данные сразу в ClickMoveBinding
+          var bindings = root.getComponentsInChildren(ClickMoveBinding);
+          for (var _iterator3 = _createForOfIteratorHelperLoose(bindings), _step3; !(_step3 = _iterator3()).done;) {
+            var b = _step3.value;
+            b.updateFromApi({
+              title: piece.title,
+              name: piece.name
+            });
+          }
         };
         _proto.setLabelByChildName = function setLabelByChildName(root, childName, text) {
           var found = this.findChildCaseInsensitive(root, childName);
