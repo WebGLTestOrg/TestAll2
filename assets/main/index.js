@@ -3638,6 +3638,28 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
               }
             });
           }
+        }
+
+        // Внутри OpenPieceBridge класса:
+        ;
+
+        _proto.buildPiecePayload = function buildPiecePayload(level, slot) {
+          var lc = this.layoutCtrl;
+          try {
+            var di = lc.levelSlotToDataIndex(level, slot);
+            var piece = di >= 0 ? lc.getPieceByDataIndex(di) : null;
+            return {
+              level: level,
+              slot: slot,
+              dataIndex: di,
+              piece: piece
+            };
+          } catch (_unused2) {
+            return {
+              level: level,
+              slot: slot
+            };
+          }
         };
         _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
           if (targetOrigin === void 0) {
@@ -3646,7 +3668,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           try {
             var _window$parent;
             (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
-          } catch (_unused2) {}
+          } catch (_unused3) {}
         };
         _proto.reply = function reply(e, type, payload) {
           this.safePostToParent({
@@ -3775,17 +3797,14 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   cm.clickedSlot = slot;
                   cm.fsm = 'Aligning';
 
-                  // === НОВОЕ: соберём полную инфу о кусочке и сразу оповестим родителя, что начали открывать
-                  info = lc.getPieceInfoByLevelSlot(level, slot);
+                  // полная инфа
+                  info = this.buildPiecePayload(level, slot);
                   this.safePostToParent({
                     type: 'OPENING',
-                    payload: info != null ? info : {
-                      level: level,
-                      slot: slot
-                    }
+                    payload: info
                   });
 
-                  // 1) центрирование по высоте
+                  // центрирование
                   bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
                   step = lc.getLevelStep();
                   targetHeight = (level + bias) * step;
@@ -3795,7 +3814,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   _context4.next = 16;
                   return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
                 case 16:
-                  // 3) актуальный узел + биндинг
+                  // биндинг узла
                   owner = lc.findNodeByLevelSlot(level, slot);
                   if (owner) {
                     _context4.next = 21;
@@ -3809,7 +3828,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   cm.currentPiece = owner;
                   cm.currentBinding = binding;
 
-                  // 4) выезд + бортик + поворот модели
+                  // выезд/бортик/поворот
                   _context4.next = 26;
                   return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
                 case 26:
@@ -3817,13 +3836,10 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   _context4.next = 29;
                   return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
                 case 29:
-                  // === НОВОЕ: анимация открытия завершилась
+                  // открыт
                   this.safePostToParent({
                     type: 'OPENED',
-                    payload: info != null ? info : {
-                      level: level,
-                      slot: slot
-                    }
+                    payload: info
                   });
                   cm.fsm = 'LockedOut';
                   return _context4.abrupt("return", true);
@@ -3833,9 +3849,8 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   console.warn('[OpenPieceBridge] ошибка открытия:', _context4.t0);
                   try {
                     cm.unlockControls == null || cm.unlockControls();
-                  } catch (_unused3) {}
+                  } catch (_unused4) {}
                   cm.fsm = 'Idle';
-                  // Можно уведомить родителя об ошибке конкретного открытия
                   this.safePostToParent({
                     type: 'OPEN_FAILED',
                     payload: {
@@ -3858,11 +3873,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         }();
         _proto.closeOpened = /*#__PURE__*/function () {
           var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-            var lc, cm, level, slot, info;
+            var cm, level, slot, info;
             return _regeneratorRuntime().wrap(function _callee5$(_context5) {
               while (1) switch (_context5.prev = _context5.next) {
                 case 0:
-                  lc = this.layoutCtrl;
+                  this.layoutCtrl;
                   cm = this.clickMgr;
                   if (cm) {
                     _context5.next = 4;
@@ -3870,10 +3885,9 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context5.abrupt("return", false);
                 case 4:
-                  // захватим, ЧТО закрываем, пока состояние не изменили
                   level = cm == null ? void 0 : cm.clickedLevel;
                   slot = cm == null ? void 0 : cm.clickedSlot;
-                  info = typeof level === 'number' && typeof slot === 'number' ? lc == null ? void 0 : lc.getPieceInfoByLevelSlot(level, slot) : null;
+                  info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) : null;
                   if (!(cm.fsm === 'LockedOut')) {
                     _context5.next = 12;
                     break;
@@ -3881,7 +3895,6 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   _context5.next = 10;
                   return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
                 case 10:
-                  // === НОВОЕ: сообщаем о факте закрытия
                   this.safePostToParent({
                     type: 'CLOSED',
                     payload: info != null ? info : {
