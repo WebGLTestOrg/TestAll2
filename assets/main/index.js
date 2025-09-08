@@ -2020,7 +2020,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21;
       cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -2054,6 +2054,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         type: Node
       }), _dec8 = property({
         tooltip: 'Мировое расстояние выезда (ед.), одинаковое для всех уровней'
+      }), _dec9 = property({
+        tooltip: 'Origin родителя для postMessage; оставь пустым для *'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(GlobalClickManager3D, _Component);
         function GlobalClickManager3D() {
@@ -2092,8 +2094,11 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           _initializerDefineProperty(_this, "modelRotateDeg", _descriptor18, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "modelRotateDuration", _descriptor19, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "modelRotateEasing", _descriptor20, _assertThisInitialized(_this));
+          // NEW: куда постить события (оставь пусто для '*')
+          _initializerDefineProperty(_this, "parentOrigin", _descriptor21, _assertThisInitialized(_this));
           // state
           _this.fsm = State.Idle;
+          // сделал public, раз мост читает
           _this.clickedLevel = 0;
           _this.clickedSlot = 0;
           _this.currentPiece = null;
@@ -2104,6 +2109,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           // для model
           _this.rotateTween = null;
           _this.modelTween = null;
+          // NEW: флаг «это пользовательское действие» — только тогда шлём в родителя из этого класса
+          _this._emitOnThisAction = false;
           return _this;
         }
         var _proto = GlobalClickManager3D.prototype;
@@ -2121,7 +2128,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.onTouchEnd = function onTouchEnd(e) {
           if (!this.sceneCamera) return;
           if (this.fsm === State.LockedOut) {
-            void this.closeAndInsert();
+            // NEW: закрытие пользователем → шлём CLOSED в конце
+            this._emitOnThisAction = true;
+            void this.closeAndInsert(true);
             return;
           }
           if (InteractionState.inGesture && InteractionState.source === 'mouse') return;
@@ -2138,7 +2147,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.onMouseUp = function onMouseUp(e) {
           if (!this.sceneCamera || e.getButton() !== 0) return;
           if (this.fsm === State.LockedOut) {
-            void this.closeAndInsert();
+            // NEW: закрытие пользователем → шлём CLOSED в конце
+            this._emitOnThisAction = true;
+            void this.closeAndInsert(true);
             return;
           }
           if (InteractionState.inGesture && InteractionState.source === 'touch') return;
@@ -2189,6 +2200,10 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                 case 12:
                   this.clickedLevel = L;
                   this.clickedSlot = S;
+
+                  // NEW: пользовательский «OPENING»
+                  this._emitOnThisAction = true;
+                  this.postPieceEvent('OPENING', L, S);
                   this.lockControls();
                   this.fsm = State.Aligning;
 
@@ -2196,12 +2211,12 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   bias = L <= 1 ? this.levelBiasTop : this.levelBiasRest;
                   step = this.layoutCtrl.getLevelStep();
                   targetHeight = (L + bias) * step;
-                  _context.next = 21;
-                  return this.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, this.heightCenterDuration, this.heightNudgeDuration, 'quadOut', true);
-                case 21:
                   _context.next = 23;
-                  return this.rotateRootToBringSlotToCamera(this.clickedSlot);
+                  return this.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, this.heightCenterDuration, this.heightNudgeDuration, 'quadOut', true);
                 case 23:
+                  _context.next = 25;
+                  return this.rotateRootToBringSlotToCamera(this.clickedSlot);
+                case 25:
                   // 3) берём актуальный видимый (на случай рециклинга)
                   resolved = this.layoutCtrl.findNodeByLevelSlot(this.clickedLevel, this.clickedSlot);
                   owner = resolved != null ? resolved : picked.n;
@@ -2210,17 +2225,21 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   this.currentBinding = b;
 
                   // 4) выезд (компенсация скейла) + включение бортика + поворот модели
-                  _context.next = 30;
+                  _context.next = 32;
                   return this.slideOutWithScaleComp();
-                case 30:
+                case 32:
                   // включаем “бортик” сразу после начала открытия (можно перенести выше — по вкусу)
                   this.setRimActive(true);
-                  _context.next = 33;
+                  _context.next = 35;
                   return this.rotateModelOpen();
-                case 33:
-                  this.bloor.active = true;
-                  this.fsm = State.LockedOut;
                 case 35:
+                  if (this.bloor) this.bloor.active = true;
+
+                  // NEW: пользовательский «OPENED»
+                  this.postPieceEvent('OPENED', this.clickedLevel, this.clickedSlot);
+                  this._emitOnThisAction = false;
+                  this.fsm = State.LockedOut;
+                case 39:
                 case "end":
                   return _context.stop();
               }
@@ -2353,49 +2372,60 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.setRimActiveFor = function setRimActiveFor(binding, active) {
           var rim = binding == null ? void 0 : binding.rim;
           if (rim && rim.active !== active) rim.active = active;
-        };
-        _proto.closeAndInsert = /*#__PURE__*/function () {
-          var _closeAndInsert = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
-            var _this$currentBinding$2, _this$baseLocalX$get, target, baseX;
+        }
+
+        // NEW: closeAndInsert теперь умеет эмитить CLOSED при пользовательском закрытии
+        ;
+
+        _proto.closeAndInsert = /*#__PURE__*/
+        function () {
+          var _closeAndInsert = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(emitToParent) {
+            var L, S, _this$currentBinding$2, _this$baseLocalX$get, target, baseX;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
               while (1) switch (_context3.prev = _context3.next) {
                 case 0:
+                  if (emitToParent === void 0) {
+                    emitToParent = false;
+                  }
                   if (!(this.fsm !== State.LockedOut)) {
-                    _context3.next = 2;
+                    _context3.next = 3;
                     break;
                   }
                   return _context3.abrupt("return");
-                case 2:
+                case 3:
                   this.fsm = State.SlideIn;
-                  this.bloor.active = false;
-                  // 1) вернуть модель в базовый угол
-                  _context3.next = 6;
+                  if (this.bloor) this.bloor.active = false;
+                  L = this.clickedLevel;
+                  S = this.clickedSlot; // 1) вернуть модель в базовый угол
+                  _context3.next = 9;
                   return this.rotateModelClose();
-                case 6:
+                case 9:
                   // 2) выключить “бортик”
                   this.setRimActive(false);
 
                   // 3) задвинуть назад
                   if (!(this.currentPiece && this.currentBinding)) {
-                    _context3.next = 12;
+                    _context3.next = 15;
                     break;
                   }
                   target = (_this$currentBinding$2 = this.currentBinding.target) != null ? _this$currentBinding$2 : this.currentPiece;
                   baseX = (_this$baseLocalX$get = this.baseLocalX.get(target)) != null ? _this$baseLocalX$get : target.position.x;
-                  _context3.next = 12;
+                  _context3.next = 15;
                   return this.tweenLocalX(target, baseX, this.slideDuration, this.slideEasing);
-                case 12:
+                case 15:
                   this.unlockControls();
                   this.currentPiece = null;
                   this.currentBinding = null;
                   this.fsm = State.Idle;
-                case 16:
+                  if (emitToParent) this.postPieceEvent('CLOSED', L, S);
+                  this._emitOnThisAction = false;
+                case 21:
                 case "end":
                   return _context3.stop();
               }
             }, _callee3, this);
           }));
-          function closeAndInsert() {
+          function closeAndInsert(_x3) {
             return _closeAndInsert.apply(this, arguments);
           }
           return closeAndInsert;
@@ -2549,6 +2579,42 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           if (this.rotator) this.rotator.enabled = true;
           (_this$scrollCtrl2 = this.scrollCtrl) == null || _this$scrollCtrl2.setInputEnabled(true);
           InteractionState.hardReset == null || InteractionState.hardReset();
+        }
+
+        // ====== NEW: helpers для событий в родителя ======
+        ;
+
+        _proto.safePostToParent = function safePostToParent(msg) {
+          var origin = this.parentOrigin && this.parentOrigin.trim().length ? this.parentOrigin : '*';
+          try {
+            var _parent;
+            (_parent = window.parent) == null || _parent.postMessage(msg, origin);
+          } catch (_unused) {}
+        };
+        _proto.buildPiecePayload = function buildPiecePayload(level, slot) {
+          var lc = this.layoutCtrl;
+          try {
+            var di = lc.levelSlotToDataIndex(level, slot);
+            var piece = di >= 0 ? lc.getPieceByDataIndex(di) : null;
+            return {
+              level: level,
+              slot: slot,
+              dataIndex: di,
+              piece: piece
+            };
+          } catch (_unused2) {
+            return {
+              level: level,
+              slot: slot
+            };
+          }
+        };
+        _proto.postPieceEvent = function postPieceEvent(type, level, slot) {
+          if (!this._emitOnThisAction) return;
+          this.safePostToParent({
+            type: type,
+            payload: this.buildPiecePayload(level, slot)
+          });
         };
         return GlobalClickManager3D;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "sceneCamera", [_dec2], {
@@ -2690,6 +2756,13 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
+        }
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return '';
         }
       })), _class2)) || _class));
       cclegacy._RF.pop();
@@ -3870,8 +3943,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _openAt.apply(this, arguments);
           }
           return openAt;
-        }();
-        _proto.closeOpened = /*#__PURE__*/function () {
+        }() // внутри класса OpenPieceBridge
+        ;
+
+        _proto.closeOpened = /*#__PURE__*/
+        function () {
           var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
             var cm, level, slot, info;
             return _regeneratorRuntime().wrap(function _callee5$(_context5) {
@@ -3885,9 +3961,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context5.abrupt("return", false);
                 case 4:
+                  // берём, что именно было открыто (это работает и для вручную открытого)
                   level = cm == null ? void 0 : cm.clickedLevel;
                   slot = cm == null ? void 0 : cm.clickedSlot;
-                  info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) : null;
+                  info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) // тот же helper, что и раньше
+                  : null;
                   if (!(cm.fsm === 'LockedOut')) {
                     _context5.next = 12;
                     break;
@@ -3895,6 +3973,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   _context5.next = 10;
                   return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
                 case 10:
+                  // закрываем независимо от способа открытия
                   this.safePostToParent({
                     type: 'CLOSED',
                     payload: info != null ? info : {
