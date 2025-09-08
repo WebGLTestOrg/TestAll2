@@ -3536,12 +3536,10 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "layoutCtrl", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "clickMgr", _descriptor2, _assertThisInitialized(_this));
-          // Разрешённые origin родителя (оставь пустым Set — принимать от любого на свой риск)
           _this.allowedParents = new Set([
             // 'https://taduar2001.github.io',
           ]);
           _this.lastBusy = null;
-          // ===== message handler =====
           _this.onMessage = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
             var data, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _data$payload$userId, _data$payload, userId, _ok, _ok2;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -3553,53 +3551,60 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context.abrupt("return");
                 case 2:
+                  if (!(e.source !== window.parent)) {
+                    _context.next = 4;
+                    break;
+                  }
+                  return _context.abrupt("return");
+                case 4:
+                  // НОВОЕ: проверка источника
                   data = e.data || {};
                   _context.t0 = data.type;
-                  _context.next = _context.t0 === 'QUERY_BUSY' ? 6 : _context.t0 === 'QUERY_INFO' ? 8 : _context.t0 === 'OPEN_RANDOM' ? 11 : _context.t0 === 'OPEN_BY_USER' ? 16 : _context.t0 === 'CLOSE_OPENED' ? 22 : 27;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 8 : _context.t0 === 'QUERY_INFO' ? 10 : _context.t0 === 'OPEN_RANDOM' ? 13 : _context.t0 === 'OPEN_BY_USER' ? 18 : _context.t0 === 'CLOSE_OPENED' ? 24 : _context.t0 === 'CLOSE_ANY' ? 24 : 29;
                   break;
-                case 6:
+                case 8:
                   _this.reply(e, 'BUSY_STATE', {
                     busy: _this.isBusy()
                   });
-                  return _context.abrupt("break", 27);
-                case 8:
+                  return _context.abrupt("break", 29);
+                case 10:
                   count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
                   _this.reply(e, 'INFO', {
                     piecesCount: count
                   });
-                  return _context.abrupt("break", 27);
-                case 11:
-                  _context.next = 13;
-                  return _this.openRandom();
+                  return _context.abrupt("break", 29);
                 case 13:
+                  _context.next = 15;
+                  return _this.openRandom();
+                case 15:
                   ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: ok,
                     mode: 'random'
                   });
-                  return _context.abrupt("break", 27);
-                case 16:
+                  return _context.abrupt("break", 29);
+                case 18:
                   userId = (_data$payload$userId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.userId) != null ? _data$payload$userId : '';
-                  _context.next = 19;
+                  _context.next = 21;
                   return _this.openByUserId(userId);
-                case 19:
+                case 21:
                   _ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok,
                     mode: 'byUser',
                     userId: userId
                   });
-                  return _context.abrupt("break", 27);
-                case 22:
-                  _context.next = 24;
-                  return _this.closeOpened();
+                  return _context.abrupt("break", 29);
                 case 24:
+                  _context.next = 26;
+                  return _this.closeOpened();
+                case 26:
                   _ok2 = _context.sent;
                   _this.reply(e, 'CLOSE_RESULT', {
                     ok: _ok2
                   });
-                  return _context.abrupt("break", 27);
-                case 27:
+                  return _context.abrupt("break", 29);
+                case 29:
                 case "end":
                   return _context.stop();
               }
@@ -3608,7 +3613,6 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           return _this;
         }
         var _proto = OpenPieceBridge.prototype;
-        // чтобы отсылать BUSY_STATE только при изменении
         _proto.onEnable = function onEnable() {
           this.safePostToParent({
             type: 'IFRAME_READY'
@@ -3616,12 +3620,13 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           window.addEventListener('message', this.onMessage);
         };
         _proto.onDisable = function onDisable() {
+          try {
+            this.safePostToParent({
+              type: 'IFRAME_GOING_AWAY'
+            });
+          } catch (_unused) {}
           window.removeEventListener('message', this.onMessage);
-        }
-
-        // === notify parent on BUSY changes ===
-        ;
-
+        };
         _proto.update = function update() {
           var busy = this.isBusy();
           if (busy !== this.lastBusy) {
@@ -3633,11 +3638,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
               }
             });
           }
-        }
-
-        // ===== postMessage helpers =====
-        ;
-
+        };
         _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
           if (targetOrigin === void 0) {
             targetOrigin = '*';
@@ -3645,7 +3646,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           try {
             var _window$parent;
             (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
-          } catch (_unused) {}
+          } catch (_unused2) {}
         };
         _proto.reply = function reply(e, type, payload) {
           this.safePostToParent({
@@ -3653,17 +3654,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             payload: payload
           }, e.origin || '*');
         };
-        // ===== state helpers =====
         _proto.isBusy = function isBusy() {
           var cm = this.clickMgr;
           return !cm || cm.fsm !== 'Idle';
-        }
-
-        // ===== actions =====
-        ;
-
-        _proto.openRandom = /*#__PURE__*/
-        function () {
+        };
+        _proto.openRandom = /*#__PURE__*/function () {
           var _openRandom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
             var lc, cm, seed, rnd;
             return _regeneratorRuntime().wrap(function _callee2$(_context2) {
@@ -3768,7 +3763,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         }();
         _proto.openAt = /*#__PURE__*/function () {
           var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(level, slot) {
-            var lc, cm, bias, step, targetHeight, owner, binding;
+            var lc, cm, info, bias, step, targetHeight, owner, binding;
             return _regeneratorRuntime().wrap(function _callee4$(_context4) {
               while (1) switch (_context4.prev = _context4.next) {
                 case 0:
@@ -3780,54 +3775,81 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   cm.clickedSlot = slot;
                   cm.fsm = 'Aligning';
 
+                  // === НОВОЕ: соберём полную инфу о кусочке и сразу оповестим родителя, что начали открывать
+                  info = lc.getPieceInfoByLevelSlot(level, slot);
+                  this.safePostToParent({
+                    type: 'OPENING',
+                    payload: info != null ? info : {
+                      level: level,
+                      slot: slot
+                    }
+                  });
+
                   // 1) центрирование по высоте
                   bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
                   step = lc.getLevelStep();
                   targetHeight = (level + bias) * step;
-                  _context4.next = 12;
-                  return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
-                case 12:
                   _context4.next = 14;
-                  return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
+                  return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
                 case 14:
+                  _context4.next = 16;
+                  return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
+                case 16:
                   // 3) актуальный узел + биндинг
                   owner = lc.findNodeByLevelSlot(level, slot);
                   if (owner) {
-                    _context4.next = 19;
+                    _context4.next = 21;
                     break;
                   }
                   cm.unlockControls == null || cm.unlockControls();
                   cm.fsm = 'Idle';
                   return _context4.abrupt("return", false);
-                case 19:
+                case 21:
                   binding = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding);
                   cm.currentPiece = owner;
                   cm.currentBinding = binding;
 
                   // 4) выезд + бортик + поворот модели
-                  _context4.next = 24;
+                  _context4.next = 26;
                   return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
-                case 24:
+                case 26:
                   cm.setRimActive == null || cm.setRimActive(true);
-                  _context4.next = 27;
+                  _context4.next = 29;
                   return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
-                case 27:
+                case 29:
+                  // === НОВОЕ: анимация открытия завершилась
+                  this.safePostToParent({
+                    type: 'OPENED',
+                    payload: info != null ? info : {
+                      level: level,
+                      slot: slot
+                    }
+                  });
                   cm.fsm = 'LockedOut';
                   return _context4.abrupt("return", true);
-                case 31:
-                  _context4.prev = 31;
+                case 34:
+                  _context4.prev = 34;
                   _context4.t0 = _context4["catch"](2);
                   console.warn('[OpenPieceBridge] ошибка открытия:', _context4.t0);
                   try {
                     cm.unlockControls == null || cm.unlockControls();
-                  } catch (_unused2) {}
+                  } catch (_unused3) {}
                   cm.fsm = 'Idle';
+                  // Можно уведомить родителя об ошибке конкретного открытия
+                  this.safePostToParent({
+                    type: 'OPEN_FAILED',
+                    payload: {
+                      level: level,
+                      slot: slot,
+                      error: String(_context4.t0 || 'unknown')
+                    }
+                  });
                   return _context4.abrupt("return", false);
-                case 37:
+                case 41:
                 case "end":
                   return _context4.stop();
               }
-            }, _callee4, this, [[2, 31]]);
+            }, _callee4, this, [[2, 34]]);
           }));
           function openAt(_x3, _x4) {
             return _openAt.apply(this, arguments);
@@ -3836,28 +3858,41 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         }();
         _proto.closeOpened = /*#__PURE__*/function () {
           var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
-            var cm;
+            var lc, cm, level, slot, info;
             return _regeneratorRuntime().wrap(function _callee5$(_context5) {
               while (1) switch (_context5.prev = _context5.next) {
                 case 0:
+                  lc = this.layoutCtrl;
                   cm = this.clickMgr;
                   if (cm) {
-                    _context5.next = 3;
+                    _context5.next = 4;
                     break;
                   }
                   return _context5.abrupt("return", false);
-                case 3:
+                case 4:
+                  // захватим, ЧТО закрываем, пока состояние не изменили
+                  level = cm == null ? void 0 : cm.clickedLevel;
+                  slot = cm == null ? void 0 : cm.clickedSlot;
+                  info = typeof level === 'number' && typeof slot === 'number' ? lc == null ? void 0 : lc.getPieceInfoByLevelSlot(level, slot) : null;
                   if (!(cm.fsm === 'LockedOut')) {
-                    _context5.next = 7;
+                    _context5.next = 12;
                     break;
                   }
-                  _context5.next = 6;
+                  _context5.next = 10;
                   return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
-                case 6:
+                case 10:
+                  // === НОВОЕ: сообщаем о факте закрытия
+                  this.safePostToParent({
+                    type: 'CLOSED',
+                    payload: info != null ? info : {
+                      level: level,
+                      slot: slot
+                    }
+                  });
                   return _context5.abrupt("return", true);
-                case 7:
+                case 12:
                   return _context5.abrupt("return", false);
-                case 8:
+                case 13:
                 case "end":
                   return _context5.stop();
               }
@@ -5659,6 +5694,22 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
           this.scrollToLevel(found.level, opts);
           return true;
+        }
+
+        // Внутри класса TowerLayoutController
+
+        /** Публично: получить piece + dataIndex по абсолютным level/slot */;
+        _proto.getPieceInfoByLevelSlot = function getPieceInfoByLevelSlot(level, slot) {
+          var di = this.levelSlotToDataIndex(level, slot);
+          if (di < 0) return null;
+          var piece = this.getPieceFor(level, slot);
+          if (!piece) return null;
+          return {
+            level: level,
+            slot: slot,
+            dataIndex: di,
+            piece: piece
+          };
         }
 
         /** Удобный хелпер: проскроллить к случайному кусочку. Возвращает info или null. */;
