@@ -3464,7 +3464,7 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
 });
 
 System.register("chunks:///_virtual/StartApp.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  var _inheritsLoose, cclegacy, _decorator, game, Component;
+  var _inheritsLoose, cclegacy, _decorator, game, view, ResolutionPolicy, Component;
   return {
     setters: [function (module) {
       _inheritsLoose = module.inheritsLoose;
@@ -3472,6 +3472,8 @@ System.register("chunks:///_virtual/StartApp.ts", ['./rollupPluginModLoBabelHelp
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
       game = module.game;
+      view = module.view;
+      ResolutionPolicy = module.ResolutionPolicy;
       Component = module.Component;
     }],
     execute: function () {
@@ -3485,9 +3487,48 @@ System.register("chunks:///_virtual/StartApp.ts", ['./rollupPluginModLoBabelHelp
         }
         var _proto = UncapFPS.prototype;
         _proto.start = function start() {
-          // ������ 240 fps (������� "��������")
-          // ������ ���������� �������� �� ����������� ��������� ������� �������
+          var _this = this;
+          // ������� ����������� FPS (������� ������ 240)
           game.setFrameRate(240);
+
+          // ��������� ��������
+          this.syncSize();
+
+          // ������� resize ������ iframe
+          window.addEventListener('resize', function () {
+            clearTimeout(_this._resizeT);
+            _this._resizeT = setTimeout(function () {
+              return _this.syncSize();
+            }, 50);
+          });
+
+          // ������� ��������� �� �������� (���� iframe ������� ����� transform: scale)
+          window.addEventListener('message', function (e) {
+            var _ref = e.data || {},
+              type = _ref.type,
+              payload = _ref.payload;
+            if (type === 'SET_VIEWPORT_SIZE' && payload != null && payload.width && payload != null && payload.height) {
+              _this.applySize(payload.width, payload.height);
+            }
+          });
+        };
+        _proto.syncSize = function syncSize() {
+          var vv = window.visualViewport;
+          var w, h;
+          if (vv) {
+            w = Math.floor(vv.width);
+            h = Math.floor(vv.height);
+          } else {
+            w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+            h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+          }
+          this.applySize(w, h);
+        };
+        _proto.applySize = function applySize(w, h) {
+          // �������������� ������ ����
+          view.resizeWithBrowserSize(true);
+          // ������������� ������-��������� ��� ����������� ������ iframe
+          view.setDesignResolutionSize(w, h, ResolutionPolicy.SHOW_ALL);
         };
         return UncapFPS;
       }(Component)) || _class));
