@@ -2568,16 +2568,33 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         ;
 
         _proto.lockControls = function lockControls() {
-          var _this$rotator, _this$scrollCtrl;
+          var _this$rotator;
+          // Останавливаем инерцию поворота
           (_this$rotator = this.rotator) == null || _this$rotator.stopInertia();
+          // Выключаем ручной поворот корня
           if (this.rotator) this.rotator.enabled = false;
-          (_this$scrollCtrl = this.scrollCtrl) == null || _this$scrollCtrl.setInputEnabled(true); // пусть колесо/клавиши не мешают, но твин рулит
+
+          // Полностью блокируем пользовательский ввод скролла (колесо/drag/клавиши)
+          // Программные твины scrollCtrl.* продолжат работать.
+          if (this.scrollCtrl) {
+            this.scrollCtrl.setInputEnabled(false);
+            // На всякий случай гасим текущие жесты/инерцию/твины
+            this.scrollCtrl.stopAll();
+          }
+
+          // Сбрасываем глобальное состояние жестов
           InteractionState.hardReset == null || InteractionState.hardReset();
         };
         _proto.unlockControls = function unlockControls() {
-          var _this$scrollCtrl2;
+          // Возвращаем ручной поворот корня
           if (this.rotator) this.rotator.enabled = true;
-          (_this$scrollCtrl2 = this.scrollCtrl) == null || _this$scrollCtrl2.setInputEnabled(true);
+
+          // Возвращаем пользовательский ввод скролла
+          if (this.scrollCtrl) {
+            this.scrollCtrl.setInputEnabled(true);
+            // Жесты уже сброшены, но продублируем общий reset
+          }
+
           InteractionState.hardReset == null || InteractionState.hardReset();
         }
 
@@ -2611,9 +2628,11 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         };
         _proto.postPieceEvent = function postPieceEvent(type, level, slot) {
           if (!this._emitOnThisAction) return;
+          var payload = this.buildPiecePayload(level, slot);
+          console.log('[GM3D->parent]', type, payload); // <-- видно в консоли айфрейма
           this.safePostToParent({
             type: type,
-            payload: this.buildPiecePayload(level, slot)
+            payload: payload
           });
         };
         return GlobalClickManager3D;
@@ -5122,6 +5141,18 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return true;
         }
       })), _class2)) || _class));
+      function safePostToParent(msg, targetOrigin) {
+        if (targetOrigin === void 0) {
+          targetOrigin = '*';
+        }
+        try {
+          var _window$parent;
+          console.log('[safePostToParent] postMessage →', msg);
+          (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
+        } catch (e) {
+          console.warn('[safePostToParent] Ошибка postMessage:', e);
+        }
+      }
 
       /** ===== Контроллер башни + интеграция API ===== */
       var TowerLayoutController = exports('TowerLayoutController', (_dec23 = ccclass('TowerLayoutController'), _dec24 = property({
@@ -5145,6 +5176,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this.nodeLevelInfo = new Map();
           _this.lastTopBase = Number.NaN;
           _this.passedPieces = 0;
+          _this.top4VisibleNow = null;
+          // null — ещё не знаем
           // данные
           _this.cakesSource = [];
           _this.cakesExpanded = [];
@@ -5193,6 +5226,31 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (per <= 0 || total <= 0) return 0;
           var rem = total % per;
           return rem === 0 ? 0 : per - rem;
+        };
+        _proto.sendTop4Event = function sendTop4Event(kind) {
+          var msg = {
+            type: 'TOP4_VISIBILITY',
+            action: kind
+          };
+          console.log('[TowerLayoutController] postMessage →', msg);
+          safePostToParent(msg);
+        };
+        _proto.updateTop4Visibility = function updateTop4Visibility(topBase) {
+          // "внутри" — когда верхний уровень <= 3 (значит видим первые 4 слоя)
+          var now = topBase <= 3;
+          if (this.top4VisibleNow === null) {
+            // первый раз инициализация
+            this.top4VisibleNow = now;
+            console.log('[TowerLayoutController] INIT TOP4_VISIBILITY =', now ? 'ENTERED' : 'EXITED');
+            this.sendTop4Event(now ? 'ENTERED' : 'EXITED');
+            return;
+          }
+          if (now !== this.top4VisibleNow) {
+            // состояние изменилось → отправляем событие
+            this.top4VisibleNow = now;
+            console.log('[TowerLayoutController] CHANGE TOP4_VISIBILITY →', now ? 'ENTERED' : 'EXITED', ' topBase=', topBase);
+            this.sendTop4Event(now ? 'ENTERED' : 'EXITED');
+          }
         };
         _proto._onOffsetChanged = function _onOffsetChanged(offset) {
           var max = this.getMaxScrollableOffset();
@@ -5428,6 +5486,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             if (this.spawn.counterLabel) this.spawn.counterLabel.string = "" + this.passedPieces;
           }
           this.lastTopBase = topBase;
+          this.updateTop4Visibility(topBase);
           var basePiece = this.spawn.targetVisualScale / Math.max(1e-6, this.spawn.baseScale);
           var sGrad = this.spawn.scaleInWindow;
           var rSafe = Math.max(1e-6, this.spawn.r);
@@ -5786,6 +5845,19 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
           this.scrollToLevel(found.level, opts);
           return true;
+        }
+
+        // уже есть у вас
+        ;
+
+        _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
+          if (targetOrigin === void 0) {
+            targetOrigin = '*';
+          }
+          try {
+            var _window$parent2;
+            (_window$parent2 = window.parent) == null || _window$parent2.postMessage(msg, targetOrigin);
+          } catch (_unused2) {}
         }
 
         // Внутри класса TowerLayoutController
