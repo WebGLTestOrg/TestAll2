@@ -3633,7 +3633,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           ]);
           _this.lastBusy = null;
           _this.onMessage = /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-            var data, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _data$payload$userId, _data$payload, userId, _ok, _ok2;
+            var data, _this$layoutCtrl$getP, _this$layoutCtrl, count, ok, _ref2, _data$payload$uniqId, _data$payload, _data$payload2, uniqId, _ok, _ref3, _ref4, _data$payload$userId, _data$payload3, _data$payload4, _data$payload5, _uniqId, _ok2, _ok3;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
@@ -3649,22 +3649,22 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context.abrupt("return");
                 case 4:
-                  // НОВОЕ: проверка источника
+                  // защита источника
                   data = e.data || {};
                   _context.t0 = data.type;
-                  _context.next = _context.t0 === 'QUERY_BUSY' ? 8 : _context.t0 === 'QUERY_INFO' ? 10 : _context.t0 === 'OPEN_RANDOM' ? 13 : _context.t0 === 'OPEN_BY_USER' ? 18 : _context.t0 === 'CLOSE_OPENED' ? 24 : _context.t0 === 'CLOSE_ANY' ? 24 : 29;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 8 : _context.t0 === 'QUERY_INFO' ? 10 : _context.t0 === 'OPEN_RANDOM' ? 13 : _context.t0 === 'OPEN_BY_UNIQ' ? 18 : _context.t0 === 'OPEN_BY_USER' ? 24 : _context.t0 === 'CLOSE_OPENED' ? 31 : _context.t0 === 'CLOSE_ANY' ? 31 : 36;
                   break;
                 case 8:
                   _this.reply(e, 'BUSY_STATE', {
                     busy: _this.isBusy()
                   });
-                  return _context.abrupt("break", 29);
+                  return _context.abrupt("break", 36);
                 case 10:
                   count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
                   _this.reply(e, 'INFO', {
                     piecesCount: count
                   });
-                  return _context.abrupt("break", 29);
+                  return _context.abrupt("break", 36);
                 case 13:
                   _context.next = 15;
                   return _this.openRandom();
@@ -3674,29 +3674,43 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     ok: ok,
                     mode: 'random'
                   });
-                  return _context.abrupt("break", 29);
+                  return _context.abrupt("break", 36);
                 case 18:
-                  userId = (_data$payload$userId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.userId) != null ? _data$payload$userId : '';
+                  uniqId = (_ref2 = (_data$payload$uniqId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.uniqId) != null ? _data$payload$uniqId : data == null || (_data$payload2 = data.payload) == null ? void 0 : _data$payload2.uniq_id) != null ? _ref2 : '';
                   _context.next = 21;
-                  return _this.openByUserId(userId);
+                  return _this.openByUniqId(uniqId);
                 case 21:
                   _ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok,
-                    mode: 'byUser',
-                    userId: userId
+                    mode: 'byUniq',
+                    uniqId: uniqId
                   });
-                  return _context.abrupt("break", 29);
+                  return _context.abrupt("break", 36);
                 case 24:
-                  _context.next = 26;
-                  return _this.closeOpened();
-                case 26:
+                  console.warn('[OpenPieceBridge] OPEN_BY_USER устарел — используйте OPEN_BY_UNIQ.');
+                  _uniqId = (_ref3 = (_ref4 = (_data$payload$userId = data == null || (_data$payload3 = data.payload) == null ? void 0 : _data$payload3.userId) != null ? _data$payload$userId : data == null || (_data$payload4 = data.payload) == null ? void 0 : _data$payload4.uniqId) != null ? _ref4 : data == null || (_data$payload5 = data.payload) == null ? void 0 : _data$payload5.uniq_id) != null ? _ref3 : '';
+                  _context.next = 28;
+                  return _this.openByUniqId(_uniqId);
+                case 28:
                   _ok2 = _context.sent;
-                  _this.reply(e, 'CLOSE_RESULT', {
-                    ok: _ok2
+                  _this.reply(e, 'OPEN_RESULT', {
+                    ok: _ok2,
+                    mode: 'byUniq',
+                    uniqId: _uniqId,
+                    deprecated: 'OPEN_BY_USER'
                   });
-                  return _context.abrupt("break", 29);
-                case 29:
+                  return _context.abrupt("break", 36);
+                case 31:
+                  _context.next = 33;
+                  return _this.closeOpened();
+                case 33:
+                  _ok3 = _context.sent;
+                  _this.reply(e, 'CLOSE_RESULT', {
+                    ok: _ok3
+                  });
+                  return _context.abrupt("break", 36);
+                case 36:
                 case "end":
                   return _context.stop();
               }
@@ -3732,19 +3746,31 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           }
         }
 
-        // Внутри OpenPieceBridge класса:
-        ;
-
+        /** Собираем полезную нагрузку по уровню/слоту, включая полную piece */;
         _proto.buildPiecePayload = function buildPiecePayload(level, slot) {
           var lc = this.layoutCtrl;
           try {
+            var _piece$uniq_id, _piece$hex_color, _piece$name, _piece$title, _piece$greeting_text, _piece$filling_id, _piece$file, _piece$created_at, _piece$moderate_statu;
             var di = lc.levelSlotToDataIndex(level, slot);
             var piece = di >= 0 ? lc.getPieceByDataIndex(di) : null;
+
+            // НОВОЕ: возвращаем только нужные публичные поля, если piece существует
+            var slim = piece ? {
+              uniq_id: (_piece$uniq_id = piece.uniq_id) != null ? _piece$uniq_id : null,
+              hex_color: (_piece$hex_color = piece.hex_color) != null ? _piece$hex_color : null,
+              name: (_piece$name = piece.name) != null ? _piece$name : null,
+              title: (_piece$title = piece.title) != null ? _piece$title : null,
+              greeting_text: (_piece$greeting_text = piece.greeting_text) != null ? _piece$greeting_text : null,
+              filling_id: (_piece$filling_id = piece.filling_id) != null ? _piece$filling_id : null,
+              file: (_piece$file = piece.file) != null ? _piece$file : null,
+              created_at: (_piece$created_at = piece.created_at) != null ? _piece$created_at : null,
+              moderate_status: (_piece$moderate_statu = piece.moderate_status) != null ? _piece$moderate_statu : null
+            } : null;
             return {
               level: level,
               slot: slot,
               dataIndex: di,
-              piece: piece
+              piece: slim
             };
           } catch (_unused2) {
             return {
@@ -3819,9 +3845,10 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _openRandom.apply(this, arguments);
           }
           return openRandom;
-        }();
-        _proto.openByUserId = /*#__PURE__*/function () {
-          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(userId) {
+        }() /** НОВОЕ: открытие по uniq_id */;
+        _proto.openByUniqId = /*#__PURE__*/
+        function () {
+          var _openByUniqId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(uniqId) {
             var lc, cm, q, hit;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
               while (1) switch (_context3.prev = _context3.next) {
@@ -3840,19 +3867,19 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context3.abrupt("return", false);
                 case 6:
-                  q = (userId != null ? userId : '').trim();
+                  q = (uniqId != null ? uniqId : '').trim();
                   if (q) {
                     _context3.next = 9;
                     break;
                   }
                   return _context3.abrupt("return", false);
                 case 9:
-                  hit = lc.findLevelSlotByUserId(q);
+                  hit = lc.findLevelSlotByUniqId(q);
                   if (hit) {
                     _context3.next = 13;
                     break;
                   }
-                  console.warn('[OpenPieceBridge] user_id не найден:', q);
+                  console.warn('[OpenPieceBridge] uniq_id не найден:', q);
                   return _context3.abrupt("return", false);
                 case 13:
                   lc.scrollToLevel(hit.level, {
@@ -3870,20 +3897,39 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
               }
             }, _callee3, this);
           }));
-          function openByUserId(_x2) {
+          function openByUniqId(_x2) {
+            return _openByUniqId.apply(this, arguments);
+          }
+          return openByUniqId;
+        }() /** УСТАРЕВШЕЕ: алиас для обратной совместимости */;
+        _proto.openByUserId = /*#__PURE__*/
+        function () {
+          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(userId) {
+            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+              while (1) switch (_context4.prev = _context4.next) {
+                case 0:
+                  console.warn('[OpenPieceBridge] openByUserId устарел — используйте openByUniqId.');
+                  return _context4.abrupt("return", this.openByUniqId(userId));
+                case 2:
+                case "end":
+                  return _context4.stop();
+              }
+            }, _callee4, this);
+          }));
+          function openByUserId(_x3) {
             return _openByUserId.apply(this, arguments);
           }
           return openByUserId;
         }();
         _proto.openAt = /*#__PURE__*/function () {
-          var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(level, slot) {
+          var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(level, slot) {
             var lc, cm, info, bias, step, targetHeight, owner, binding;
-            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-              while (1) switch (_context4.prev = _context4.next) {
+            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+              while (1) switch (_context5.prev = _context5.next) {
                 case 0:
                   lc = this.layoutCtrl;
                   cm = this.clickMgr;
-                  _context4.prev = 2;
+                  _context5.prev = 2;
                   cm.lockControls == null || cm.lockControls();
                   cm.clickedLevel = level;
                   cm.clickedSlot = slot;
@@ -3900,32 +3946,32 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
                   step = lc.getLevelStep();
                   targetHeight = (level + bias) * step;
-                  _context4.next = 14;
+                  _context5.next = 14;
                   return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
                 case 14:
-                  _context4.next = 16;
+                  _context5.next = 16;
                   return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
                 case 16:
                   // биндинг узла
                   owner = lc.findNodeByLevelSlot(level, slot);
                   if (owner) {
-                    _context4.next = 21;
+                    _context5.next = 21;
                     break;
                   }
                   cm.unlockControls == null || cm.unlockControls();
                   cm.fsm = 'Idle';
-                  return _context4.abrupt("return", false);
+                  return _context5.abrupt("return", false);
                 case 21:
                   binding = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding);
                   cm.currentPiece = owner;
                   cm.currentBinding = binding;
 
                   // выезд/бортик/поворот
-                  _context4.next = 26;
+                  _context5.next = 26;
                   return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
                 case 26:
                   cm.setRimActive == null || cm.setRimActive(true);
-                  _context4.next = 29;
+                  _context5.next = 29;
                   return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
                 case 29:
                   // открыт
@@ -3934,11 +3980,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     payload: info
                   });
                   cm.fsm = 'LockedOut';
-                  return _context4.abrupt("return", true);
+                  return _context5.abrupt("return", true);
                 case 34:
-                  _context4.prev = 34;
-                  _context4.t0 = _context4["catch"](2);
-                  console.warn('[OpenPieceBridge] ошибка открытия:', _context4.t0);
+                  _context5.prev = 34;
+                  _context5.t0 = _context5["catch"](2);
+                  console.warn('[OpenPieceBridge] ошибка открытия:', _context5.t0);
                   try {
                     cm.unlockControls == null || cm.unlockControls();
                   } catch (_unused4) {}
@@ -3948,51 +3994,46 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     payload: {
                       level: level,
                       slot: slot,
-                      error: String(_context4.t0 || 'unknown')
+                      error: String(_context5.t0 || 'unknown')
                     }
                   });
-                  return _context4.abrupt("return", false);
+                  return _context5.abrupt("return", false);
                 case 41:
                 case "end":
-                  return _context4.stop();
+                  return _context5.stop();
               }
-            }, _callee4, this, [[2, 34]]);
+            }, _callee5, this, [[2, 34]]);
           }));
-          function openAt(_x3, _x4) {
+          function openAt(_x4, _x5) {
             return _openAt.apply(this, arguments);
           }
           return openAt;
-        }() // внутри класса OpenPieceBridge
-        ;
-
-        _proto.closeOpened = /*#__PURE__*/
-        function () {
-          var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5() {
+        }();
+        _proto.closeOpened = /*#__PURE__*/function () {
+          var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
             var cm, level, slot, info;
-            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-              while (1) switch (_context5.prev = _context5.next) {
+            return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+              while (1) switch (_context6.prev = _context6.next) {
                 case 0:
                   this.layoutCtrl;
                   cm = this.clickMgr;
                   if (cm) {
-                    _context5.next = 4;
+                    _context6.next = 4;
                     break;
                   }
-                  return _context5.abrupt("return", false);
+                  return _context6.abrupt("return", false);
                 case 4:
-                  // берём, что именно было открыто (это работает и для вручную открытого)
+                  // берём, что именно было открыто (работает и для вручную открытого)
                   level = cm == null ? void 0 : cm.clickedLevel;
                   slot = cm == null ? void 0 : cm.clickedSlot;
-                  info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) // тот же helper, что и раньше
-                  : null;
+                  info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) : null;
                   if (!(cm.fsm === 'LockedOut')) {
-                    _context5.next = 12;
+                    _context6.next = 12;
                     break;
                   }
-                  _context5.next = 10;
+                  _context6.next = 10;
                   return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
                 case 10:
-                  // закрываем независимо от способа открытия
                   this.safePostToParent({
                     type: 'CLOSED',
                     payload: info != null ? info : {
@@ -4000,14 +4041,14 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                       slot: slot
                     }
                   });
-                  return _context5.abrupt("return", true);
+                  return _context6.abrupt("return", true);
                 case 12:
-                  return _context5.abrupt("return", false);
+                  return _context6.abrupt("return", false);
                 case 13:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
-            }, _callee5, this);
+            }, _callee6, this);
           }));
           function closeOpened() {
             return _closeOpened.apply(this, arguments);
@@ -5382,8 +5423,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                   this.cakesSource = rawItems.map(function (it, idx) {
                     var _it$hex_color;
                     var n = _this3.normalizeCakePiece(it);
-                    if (!n.user_id) console.warn("[API item " + idx + "] user_id \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442/\u043D\u0435 UUID. uniq_id=", it == null ? void 0 : it.uniq_id);
+                    if (!n.uniq_id) console.warn("[API item " + idx + "] uniq_id \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442/\u043D\u0435 UUID. raw uniq_id=", it == null ? void 0 : it.uniq_id);
                     if (!n.hex_color) console.warn("[API item " + idx + "] hex_color \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442/\u043D\u0435 HEX. raw=", (_it$hex_color = it == null ? void 0 : it.hex_color) != null ? _it$hex_color : it == null ? void 0 : it.color);
+                    if (!n.created_at) console.warn("[API item " + idx + "] created_at \u043D\u0435 \u0440\u0430\u0441\u043F\u043E\u0437\u043D\u0430\u043D. raw=", it == null ? void 0 : it.created_at);
                     return n;
                   });
                   console.log('[API] Нормализовано (источник):', this.cakesSource.length, this.cakesSource);
@@ -5729,28 +5771,95 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return s ? '#' + s.slice(0, 6).toUpperCase() : '#000000';
         };
         _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
-          var _raw$hex_color, _ref, _raw$greeting_text, _raw$filling_id, _raw$file;
-          var user_id = this.strOrNull(raw == null ? void 0 : raw.uniq_id);
-          if (user_id && !this.isUuidLoose(user_id)) {
-            console.warn('[API] uniq_id не UUID → null:', user_id);
-            user_id = null;
+          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _ref3, _raw$created_at, _ref4, _raw$moderate_status, _ref5, _ref6, _raw$file, _ref7, _raw$greeting_text, _raw$filling_id;
+          // uniq_id
+          var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
+          if (uniq_id && !this.isUuidLoose(uniq_id)) {
+            console.warn('[API] uniq_id не UUID → null:', uniq_id);
+            uniq_id = null;
           }
+
+          // hex_color
           var hex_color = this.strOrNull((_raw$hex_color = raw == null ? void 0 : raw.hex_color) != null ? _raw$hex_color : raw == null ? void 0 : raw.color);
           if (hex_color && this.isHexColor(hex_color)) {
             hex_color = this.normalizeHex(hex_color);
           } else {
             hex_color = null;
           }
+
+          // created_at → "YYYY-MM-DD HH:mm:ss"
+          var created_at = this.formatDateTimeToYYYYMMDD_HHMMSS((_ref3 = (_raw$created_at = raw == null ? void 0 : raw.created_at) != null ? _raw$created_at : raw == null ? void 0 : raw.createdAt) != null ? _ref3 : raw == null ? void 0 : raw.date);
+
+          // moderate_status — строка или null
+          var moderate_status = this.strOrNull((_ref4 = (_raw$moderate_status = raw == null ? void 0 : raw.moderate_status) != null ? _raw$moderate_status : raw == null ? void 0 : raw.status) != null ? _ref4 : raw == null ? void 0 : raw.moderateStatus);
+
+          // file — ожидаем URL (если пришёл base64 — оставим как есть, но строкой)
+          var file = this.strOrNull((_ref5 = (_ref6 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref6 : raw == null ? void 0 : raw.fileUrl) != null ? _ref5 : raw == null ? void 0 : raw.file_base64);
           return {
-            user_id: user_id,
+            uniq_id: uniq_id,
             hex_color: hex_color,
             name: this.strOrNull(raw == null ? void 0 : raw.name),
             title: this.strOrNull(raw == null ? void 0 : raw.title),
-            greeting_text: this.strOrNull((_ref = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref : raw == null ? void 0 : raw.greeting),
+            greeting_text: this.strOrNull((_ref7 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref7 : raw == null ? void 0 : raw.greeting),
             filling_id: this.numOrNull((_raw$filling_id = raw == null ? void 0 : raw.filling_id) != null ? _raw$filling_id : raw == null ? void 0 : raw.fillingId),
-            file: this.strOrNull((_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_base64)
+            file: file,
+            created_at: created_at,
+            moderate_status: moderate_status
           };
         }
+
+        /** Приводит дату к "YYYY-MM-DD HH:mm:ss" (или null, если не распознано) */;
+        _proto.formatDateTimeToYYYYMMDD_HHMMSS = function formatDateTimeToYYYYMMDD_HHMMSS(v) {
+          if (v == null) return null;
+
+          // Уже в нужном формате?
+          if (typeof v === 'string') {
+            var s = v.trim();
+            // Поддержка "YYYY-MM-DD HH:mm" / "YYYY-MM-DDTHH:mm[:ss]" → нормализуем
+            var m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+            if (m1) {
+              var _ = m1[0],
+                Y = m1[1],
+                M = m1[2],
+                D = m1[3],
+                h = m1[4],
+                m = m1[5],
+                sec = m1[6];
+              var ss = sec != null ? sec : '00';
+              return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + ss;
+            }
+            // Попробуем распарсить как ISO/локальную дату
+            var d = new Date(s);
+            if (!isNaN(d.getTime())) return this.formatDate(d);
+            return null;
+          }
+
+          // Число → timestamp (секунды или миллисекунды)
+          if (typeof v === 'number' && Number.isFinite(v)) {
+            var ts = v > 1e12 ? v : v * 1000; // эвристика: если похоже на секунды — умножим
+            var _d = new Date(ts);
+            if (!isNaN(_d.getTime())) return this.formatDate(_d);
+          }
+
+          // Дата
+          if (v instanceof Date && !isNaN(v.getTime())) {
+            return this.formatDate(v);
+          }
+          return null;
+        };
+        _proto.pad2 = function pad2(n) {
+          return n < 10 ? '0' + n : '' + n;
+        };
+        _proto.formatDate = function formatDate(d) {
+          var Y = d.getFullYear();
+          var M = this.pad2(d.getMonth() + 1);
+          var D = this.pad2(d.getDate());
+          var h = this.pad2(d.getHours());
+          var m = this.pad2(d.getMinutes());
+          var s = this.pad2(d.getSeconds());
+          return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
+        }
+
         /* ========================== Публичные утилиты индексации/поиска ========================== */
 
         /** Сколько объектов на уровне (public helper) */;
@@ -5813,16 +5922,14 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           };
         }
 
-        /** Поиск первого кусочка по user_id. Возвращает позицию и сам piece. */;
-        _proto.findLevelSlotByUserId = function findLevelSlotByUserId(userId) {
-          if (!userId) return null;
+        /** Поиск первого кусочка по uniq_id. Возвращает позицию и сам piece. */;
+        _proto.findLevelSlotByUniqId = function findLevelSlotByUniqId(uniqId) {
+          if (!uniqId) return null;
           var total = this.getTotalPieces();
           if (total <= 0) return null;
-
-          // линейный проход по expanded массиву, чтобы сохранить стабильный порядок
           for (var di = 0; di < total; di++) {
             var p = this.cakesExpanded[di];
-            if (p != null && p.user_id && p.user_id.toLowerCase() === userId.toLowerCase()) {
+            if (p != null && p.uniq_id && p.uniq_id.toLowerCase() === uniqId.toLowerCase()) {
               var pos = this.dataIndexToLevelSlot(di);
               if (!pos) continue;
               return {
@@ -5836,11 +5943,11 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return null;
         }
 
-        /** Удобный хелпер: проскроллить к кусочку по user_id. true если удалось. */;
-        _proto.scrollToUserId = function scrollToUserId(userId, opts) {
-          var found = this.findLevelSlotByUserId(userId);
+        /** Проскроллить к кусочку по uniq_id. true если удалось. */;
+        _proto.scrollToUniqId = function scrollToUniqId(uniqId, opts) {
+          var found = this.findLevelSlotByUniqId(uniqId);
           if (!found) {
-            console.warn('[TowerLayout] Не найден кусочек с user_id=', userId);
+            console.warn('[TowerLayout] Не найден кусочек с uniq_id=', uniqId);
             return false;
           }
           this.scrollToLevel(found.level, opts);
