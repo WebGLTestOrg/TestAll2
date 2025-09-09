@@ -192,7 +192,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
       Component = module.Component;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36;
       cclegacy._RF.push({}, "28184xX3rNPcJTTJ6RRKcou", "ArcTextMesh", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property,
@@ -231,55 +231,61 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
       }), _dec6 = property({
         tooltip: 'После сборки отключить компонент (0 оверхеда)'
       }), _dec7 = property({
-        tooltip: 'Поставь true -> пересборка прямо сейчас'
+        slide: true,
+        range: [0, 240],
+        step: 1
       }), _dec8 = property({
-        tooltip: 'Текст 1-й строки'
+        tooltip: 'Поставь true -> пересборка прямо сейчас'
       }), _dec9 = property({
-        type: JsonAsset
+        tooltip: 'Текст 1-й строки'
       }), _dec10 = property({
-        type: Texture2D
-      }), _dec11 = property({
-        type: Material
-      }), _dec12 = property({
-        tooltip: 'Размер шрифта 1 (px→мир)'
-      }), _dec13 = property({
-        tooltip: 'Шаг 1 (xadvance множитель)'
-      }), _dec14 = property({
-        type: Color
-      }), _dec15 = property({
-        tooltip: 'Текст 2-й строки'
-      }), _dec16 = property({
         type: JsonAsset
-      }), _dec17 = property({
+      }), _dec11 = property({
         type: Texture2D
-      }), _dec18 = property({
+      }), _dec12 = property({
         type: Material
-      }), _dec19 = property({
-        tooltip: 'Размер шрифта 2 (px→мир)'
-      }), _dec20 = property({
-        tooltip: 'Шаг 2 (xadvance множитель)'
-      }), _dec21 = property({
+      }), _dec13 = property({
+        tooltip: 'Размер шрифта 1 (px→мир)'
+      }), _dec14 = property({
+        tooltip: 'Шаг 1 (xadvance множитель)'
+      }), _dec15 = property({
         type: Color
+      }), _dec16 = property({
+        tooltip: 'Текст 2-й строки'
+      }), _dec17 = property({
+        type: JsonAsset
+      }), _dec18 = property({
+        type: Texture2D
+      }), _dec19 = property({
+        type: Material
+      }), _dec20 = property({
+        tooltip: 'Размер шрифта 2 (px→мир)'
+      }), _dec21 = property({
+        tooltip: 'Шаг 2 (xadvance множитель)'
       }), _dec22 = property({
-        type: BendMode
+        type: Color
       }), _dec23 = property({
-        type: ArcPlane
+        type: BendMode
       }), _dec24 = property({
-        type: ArcAlign
+        type: ArcPlane
       }), _dec25 = property({
-        type: ArcBend
+        type: ArcAlign
       }), _dec26 = property({
+        type: ArcBend
+      }), _dec27 = property({
         slide: true,
         range: [2, 64],
         step: 1
-      }), _dec27 = property({
+      }), _dec28 = property({
         slide: true,
         range: [1, 32],
         step: 1
-      }), _dec28 = property({
+      }), _dec29 = property({
         slide: true,
         range: [1, 128],
         step: 1
+      }), _dec30 = property({
+        tooltip: 'Центрировать только когда активны обе строки'
       }), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(ArcTextMSDFTwoLinesSubmesh, _Component);
         function ArcTextMSDFTwoLinesSubmesh() {
@@ -292,48 +298,63 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           _initializerDefineProperty(_this, "editorLiveUpdate", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "buildOnStart", _descriptor2, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "freezeAfterBuild", _descriptor3, _assertThisInitialized(_this));
+          /** Максимальная частота ребилда (Hz). 0 = не ограничивать, 60 = раз в кадр */
+          _initializerDefineProperty(_this, "maxRebuildRate", _descriptor4, _assertThisInitialized(_this));
           // Кнопка-переключатель в инспекторе
           _this._forceRebuild = false;
           // -------- строка 1 (верхняя)
-          _initializerDefineProperty(_this, "text1", _descriptor4, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fontJson1", _descriptor5, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "atlas1", _descriptor6, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "material1", _descriptor7, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pixelScale1", _descriptor8, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "spacingScale1", _descriptor9, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "color1", _descriptor10, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "text1", _descriptor5, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fontJson1", _descriptor6, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "atlas1", _descriptor7, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "material1", _descriptor8, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pixelScale1", _descriptor9, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "spacingScale1", _descriptor10, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "color1", _descriptor11, _assertThisInitialized(_this));
           // -------- строка 2 (нижняя)
-          _initializerDefineProperty(_this, "text2", _descriptor11, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fontJson2", _descriptor12, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "atlas2", _descriptor13, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "material2", _descriptor14, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pixelScale2", _descriptor15, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "spacingScale2", _descriptor16, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "color2", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "text2", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fontJson2", _descriptor13, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "atlas2", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "material2", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pixelScale2", _descriptor16, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "spacingScale2", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "color2", _descriptor18, _assertThisInitialized(_this));
           // Вертикальная дистанция между строками (мировые ед.): text1 ↑ d/2, text2 ↓ d/2
-          _initializerDefineProperty(_this, "lineSpacing", _descriptor18, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "lineSpacing", _descriptor19, _assertThisInitialized(_this));
           // MSDF/UV
-          _initializerDefineProperty(_this, "invertV", _descriptor19, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "mirrorX", _descriptor20, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "mirrorY", _descriptor21, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "autoPxRange", _descriptor22, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "msdfSoftness", _descriptor23, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "alphaClip", _descriptor24, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertV", _descriptor20, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "mirrorX", _descriptor21, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "mirrorY", _descriptor22, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "autoPxRange", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "msdfSoftness", _descriptor24, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "alphaClip", _descriptor25, _assertThisInitialized(_this));
           // Кривизна/раскладка
-          _initializerDefineProperty(_this, "bendMode", _descriptor25, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "radius", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bendMode", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "radius", _descriptor27, _assertThisInitialized(_this));
           // при ArcAngle может быть 0
-          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor27, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "plane", _descriptor28, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "align", _descriptor29, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "bend", _descriptor30, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "faceOutward", _descriptor31, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor28, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "plane", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "align", _descriptor30, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bend", _descriptor31, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceOutward", _descriptor32, _assertThisInitialized(_this));
           // Сегментация (колонки)
-          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor32, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor33, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor33, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor35, _assertThisInitialized(_this));
           // Центрирование по видимой высоте (Y для XY/XZ, Z для YZ)
-          _initializerDefineProperty(_this, "centerVertByBounds", _descriptor35, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "centerVertByBounds", _descriptor36, _assertThisInitialized(_this));
+          // ---------- perf: очередь/сигнатура ----------
+          _this._rebuildQueued = false;
+          _this._lastRebuildAt = 0;
+          _this._lastSignature = '';
+          // чтобы понять «пусто/непусто» и дергать instant rebuild
+          _this._line1Has = false;
+          _this._line2Has = false;
+          // ---------- cache: метрики шрифта ----------
+          _this._fontCache = new Map();
+          _this._doQueuedRebuild = function () {
+            _this._rebuildQueued = false;
+            _this.rebuildNow();
+          };
           return _this;
         }
         var _proto = ArcTextMSDFTwoLinesSubmesh.prototype;
@@ -344,29 +365,76 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
         };
         _proto.start = function start() {
           if (this.buildOnStart) {
-            this._rebuild();
+            this.rebuildNow();
             if (this.freezeAfterBuild) this.enabled = false;
           }
         };
         _proto.onValidate = function onValidate() {}
 
+        // ---------- API: безопасный запрос пересборки ----------
+        ;
+
+        _proto.requestRebuild = function requestRebuild() {
+          var _globalThis$performan,
+            _globalThis$performan2,
+            _this2 = this;
+          if (this._rebuildQueued) return;
+          var now = (_globalThis$performan = (_globalThis$performan2 = globalThis.performance) == null || _globalThis$performan2.now == null ? void 0 : _globalThis$performan2.now()) != null ? _globalThis$performan : Date.now();
+          var minDelay = this.maxRebuildRate > 0 ? 1000 / this.maxRebuildRate : 0;
+          var dueIn = Math.max(0, this._lastRebuildAt + minDelay - now);
+          this._rebuildQueued = true;
+          if (dueIn <= 0) this.scheduleOnce(this._doQueuedRebuild, 0);else setTimeout(function () {
+            if (_this2.isValid) _this2.scheduleOnce(_this2._doQueuedRebuild, 0);
+          }, dueIn);
+        };
+        _proto.rebuildNow = function rebuildNow() {
+          var _globalThis$performan3, _globalThis$performan4;
+          var sig = this._makeSignature();
+          if (sig === this._lastSignature) return;
+          this._rebuild();
+          this._lastSignature = sig;
+          this._lastRebuildAt = (_globalThis$performan3 = (_globalThis$performan4 = globalThis.performance) == null || _globalThis$performan4.now == null ? void 0 : _globalThis$performan4.now()) != null ? _globalThis$performan3 : Date.now();
+        };
+        _proto._makeSignature = function _makeSignature() {
+          var _uuid, _this$fontJson, _uuid2, _this$fontJson2, _uuid3, _this$material, _uuid4, _this$material2;
+          var j1 = (_uuid = (_this$fontJson = this.fontJson1) == null ? void 0 : _this$fontJson.uuid) != null ? _uuid : '0';
+          var j2 = (_uuid2 = (_this$fontJson2 = this.fontJson2) == null ? void 0 : _this$fontJson2.uuid) != null ? _uuid2 : '0';
+          var a1 = this._texSig(this.atlas1);
+          var a2 = this._texSig(this.atlas2);
+          var m1 = (_uuid3 = (_this$material = this.material1) == null ? void 0 : _this$material.uuid) != null ? _uuid3 : '0';
+          var m2 = (_uuid4 = (_this$material2 = this.material2) == null ? void 0 : _this$material2.uuid) != null ? _uuid4 : '0';
+          return [this.text1, this.text2, j1, j2, a1, a2, m1, m2, this.pixelScale1, this.pixelScale2, this.spacingScale1, this.spacingScale2, this.lineSpacing, this.invertV, this.mirrorX, this.mirrorY, this.autoPxRange, this.msdfSoftness, this.alphaClip, this.bendMode, this.radius, this.arcAngleDeg, this.plane, this.align, this.bend, this.faceOutward, this.segmentWidthPx, this.minSegmentsPerGlyph, this.maxSegmentsPerGlyph,
+          // важно: наличие строк — часть сигнатуры
+          this._line1Has ? 1 : 0, this._line2Has ? 1 : 0,
+          // центрирование включено?
+          this.centerVertByBounds ? 1 : 0].join('|');
+        };
+        _proto._texSig = function _texSig(t) {
+          var _ref, _format;
+          if (!t) return '0';
+          var fmt = (_ref = (_format = t._format) != null ? _format : t.format) != null ? _ref : 'fmt';
+          return t.width + "x" + t.height + ":" + fmt;
+        }
+
         // ---------- сборка: 1 меш, 1–2 сабмеша ----------
         ;
 
         _proto._rebuild = function _rebuild() {
-          var ok1 = !!(this.text1 && this.fontJson1 && this.atlas1 && this.material1);
-          var ok2 = !!(this.text2 && this.fontJson2 && this.atlas2 && this.material2);
+          var has1 = !!(this.text1 && this.fontJson1 && this.atlas1 && this.material1);
+          var has2 = !!(this.text2 && this.fontJson2 && this.atlas2 && this.material2);
+          this._line1Has = !!(this.text1 && this.text1.length);
+          this._line2Has = !!(this.text2 && this.text2.length);
           var mr = this.node.getComponent(MeshRenderer);
-          if (!ok1 && !ok2) {
+          if (!has1 && !has2) {
             mr.mesh = null;
             mr.materials = [];
             return;
           }
           var half = this.lineSpacing * 0.5;
-          var geo1 = ok1 ? this._buildLine(this.text1, this.fontJson1, this.atlas1, this.pixelScale1, this.spacingScale1, +half) : null;
-          var geo2 = ok2 ? this._buildLine(this.text2, this.fontJson2, this.atlas2, this.pixelScale2, this.spacingScale2, -half) : null;
-          var canMerge = ok1 && ok2 && this.atlas1 === this.atlas2 && this.material1 === this.material2;
-          var oneSub = canMerge || !ok2;
+          var geo1 = has1 ? this._buildLine(this.text1, this.fontJson1, this.atlas1, this.pixelScale1, this.spacingScale1, +half) : null;
+          var geo2 = has2 ? this._buildLine(this.text2, this.fontJson2, this.atlas2, this.pixelScale2, this.spacingScale2, -half) : null;
+          var canMerge = has1 && has2 && this.atlas1 === this.atlas2 && this.material1 === this.material2;
+          var oneSub = canMerge || !has2;
           var positions = [];
           var normals = [];
           var uvs = [];
@@ -402,8 +470,10 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             maxPos.z = Math.max(maxPos.z, geo2.maxPos.z);
           }
 
-          // Центрирование по видимой высоте
-          if (this.centerVertByBounds && positions.length >= 3) {
+          // --- ВАЖНО: фиксируем слоты строк ---
+          // Центрируем по bounds ТОЛЬКО когда обе строки присутствуют.
+          var shouldCenter = this.centerVertByBounds && !!geo1 && !!geo2;
+          if (shouldCenter && positions.length >= 3) {
             var vIdx = this.plane === ArcPlane.YZ ? 2 : 1;
             var vMin = 1e9,
               vMax = -1e9;
@@ -413,9 +483,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
               if (v > vMax) vMax = v;
             }
             var vMid = (vMin + vMax) * 0.5;
-            for (var _i = vIdx; _i < positions.length; _i += 3) {
-              positions[_i] -= vMid;
-            }
+            for (var _i = vIdx; _i < positions.length; _i += 3) positions[_i] -= vMid;
 
             // пересчёт bounds
             var minX = 1e9,
@@ -438,6 +506,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             minPos.set(minX, minY, minZ);
             maxPos.set(maxX, maxY, maxZ);
           }
+          // иначе (одна строка) — никаких центровок: верхняя остаётся на +half, нижняя на -half → без «перепрыгивания».
 
           // ----- vertex buffer (pos3 normal3 uv2)
           var stride = 8 * 4;
@@ -458,7 +527,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           }
           var vbBytes = new Uint8Array(vbAB);
 
-          // ----- индексы: ВСЕГДА склеиваем оба списка в один общий буфер
+          // ----- индексы: всегда один общий буфер
           var totalIdx = indices0.length + indices1.length;
           var indAll = new Uint32Array(totalIdx);
           indAll.set(indices0, 0);
@@ -533,54 +602,38 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           }
         }
 
-        // ---------- геометрия одной строки (минимум аллокаций) ----------
+        // ---------- геометрия одной строки (с кэшем метрик) ----------
         ;
 
         _proto._buildLine = function _buildLine(text, json, atlas, pixelScale, spacingScale, baselineOffsetY) {
-          var _data$common$base,
-            _this2 = this;
-          var data = json.json;
-
-          // glyph map
-          var glyphMap = new Map();
-          if (Array.isArray(data.chars)) {
-            for (var _iterator = _createForOfIteratorHelperLoose(data.chars), _step; !(_step = _iterator()).done;) {
-              var c = _step.value;
-              glyphMap.set(c.id, c);
-            }
-          } else for (var k in data.chars) glyphMap.set(Number(k), data.chars[k]);
-
-          // kerning
-          var kmap = new Map();
-          if (Array.isArray(data.kernings)) {
-            for (var _iterator2 = _createForOfIteratorHelperLoose(data.kernings), _step2; !(_step2 = _iterator2()).done;) {
-              var _k = _step2.value;
-              kmap.set(_k.first << 16 | _k.second, _k.amount);
-            }
-          } else if (data.kernings) for (var key in data.kernings) kmap.set(Number(key), data.kernings[key]);
+          var _fd$common$base,
+            _this3 = this;
+          var fd = this._getFontData(json);
+          var glyphMap = fd.glyphMap;
+          var kernMap = fd.kernMap;
           var kern = function kern(prev, curr) {
-            var _kmap$get;
-            return (_kmap$get = kmap.get(prev << 16 | curr)) != null ? _kmap$get : 0;
+            var _kernMap$get;
+            return (_kernMap$get = kernMap.get(prev << 16 | curr)) != null ? _kernMap$get : 0;
           };
           var S = Math.max(1e-4, pixelScale);
           var texW = Math.max(1, atlas.width),
             texH = Math.max(1, atlas.height);
-          var lineH = data.common.lineHeight || 0;
-          var base = (_data$common$base = data.common.base) != null ? _data$common$base : Math.round(lineH * 0.5);
+          var lineH = fd.common.lineHeight || 0;
+          var base = (_fd$common$base = fd.common.base) != null ? _fd$common$base : Math.round(lineH * 0.5);
           var baselineY = base * S;
           var infos = [];
           var penX = 0,
             minX = 1e9,
             maxX = -1e9;
           var codes = [];
-          for (var _iterator3 = _createForOfIteratorHelperLoose(text), _step3; !(_step3 = _iterator3()).done;) {
-            var ch = _step3.value;
+          for (var _iterator = _createForOfIteratorHelperLoose(text), _step; !(_step = _iterator()).done;) {
+            var ch = _step.value;
             codes.push(ch.codePointAt(0));
           }
           for (var i = 0; i < codes.length; i++) {
             var _glyphMap$get;
             var g = (_glyphMap$get = glyphMap.get(codes[i])) != null ? _glyphMap$get : glyphMap.get(63);
-            if (!g) continue;
+            if (!g) continue; // '?' fallback
             var advPx = (g.xadvance + (i > 0 ? kern(codes[i - 1], g.id) : 0)) * S * spacingScale;
             var left = penX + g.xoffset * S;
             var right = left + g.width * S;
@@ -620,7 +673,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           var tmpQ0 = new math.Quat(),
             tmpQ1 = new math.Quat();
           var pointOnArcOut = function pointOnArcOut(theta, r, out) {
-            switch (_this2.plane) {
+            switch (_this3.plane) {
               case ArcPlane.XY:
                 out.set(Math.cos(theta) * r, Math.sin(theta) * r, 0);
                 break;
@@ -633,8 +686,8 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             }
           };
           var rotQuatDegOut = function rotQuatDegOut(deg, out) {
-            var add = _this2.faceOutward ? 90 : 0;
-            switch (_this2.plane) {
+            var add = _this3.faceOutward ? 90 : 0;
+            switch (_this3.plane) {
               case ArcPlane.XY:
                 math.Quat.fromEuler(out, 0, 0, deg + add);
                 break;
@@ -781,10 +834,9 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
 
         _proto._applyMatProps = function _applyMatProps(mat, json, atlas, color) {
           if (!atlas) return;
-          if (this.autoPxRange && json != null && json.json) {
-            var _j$distanceField$dist, _j$distanceField;
-            var j = json.json;
-            mat.setProperty('pxRange', (_j$distanceField$dist = (_j$distanceField = j.distanceField) == null ? void 0 : _j$distanceField.distanceRange) != null ? _j$distanceField$dist : 4);
+          if (this.autoPxRange && json) {
+            var fd = this._getFontData(json);
+            if ((fd == null ? void 0 : fd.distanceRange) != null) mat.setProperty('pxRange', fd.distanceRange);
           }
           mat.setProperty('mainTexture', atlas);
           mat.setProperty('tintColor', color);
@@ -792,25 +844,68 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           mat.setProperty('alphaClip', this.alphaClip);
         }
 
-        // внутри ArcTextMSDFTwoLinesSubmesh
+        // ---------- кэш метрик шрифта ----------
+        ;
 
+        _proto._getFontData = function _getFontData(json) {
+          var _uuid5, _data$distanceField;
+          if (!json) return null;
+          var id = (_uuid5 = json.uuid) != null ? _uuid5 : String(json);
+          var cached = this._fontCache.get(id);
+          if (cached) return cached;
+          var data = json.json;
+          var glyphMap = new Map();
+          if (Array.isArray(data.chars)) {
+            for (var _iterator2 = _createForOfIteratorHelperLoose(data.chars), _step2; !(_step2 = _iterator2()).done;) {
+              var c = _step2.value;
+              glyphMap.set(c.id, c);
+            }
+          } else for (var k in data.chars) glyphMap.set(Number(k), data.chars[k]);
+          var kernMap = new Map();
+          if (Array.isArray(data.kernings)) {
+            for (var _iterator3 = _createForOfIteratorHelperLoose(data.kernings), _step3; !(_step3 = _iterator3()).done;) {
+              var _k = _step3.value;
+              kernMap.set(_k.first << 16 | _k.second, _k.amount);
+            }
+          } else if (data.kernings) for (var key in data.kernings) kernMap.set(Number(key), data.kernings[key]);
+          var pack = {
+            glyphMap: glyphMap,
+            kernMap: kernMap,
+            common: data.common,
+            distanceRange: (_data$distanceField = data.distanceField) == null ? void 0 : _data$distanceField.distanceRange
+          };
+          this._fontCache.set(id, pack);
+          return pack;
+        }
+
+        // ---------- внешние сеттеры (без спама ребилдов) ----------
         /** Установить текст 1-й строки */;
         _proto.setText1 = function setText1(text) {
-          this.text1 = text && text.trim() ? text : '';
-          this._rebuild();
+          var next = text && text.trim() ? text : '';
+          var wasEmpty = !this._line1Has;
+          var willEmpty = !(next.length > 0);
+          this.text1 = next;
+          this._line1Has = !willEmpty;
+          // если сменилась пустота → мгновенный ребилд (иначе — дебаунс)
+          wasEmpty !== willEmpty ? this.rebuildNow() : this.requestRebuild();
         }
 
         /** Установить текст 2-й строки */;
         _proto.setText2 = function setText2(text) {
-          this.text2 = text && text.trim() ? text : '';
-          this._rebuild();
+          var next = text && text.trim() ? text : '';
+          var wasEmpty = !this._line2Has;
+          var willEmpty = !(next.length > 0);
+          this.text2 = next;
+          this._line2Has = !willEmpty;
+          wasEmpty !== willEmpty ? this.rebuildNow() : this.requestRebuild();
         }
 
         /** Применить данные из API: title → text1, name → text2 */;
         _proto.applyApiData = function applyApiData(data) {
-          this.text1 = data.title && data.title.trim() ? data.title : '';
-          this.text2 = data.name && data.name.trim() ? data.name : '';
-          this._rebuild();
+          var _data$title, _data$name;
+          // используем setText*, чтобы соблюсти логику instant rebuild при смене пустоты
+          this.setText1((_data$title = data.title) != null ? _data$title : '');
+          this.setText2((_data$name = data.name) != null ? _data$name : '');
         };
         _createClass(ArcTextMSDFTwoLinesSubmesh, [{
           key: "Force_Rebuild",
@@ -818,7 +913,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             return this._forceRebuild;
           },
           set: function set(v) {
-            if (v) this._rebuild();
+            if (v) this.rebuildNow();
             this._forceRebuild = false;
           }
         }]);
@@ -844,224 +939,231 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
         initializer: function initializer() {
           return true;
         }
-      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec7], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "text1", [_dec8], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "maxRebuildRate", [_dec7], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 60;
+        }
+      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "text1", [_dec9], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'Ура!';
         }
-      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "fontJson1", [_dec9], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "fontJson1", [_dec10], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "atlas1", [_dec10], {
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "atlas1", [_dec11], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "material1", [_dec11], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "material1", [_dec12], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale1", [_dec12], {
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale1", [_dec13], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale1", [_dec13], {
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale1", [_dec14], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "color1", [_dec14], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "color1", [_dec15], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return new Color(0, 0, 0, 255);
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "text2", [_dec15], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "text2", [_dec16], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'Михалыч';
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "fontJson2", [_dec16], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "fontJson2", [_dec17], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "atlas2", [_dec17], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "atlas2", [_dec18], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "material2", [_dec18], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "material2", [_dec19], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale2", [_dec19], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale2", [_dec20], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale2", [_dec20], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale2", [_dec21], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "color2", [_dec21], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "color2", [_dec22], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return new Color(0, 0, 0, 255);
         }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "lineSpacing", [property], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "lineSpacing", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 80;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "invertV", [property], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "invertV", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "mirrorX", [property], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "mirrorX", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "mirrorY", [property], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "mirrorY", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "autoPxRange", [property], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "autoPxRange", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [property], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.5;
         }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [property], {
+      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.1;
         }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec22], {
+      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec23], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return BendMode.ArcAngle;
         }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
+      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
+      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 40;
         }
-      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec23], {
+      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec24], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcPlane.XZ;
         }
-      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec24], {
+      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec25], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcAlign.Center;
         }
-      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec25], {
+      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec26], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcBend.Concave;
         }
-      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
+      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec26], {
+      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec27], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec27], {
+      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec28], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec28], {
+      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec29], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 6;
         }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "centerVertByBounds", [property], {
+      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "centerVertByBounds", [_dec30], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -1523,9 +1625,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
         };
 
         _proto.updateFromApi = function updateFromApi(apiData) {
-          if (this.arcText) {
-            this.arcText.applyApiData(apiData);
-          }
+          if (this.arcText) ;
         }
 
         /** ���� ������� ��������� � ����� (��� �������) */;
@@ -4910,7 +5010,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
 });
 
 System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './ColorLibrary.ts', './TowerScrollController.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, instantiate, Vec3, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, instantiate, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -4918,6 +5018,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       _inheritsLoose = module.inheritsLoose;
       _assertThisInitialized = module.assertThisInitialized;
       _createForOfIteratorHelperLoose = module.createForOfIteratorHelperLoose;
+      _createClass = module.createClass;
       _asyncToGenerator = module.asyncToGenerator;
       _regeneratorRuntime = module.regeneratorRuntime;
     }, function (module) {
@@ -4926,7 +5027,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       Prefab = module.Prefab;
       Label = module.Label;
       instantiate = module.instantiate;
-      Vec3 = module.Vec3;
       Component = module.Component;
     }, function (module) {
       ClickMoveBinding = module.ClickMoveBinding;
@@ -4936,14 +5036,14 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _dec23, _dec24, _dec25, _class4, _class5, _descriptor25, _descriptor26;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _dec23, _dec24, _dec25, _class4, _class5, _descriptor25, _descriptor26, _class6;
       cclegacy._RF.push({}, "368ffNUv4lFSZtXbbDm9TB3", "TVS_SpawnLayout", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
 
-      /** ===== API-модель ===== */
+      /* ========================= API-модель ========================= */
 
-      /** ===== Конфиг спавна/раскладки ===== */
+      /* ========================= Конфиг спавна ========================= */
       var TVS_SpawnLayout = exports('TVS_SpawnLayout', (_dec = ccclass('TVS_SpawnLayout'), _dec2 = property({
         type: Prefab
       }), _dec3 = property({
@@ -5005,7 +5105,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _initializerDefineProperty(this, "materialIndex", _descriptor15, this);
         _initializerDefineProperty(this, "colorSetsFallback", _descriptor16, this);
         _initializerDefineProperty(this, "counterLabel", _descriptor17, this);
-        /** ===== Настройки данных/цветов/прокрутки ===== */
+        /* ===== данные/цвета/прокрутка ===== */
         _initializerDefineProperty(this, "targetPieces", _descriptor18, this);
         _initializerDefineProperty(this, "rngSeed", _descriptor19, this);
         _initializerDefineProperty(this, "randomizeColors", _descriptor20, this);
@@ -5182,26 +5282,27 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return true;
         }
       })), _class2)) || _class));
+
+      /* безопасный postMessage в родителя (в браузере/встраивании) */
       function safePostToParent(msg, targetOrigin) {
         if (targetOrigin === void 0) {
           targetOrigin = '*';
         }
         try {
           var _window$parent;
-          console.log('[safePostToParent] postMessage →', msg);
           (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
         } catch (e) {
-          console.warn('[safePostToParent] Ошибка postMessage:', e);
+          console.warn('[postMessage] error:', e);
         }
       }
 
-      /** ===== Контроллер башни + интеграция API ===== */
+      /* ===================== Контроллер башни ===================== */
       var TowerLayoutController = exports('TowerLayoutController', (_dec23 = ccclass('TowerLayoutController'), _dec24 = property({
         type: TVS_SpawnLayout
       }), _dec25 = property({
         type: TowerScrollController,
         tooltip: 'Ссылка на контроллер скролла'
-      }), _dec23(_class4 = (_class5 = /*#__PURE__*/function (_Component) {
+      }), _dec23(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerLayoutController, _Component);
         function TowerLayoutController() {
           var _this;
@@ -5211,180 +5312,164 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "spawn", _descriptor25, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "scrollCtrl", _descriptor26, _assertThisInitialized(_this));
-          // внутреннее
+          /* внутренняя память */
           _this.pool = [];
-          _this.lastKeyByNode = new Map();
           _this.nodeLevelInfo = new Map();
-          _this.lastTopBase = Number.NaN;
           _this.passedPieces = 0;
           _this.top4VisibleNow = null;
-          // null — ещё не знаем
-          // данные
+          /* данные */
           _this.cakesSource = [];
           _this.cakesExpanded = [];
+          /* ===================== события/скролл ===================== */
+          _this.onOffsetChanged = function (offset) {
+            var _this$scrollCtrl;
+            var max = _this.getMaxScrollableOffset();
+            var clamped = Math.min(offset, max);
+            if (clamped !== offset) (_this$scrollCtrl = _this.scrollCtrl) == null || _this$scrollCtrl.scrollToHeight(clamped, {
+              duration: 0
+            });
+            _this.layoutByOffset(clamped);
+          };
           return _this;
         }
         var _proto = TowerLayoutController.prototype;
-        _proto.getLib = function getLib() {
-          // импорт гарантирован, но инстанс может быть не создан
-          var lib = ColorTextureLibrary == null ? void 0 : ColorTextureLibrary.instance;
-          return lib != null ? lib : null;
+        _proto._changed = function _changed(prev, next, eps) {
+          if (eps === void 0) {
+            eps = TowerLayoutController.EPS;
+          }
+          return prev === undefined || Math.abs(prev - next) > eps;
+        };
+        _proto._getNodeCache = function _getNodeCache(n) {
+          var _cache;
+          return (_cache = n.__cache) != null ? _cache : n.__cache = {
+            bindings: null,
+            mrs: null,
+            lastBaseSet: -1,
+            lastSetCount: -1,
+            lastGidx: -1,
+            lastScale: undefined,
+            lastY: undefined,
+            slot: undefined,
+            angleStep: undefined,
+            level: undefined
+          };
         }
 
-        /* ========================== Жизненный цикл ========================== */;
+        /* ===================== удобные геттеры ===================== */;
+        /* ===================== lifecycle ===================== */
         _proto.onLoad = function onLoad() {
-          if (!this.scrollCtrl) console.warn('[TowerLayoutController] scrollCtrl не назначен в инспекторе');
-          if (!this.getLib()) {
-            console.warn('[TowerLayoutController] ColorTextureLibrary.instance не найден. ' + 'Добавь компонент ColorTextureLibrary на любой узел (он сам станет persist).');
+          if (!this.scrollCtrl) console.warn('[TowerLayoutController] scrollCtrl не назначен');
+          if (!this.lib) {
+            console.warn('[TowerLayoutController] ColorTextureLibrary.instance не найден — добавьте компонент на сцену.');
           }
         };
-        _proto.onEnable = function onEnable() {
-          var _this2 = this,
-            _this$scrollCtrl;
-          this.buildPool();
-          var initOff = this.scrollCtrl ? this.scrollCtrl.offset : 0;
-          this.layoutByOffset(initOff);
-          this.initApiData().then(function () {
-            _this2.rebuildExpandedCakes();
-            var cur = _this2.scrollCtrl ? _this2.scrollCtrl.offset : 0;
-            var max = _this2.getMaxScrollableOffset();
-            var clamped = Math.min(cur, max);
-            if (_this2.scrollCtrl && cur !== clamped) {
-              _this2.scrollCtrl.scrollToHeight(clamped, {
-                duration: 0
-              });
-            }
-            _this2.layoutByOffset(clamped);
-          });
-          (_this$scrollCtrl = this.scrollCtrl) == null || _this$scrollCtrl.events.on('offset-changed', this._onOffsetChanged, this);
-        };
+        _proto.onEnable = /*#__PURE__*/function () {
+          var _onEnable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+            var _this$scrollCtrl$offs, _this$scrollCtrl2, _this$scrollCtrl$offs2, _this$scrollCtrl3, _this$scrollCtrl4;
+            var cur, max, clamped;
+            return _regeneratorRuntime().wrap(function _callee$(_context) {
+              while (1) switch (_context.prev = _context.next) {
+                case 0:
+                  this.buildPool();
+                  this.layoutByOffset((_this$scrollCtrl$offs = (_this$scrollCtrl2 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl2.offset) != null ? _this$scrollCtrl$offs : 0);
+                  _context.next = 4;
+                  return this.initApiData();
+                case 4:
+                  this.rebuildExpandedCakes();
+                  cur = (_this$scrollCtrl$offs2 = (_this$scrollCtrl3 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl3.offset) != null ? _this$scrollCtrl$offs2 : 0;
+                  max = this.getMaxScrollableOffset();
+                  clamped = Math.min(cur, max);
+                  if (this.scrollCtrl && clamped !== cur) this.scrollCtrl.scrollToHeight(clamped, {
+                    duration: 0
+                  });
+                  this.layoutByOffset(clamped);
+                  (_this$scrollCtrl4 = this.scrollCtrl) == null || _this$scrollCtrl4.events.on('offset-changed', this.onOffsetChanged, this);
+                case 11:
+                case "end":
+                  return _context.stop();
+              }
+            }, _callee, this);
+          }));
+          function onEnable() {
+            return _onEnable.apply(this, arguments);
+          }
+          return onEnable;
+        }();
         _proto.onDisable = function onDisable() {
-          var _this$scrollCtrl2;
-          (_this$scrollCtrl2 = this.scrollCtrl) == null || _this$scrollCtrl2.events.off('offset-changed', this._onOffsetChanged, this);
-        };
-        _proto.getHeadPad = function getHeadPad(per, total) {
-          if (!this.spawn.partialAtTop) return 0;
-          if (per <= 0 || total <= 0) return 0;
-          var rem = total % per;
-          return rem === 0 ? 0 : per - rem;
-        };
-        _proto.sendTop4Event = function sendTop4Event(kind) {
-          var msg = {
-            type: 'TOP4_VISIBILITY',
-            action: kind
-          };
-          console.log('[TowerLayoutController] postMessage →', msg);
-          safePostToParent(msg);
+          var _this$scrollCtrl5;
+          (_this$scrollCtrl5 = this.scrollCtrl) == null || _this$scrollCtrl5.events.off('offset-changed', this.onOffsetChanged, this);
         };
         _proto.updateTop4Visibility = function updateTop4Visibility(topBase) {
-          // "внутри" — когда верхний уровень <= 3 (значит видим первые 4 слоя)
           var now = topBase <= 3;
-          if (this.top4VisibleNow === null) {
-            // первый раз инициализация
+          if (this.top4VisibleNow === null || now !== this.top4VisibleNow) {
             this.top4VisibleNow = now;
-            console.log('[TowerLayoutController] INIT TOP4_VISIBILITY =', now ? 'ENTERED' : 'EXITED');
-            this.sendTop4Event(now ? 'ENTERED' : 'EXITED');
-            return;
-          }
-          if (now !== this.top4VisibleNow) {
-            // состояние изменилось → отправляем событие
-            this.top4VisibleNow = now;
-            console.log('[TowerLayoutController] CHANGE TOP4_VISIBILITY →', now ? 'ENTERED' : 'EXITED', ' topBase=', topBase);
-            this.sendTop4Event(now ? 'ENTERED' : 'EXITED');
-          }
-        };
-        _proto._onOffsetChanged = function _onOffsetChanged(offset) {
-          var max = this.getMaxScrollableOffset();
-          var clamped = Math.min(offset, max);
-          if (clamped !== offset && this.scrollCtrl) {
-            this.scrollCtrl.scrollToHeight(clamped, {
-              duration: 0
+            safePostToParent({
+              type: 'TOP4_VISIBILITY',
+              action: now ? 'ENTERED' : 'EXITED'
             });
           }
-          this.layoutByOffset(clamped);
         }
 
-        /* ========================== Публичные API ========================== */;
+        /* ===================== публичные API ===================== */;
         _proto.getLevelStep = function getLevelStep() {
-          return Math.max(1e-6, this.levelStepConst());
+          return Math.max(1e-6, this.levelStep);
         };
         _proto.getNodeLevel = function getNodeLevel(node) {
-          var info = this.nodeLevelInfo.get(node);
-          return info ? info.level : null;
+          var _this$nodeLevelInfo$g, _this$nodeLevelInfo$g2;
+          return (_this$nodeLevelInfo$g = (_this$nodeLevelInfo$g2 = this.nodeLevelInfo.get(node)) == null ? void 0 : _this$nodeLevelInfo$g2.level) != null ? _this$nodeLevelInfo$g : null;
         };
         _proto.findMappedAncestor = function findMappedAncestor(node) {
-          var cur = node;
-          while (cur) {
-            if (this.nodeLevelInfo.has(cur)) return cur;
-            cur = cur.parent;
-          }
+          for (var cur = node; cur; cur = cur.parent) if (this.nodeLevelInfo.has(cur)) return cur;
           return null;
         };
         _proto.getLevelForAny = function getLevelForAny(node) {
-          var owner = this.findMappedAncestor(node);
-          if (!owner) return null;
-          var info = this.nodeLevelInfo.get(owner);
-          return info.level;
+          return this.findMappedAncestor(node) ? this.nodeLevelInfo.get(this.findMappedAncestor(node)).level : null;
         };
         _proto.getSlotForAny = function getSlotForAny(node) {
-          var owner = this.findMappedAncestor(node);
-          if (!owner) return null;
-          var info = this.nodeLevelInfo.get(owner);
-          return info ? info.slot : null;
-        }
-
-        /** Найти активную ноду по абсолютному уровню и слоту. */;
+          return this.findMappedAncestor(node) ? this.nodeLevelInfo.get(this.findMappedAncestor(node)).slot : null;
+        };
         _proto.findNodeByLevelSlot = function findNodeByLevelSlot(level, slot) {
           for (var _iterator = _createForOfIteratorHelperLoose(this.nodeLevelInfo), _step; !(_step = _iterator()).done;) {
             var _step$value = _step.value,
               n = _step$value[0],
               info = _step$value[1];
-            if (!n.activeInHierarchy) continue;
-            if (info.level === level && info.slot === slot) return n;
+            if (n.activeInHierarchy && info.level === level && info.slot === slot) return n;
           }
           return null;
         };
         _proto.scrollToLevel = function scrollToLevel(level, opts) {
-          var _this$scrollCtrl3;
-          var step = this.getLevelStep();
-          (_this$scrollCtrl3 = this.scrollCtrl) == null || _this$scrollCtrl3.scrollToHeight(level * step, opts != null ? opts : {});
+          var _this$scrollCtrl6;
+          (_this$scrollCtrl6 = this.scrollCtrl) == null || _this$scrollCtrl6.scrollToHeight(level * this.levelStep, opts != null ? opts : {});
         };
         _proto.scrollToNodeLevel = function scrollToNodeLevel(node, opts) {
           var L = this.getNodeLevel(node);
-          if (L == null) {
-            console.warn('[TowerLayout] scrollToNodeLevel: node has no tracked level (not visible yet?)', node == null ? void 0 : node.name);
-            return false;
-          }
+          if (L == null) return false;
           this.scrollToLevel(L, opts);
           return true;
         };
         _proto.scrollToNodeOrAncestorLevel = function scrollToNodeOrAncestorLevel(node, opts) {
           var owner = this.findMappedAncestor(node);
-          if (!owner) return false;
-          return this.scrollToNodeLevel(owner, opts);
-        }
-
-        /** Максимальный оффсет скролла, учитывая «воздух» внизу (padAfterLevels) */;
+          return owner ? this.scrollToNodeLevel(owner, opts) : false;
+        };
         _proto.getMaxScrollableOffset = function getMaxScrollableOffset() {
-          var vis = Math.max(1, this.spawn.visibleLevels);
           var totalLevels = this.getTotalLevels();
           if (totalLevels === 0) return 0;
           var pad = Math.max(0, this.spawn.padAfterLevels);
-          var maxTopBase = Math.max(0, totalLevels - vis + pad);
-          return (maxTopBase + 1) * this.getLevelStep();
+          var maxTopBase = Math.max(0, totalLevels - this.vis + pad);
+          return (maxTopBase + 1) * this.levelStep;
         }
 
-        /* ========================== Интеграция API ========================== */;
+        /* ===================== API-данные ===================== */;
         _proto.initApiData = /*#__PURE__*/
         function () {
-          var _initApiData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-            var _this3 = this;
-            var response, text, raw, rawItems;
-            return _regeneratorRuntime().wrap(function _callee$(_context) {
-              while (1) switch (_context.prev = _context.next) {
+          var _initApiData = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+            var _this2 = this;
+            var response, raw, items;
+            return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+              while (1) switch (_context2.prev = _context2.next) {
                 case 0:
-                  _context.prev = 0;
-                  _context.next = 3;
+                  _context2.prev = 0;
+                  _context2.next = 3;
                   return fetch('https://api.demo-stage.ru/cake/list', {
                     method: 'POST',
                     headers: {
@@ -5393,236 +5478,216 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                     body: JSON.stringify({})
                   });
                 case 3:
-                  response = _context.sent;
+                  response = _context2.sent;
                   if (response.ok) {
-                    _context.next = 11;
+                    _context2.next = 13;
                     break;
                   }
-                  _context.next = 7;
+                  _context2.t0 = console;
+                  _context2.t1 = response.status;
+                  _context2.next = 9;
                   return this.safeReadText(response);
-                case 7:
-                  text = _context.sent;
-                  console.error('[API] Ошибка запроса:', response.status, text);
+                case 9:
+                  _context2.t2 = _context2.sent;
+                  _context2.t0.error.call(_context2.t0, '[API] Ошибка:', _context2.t1, _context2.t2);
                   this.cakesSource = [];
-                  return _context.abrupt("return");
-                case 11:
-                  _context.next = 13;
-                  return response.json();
+                  return _context2.abrupt("return");
                 case 13:
-                  raw = _context.sent;
-                  console.log('[API] Сырой ответ:', raw);
-                  rawItems = Array.isArray(raw == null ? void 0 : raw.cakes) ? raw.cakes : [];
-                  if (!(rawItems.length === 0)) {
-                    _context.next = 20;
-                    break;
-                  }
-                  console.warn('[API] Пустой список cakes. Ключи:', raw && typeof raw === 'object' ? Object.keys(raw) : []);
-                  this.cakesSource = [];
-                  return _context.abrupt("return");
-                case 20:
-                  this.cakesSource = rawItems.map(function (it, idx) {
-                    var _it$hex_color;
-                    var n = _this3.normalizeCakePiece(it);
-                    if (!n.uniq_id) console.warn("[API item " + idx + "] uniq_id \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442/\u043D\u0435 UUID. raw uniq_id=", it == null ? void 0 : it.uniq_id);
-                    if (!n.hex_color) console.warn("[API item " + idx + "] hex_color \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442/\u043D\u0435 HEX. raw=", (_it$hex_color = it == null ? void 0 : it.hex_color) != null ? _it$hex_color : it == null ? void 0 : it.color);
-                    if (!n.created_at) console.warn("[API item " + idx + "] created_at \u043D\u0435 \u0440\u0430\u0441\u043F\u043E\u0437\u043D\u0430\u043D. raw=", it == null ? void 0 : it.created_at);
-                    return n;
+                  _context2.next = 15;
+                  return response.json();
+                case 15:
+                  raw = _context2.sent;
+                  items = Array.isArray(raw == null ? void 0 : raw.cakes) ? raw.cakes : [];
+                  this.cakesSource = items.map(function (it, i) {
+                    return _this2.normalizeCakePiece(it);
                   });
-                  console.log('[API] Нормализовано (источник):', this.cakesSource.length, this.cakesSource);
-                  _context.next = 28;
+                  _context2.next = 24;
                   break;
-                case 24:
-                  _context.prev = 24;
-                  _context.t0 = _context["catch"](0);
-                  console.error('[API] Ошибка соединения:', _context.t0);
+                case 20:
+                  _context2.prev = 20;
+                  _context2.t3 = _context2["catch"](0);
+                  console.error('[API] Ошибка соединения:', _context2.t3);
                   this.cakesSource = [];
-                case 28:
+                case 24:
                 case "end":
-                  return _context.stop();
+                  return _context2.stop();
               }
-            }, _callee, this, [[0, 24]]);
+            }, _callee2, this, [[0, 20]]);
           }));
           function initApiData() {
             return _initApiData.apply(this, arguments);
           }
           return initApiData;
-        }() /** Собираем расширенный массив на targetPieces, случайно из источника, но стабильно по seed */;
+        }() /** Собрать расширенный массив до targetPieces, с детерминированным перемешиванием */;
         _proto.rebuildExpandedCakes = function rebuildExpandedCakes() {
           var want = Math.max(0, Math.floor(this.spawn.targetPieces));
           var src = this.cakesSource.filter(Boolean);
-          if (want === 0 || src.length === 0) {
+          if (!want || !src.length) {
             this.cakesExpanded = [];
-            console.warn('[API] Нет данных для расширения: targetPieces=', want, ' src=', src.length);
             return;
           }
           var rng = this.mulberry32(this.spawn.rngSeed >>> 0);
-          var pick = function pick() {
+          var out = Array.from({
+            length: want
+          }, function () {
             return src[Math.floor(rng() * src.length)];
-          };
-          var out = new Array(want);
-          for (var i = 0; i < want; i++) out[i] = pick();
+          });
           this.fisherYatesShuffle(out, rng);
           this.cakesExpanded = out;
-          console.log('[API] Expanded cakes:', this.cakesExpanded.length);
         }
 
-        /* ========================== Доступ к данным ========================== */;
+        /* ===================== доступ к данным ===================== */;
+        _proto.getHeadPad = function getHeadPad(per, total) {
+          if (!this.spawn.partialAtTop || per <= 0 || total <= 0) return 0;
+          var rem = total % per;
+          return rem === 0 ? 0 : per - rem;
+        };
         _proto.getPieceFor = function getPieceFor(level, slot) {
-          if (!this.cakesExpanded || this.cakesExpanded.length === 0) return null;
-          var per = Math.max(1, this.spawn.objectsPerLevel);
-          var total = this.cakesExpanded.length;
-          var headPad = this.getHeadPad(per, total);
-          // смещаем глобальный индекс так, чтобы первый уровень начинался с headPad пустых слотов
-          var dataIndex = level * per + slot - headPad;
+          var total = this.getTotalPieces();
+          if (!total) return null;
+          var headPad = this.getHeadPad(this.per, total);
+          var dataIndex = level * this.per + slot - headPad;
           return dataIndex >= 0 && dataIndex < total ? this.cakesExpanded[dataIndex] : null;
         };
         _proto.getTotalPieces = function getTotalPieces() {
-          return Array.isArray(this.cakesExpanded) ? this.cakesExpanded.length : 0;
+          return this.cakesExpanded.length | 0;
         };
         _proto.getTotalLevels = function getTotalLevels() {
-          var per = Math.max(1, this.spawn.objectsPerLevel);
           var total = this.getTotalPieces();
-          var headPad = this.getHeadPad(per, total);
-          // считаем уровни по «подпаденному» началу, чтобы первый мог быть неполным
-          return Math.ceil((headPad + total) / per);
+          var headPad = this.getHeadPad(this.per, total);
+          return Math.ceil((headPad + total) / this.per);
         };
         _proto.globalIndexOf = function globalIndexOf(level, slot) {
-          var per = Math.max(1, this.spawn.objectsPerLevel);
-          return level * per + slot;
+          return level * this.per + slot;
         }
 
-        /* ========================== Раскладка/отрисовка ========================== */;
-        _proto.levelStepConst = function levelStepConst() {
-          var basePiece = this.spawn.targetVisualScale / Math.max(1e-6, this.spawn.baseScale);
-          var baseVisualHeight = this.spawn.baseHeight * this.spawn.baseScale * basePiece;
-          return baseVisualHeight + this.spawn.levelPaddingVisual;
-        };
+        /* ===================== раскладка/отрисовка ===================== */
+        // === ЗАМЕНИ метод layoutByOffset целиком ===
+        ;
+
         _proto.layoutByOffset = function layoutByOffset(offset) {
-          var _this4 = this;
-          var stepConst = Math.max(1e-6, this.levelStepConst());
-          var depthRaw = offset / stepConst;
-          var vis = Math.max(1, this.spawn.visibleLevels);
-          var per = Math.max(1, this.spawn.objectsPerLevel);
+          var _this3 = this;
+          if (!this.spawn.prefab || !this.pool.length) return;
+          var step = Math.max(1e-6, this.levelStep);
+          var depthRaw = offset / step;
           var totalLevels = this.getTotalLevels();
-
-          // опционально: «неполный конец» наверх окна
-          var depthAdjust = 0;
-          if (this.spawn.endPartialAtTop && totalLevels > 0) {
-            var lastLevelCount = this.getTotalPieces() % per || per;
-            // если есть неполный последний уровень — сдвинем окно так, чтобы он выпадал на верхнюю позицию
-            if (lastLevelCount < per) {
-              // сдвиг в долях уровня: сколько слотов пусто
-              depthAdjust = 0; // визуально мы всё равно выключаем пустые слоты; сдвиг по Y можно донастроить при необходимости
-            }
-          }
-
           var clampWhenData = totalLevels > 0;
           var pad = Math.max(0, this.spawn.padAfterLevels);
-          var maxTopBase = Math.max(0, totalLevels - vis + pad);
-          var depth = clampWhenData ? Math.min(depthRaw + depthAdjust, maxTopBase) : depthRaw + depthAdjust;
+          var maxTopBase = Math.max(0, totalLevels - this.vis + pad);
+          var depth = clampWhenData ? Math.min(depthRaw, maxTopBase) : depthRaw;
           var topBase = Math.max(0, Math.floor(depth));
           var frac = depth - topBase;
-          var newPassed = topBase * per;
+          this.updateTop4Visibility(topBase);
+
+          // глобальный счётчик
+          var newPassed = topBase * this.per;
           if (newPassed !== this.passedPieces) {
             this.passedPieces = newPassed;
-            if (this.spawn.counterLabel) this.spawn.counterLabel.string = "" + this.passedPieces;
+            if (this.spawn.counterLabel) this.spawn.counterLabel.string = String(this.passedPieces);
           }
-          this.lastTopBase = topBase;
-          this.updateTop4Visibility(topBase);
-          var basePiece = this.spawn.targetVisualScale / Math.max(1e-6, this.spawn.baseScale);
+
+          // масштаб
           var sGrad = this.spawn.scaleInWindow;
           var rSafe = Math.max(1e-6, this.spawn.r);
-          var desiredScaleAtRel = function desiredScaleAtRel(rel) {
-            return basePiece * Math.pow(rSafe, -rel * sGrad);
-          };
           var clampScale = function clampScale(x) {
-            if (!_this4.spawn.enableScaleClamp) return x;
-            var lo = Math.min(_this4.spawn.minScale, _this4.spawn.maxScale);
-            var hi = Math.max(_this4.spawn.minScale, _this4.spawn.maxScale);
+            if (!_this3.spawn.enableScaleClamp) return x;
+            var lo = Math.min(_this3.spawn.minScale, _this3.spawn.maxScale);
+            var hi = Math.max(_this3.spawn.minScale, _this3.spawn.maxScale);
             return Math.min(hi, Math.max(lo, x));
           };
+          var desiredScaleAtRel = function desiredScaleAtRel(rel) {
+            return clampScale(_this3.basePieceScale * Math.pow(rSafe, -rel * sGrad));
+          };
+
+          // начальный вертикальный сдвиг
           var relTop = topBase - depth;
-          var topScale = clampScale(desiredScaleAtRel(relTop));
+          var topScale = desiredScaleAtRel(relTop);
           var topVisualHeight = this.spawn.baseHeight * this.spawn.baseScale * topScale;
           var accY = -frac * (topVisualHeight + this.spawn.levelPaddingVisual);
-          var idx = 0;
-          for (var L = 0; L < vis; L++) {
+          var poolIdx = 0;
+          var angleStep = this.spawn.angleStep;
+          for (var L = 0; L < this.vis; L++) {
             var abs = topBase + L;
-
-            // за пределами данных — гасим оставшиеся уровни
             if (clampWhenData && abs >= totalLevels) {
-              for (; L < vis; L++) {
-                for (var j = 0; j < per; j++, idx++) {
-                  var n = this.pool[idx];
-                  if (n) {
-                    n.active = false;
-                    this.nodeLevelInfo["delete"](n);
-                  }
-                }
+              // выключаем остаток пула и выходим
+              for (; poolIdx < this.pool.length; poolIdx++) {
+                var n = this.pool[poolIdx];
+                if (!n) continue;
+                if (n.active) n.active = false;
+                this.nodeLevelInfo["delete"](n);
               }
               break;
             }
             var rel = abs - depth;
-            var pieceS = clampScale(desiredScaleAtRel(rel));
+            var pieceS = desiredScaleAtRel(rel);
             var yTop = this.spawn.anchorY - accY;
-            for (var _j = 0; _j < per; _j++) {
-              var _n = this.pool[idx];
-              if (!this.spawn.prefab) return;
+            for (var j = 0; j < this.per; j++, poolIdx++) {
+              var _n = this.pool[poolIdx];
               if (!_n) {
                 _n = instantiate(this.spawn.prefab);
                 _n.setParent(this.node);
-                _n.active = true;
-                this.pool[idx] = _n;
+                this.pool[poolIdx] = _n;
               }
-
-              // данные для этого слота
-              var gidx = this.globalIndexOf(abs, _j);
-              var piece = this.getPieceFor(abs, _j);
-
-              // нет данных — выключаем
+              var gidx = this.globalIndexOf(abs, j);
+              var piece = this.getPieceFor(abs, j);
               if (!piece) {
-                _n.active = false;
+                if (_n.active) _n.active = false;
                 this.nodeLevelInfo["delete"](_n);
                 _n.__boundIndex = undefined;
-                idx++;
                 continue;
               }
-
-              // поменялся глобальный индекс? → перебиндить контент
+              var cache = this._getNodeCache(_n);
               var prevIdx = _n.__boundIndex;
               var needRebind = prevIdx !== gidx;
 
-              // === ЦВЕТ/ТЕКСТУРЫ ЧЕРЕЗ БИБЛИОТЕКУ ===
-              this.applyLibrarySetForIndex(_n, gidx, piece);
+              // активируем только если надо
+              if (!_n.active) _n.active = true;
 
-              // позиция/поворот/скейл
-              _n.active = true;
-              _n.setPosition(new Vec3(0, yTop, 0));
-              _n.setRotationFromEuler(new Vec3(0, _j * this.spawn.angleStep, 0));
-              _n.setScale(pieceS, pieceS, pieceS);
-
-              // тексты/метаданные — обновляем при смене индекса
-              if (needRebind) {
-                this.applyPieceToNode(_n, piece);
+              // Поворот зависит от j и angleStep → меняем лишь при смене
+              if (cache.slot !== j || this._changed(cache.angleStep, angleStep)) {
+                _n.setRotationFromEuler(0, j * angleStep, 0);
+                cache.slot = j;
+                cache.angleStep = angleStep;
               }
-              _n.__boundIndex = gidx;
-              this.nodeLevelInfo.set(_n, {
-                level: abs,
-                slot: _j
-              });
-              idx++;
+
+              // Позиция
+              if (this._changed(cache.lastY, yTop)) {
+                _n.setPosition(0, yTop, 0);
+                cache.lastY = yTop;
+              }
+
+              // Масштаб
+              if (this._changed(cache.lastScale, pieceS)) {
+                _n.setScale(pieceS, pieceS, pieceS);
+                cache.lastScale = pieceS;
+              }
+
+              // Цвета/материалы + тексты — только при смене gidx
+              if (needRebind) {
+                this.applyLibrarySetForIndex(_n, gidx, piece);
+                this.applyPieceToNode(_n, piece);
+                _n.__boundIndex = gidx;
+              }
+
+              // level/slot — обновляем при изменении уровня
+              if (cache.level !== abs) {
+                this.nodeLevelInfo.set(_n, {
+                  level: abs,
+                  slot: j
+                });
+                cache.level = abs;
+              }
             }
             var visualHeight = this.spawn.baseHeight * this.spawn.baseScale * pieceS;
             accY += visualHeight + this.spawn.levelPaddingVisual;
           }
 
-          // выключаем лишние и чистим карту уровней
-          for (; idx < this.pool.length; idx++) {
-            var _n2 = this.pool[idx];
-            if (_n2) {
-              _n2.active = false;
-              this.nodeLevelInfo["delete"](_n2);
-            }
+          // остаток пула выключить
+          for (; poolIdx < this.pool.length; poolIdx++) {
+            var _n2 = this.pool[poolIdx];
+            if (!_n2) continue;
+            if (_n2.active) _n2.active = false;
+            this.nodeLevelInfo["delete"](_n2);
           }
         };
         _proto.buildPool = function buildPool() {
@@ -5630,40 +5695,46 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             console.warn('TowerLayoutController: prefab не назначен');
             return;
           }
-          var need = Math.max(1, this.spawn.visibleLevels) * Math.max(1, this.spawn.objectsPerLevel);
-          if (this.pool.length === 0) {
-            for (var i = 0; i < need; i++) {
-              var n = instantiate(this.spawn.prefab);
-              n.setParent(this.node);
-              n.active = true;
-              this.pool.push(n);
-            }
+          var need = this.vis * this.per;
+          if (this.pool.length >= need) return;
+          for (var i = this.pool.length; i < need; i++) {
+            var n = instantiate(this.spawn.prefab);
+            n.setParent(this.node);
+            n.active = true;
+            this.pool.push(n);
           }
         }
 
-        /* ========================== Цвета/наборы через библиотеку ========================== */
+        /* ===================== цвет/текстуры ===================== */
+        // === ЗАМЕНИ метод applyLibrarySetForIndex целиком ===
+        ;
 
-        /** Применить набор из ColorTextureLibrary, стабильный по gidx (и опционально hex_color) */;
         _proto.applyLibrarySetForIndex = function applyLibrarySetForIndex(root, gidx, piece) {
-          var _piece$hex_color;
-          var lib = this.getLib();
-          if (!lib) return; // просто выходим, без ошибок
-
+          var _piece$hex_color, _cache$mrs;
+          var lib = this.lib;
+          if (!lib) return;
           var count = typeof lib.getSetsCount === 'function' ? lib.getSetsCount() : this.spawn.colorSetsFallback;
-
-          // индекс набора — стабильно по gidx
           var baseKey = this.spawn.randomizeColors ? (this.spawn.rngSeedColors ^ gidx) >>> 0 : this.hash32str(((_piece$hex_color = piece.hex_color) != null ? _piece$hex_color : 'NOHEX') + '#' + gidx);
-          var setIndex = count <= 0 ? 0 : baseKey % count;
-          var bindings = root.getComponentsInChildren(ClickMoveBinding);
+          var baseSetIndex = count > 0 ? baseKey % count : 0;
+          var cache = this._getNodeCache(root);
+          // если базовый индекс и количество сетов не изменились, повторно не красим
+          if (cache.lastBaseSet === baseSetIndex && cache.lastSetCount === count) return;
+          if (!cache.bindings) {
+            cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
+            cache.mrs = cache.bindings.map(function (b) {
+              return b == null ? void 0 : b.meshRenderer;
+            }).filter(Boolean);
+          }
+          var mrs = (_cache$mrs = cache.mrs) != null ? _cache$mrs : [];
           var k = 0;
-          for (var _iterator2 = _createForOfIteratorHelperLoose(bindings), _step2; !(_step2 = _iterator2()).done;) {
-            var b = _step2.value;
-            var mr = b == null ? void 0 : b.meshRenderer;
-            if (!mr) continue;
-            var idx = (setIndex + k++) % Math.max(1, count);
+          var denom = Math.max(1, count);
+          for (var _iterator2 = _createForOfIteratorHelperLoose(mrs), _step2; !(_step2 = _iterator2()).done;) {
+            var mr = _step2.value;
+            var idx = (baseSetIndex + k++) % denom;
             lib.applySetByIndex(mr, this.spawn.materialIndex, idx);
           }
-          this.lastKeyByNode.set(root, "SET#" + setIndex);
+          cache.lastBaseSet = baseSetIndex;
+          cache.lastSetCount = count;
         };
         _proto.hash32str = function hash32str(s) {
           var h = 2166136261 >>> 0;
@@ -5672,66 +5743,42 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             h = Math.imul(h, 16777619);
           }
           return h >>> 0;
-        };
-        _proto.getSetsCount = function getSetsCount() {
-          var _lib$getSetsCount;
-          var lib = ColorTextureLibrary == null ? void 0 : ColorTextureLibrary.instance;
-          return (_lib$getSetsCount = lib == null || lib.getSetsCount == null ? void 0 : lib.getSetsCount()) != null ? _lib$getSetsCount : this.spawn.colorSetsFallback;
         }
 
-        /* ========================== Тексты в префаб ========================== */;
+        /* ===================== биндинг текста ===================== */;
         _proto.applyPieceToNode = function applyPieceToNode(root, piece) {
           root.__piece = piece != null ? piece : null;
           if (!piece) return;
-
-          // передаём данные сразу в ClickMoveBinding
-          var bindings = root.getComponentsInChildren(ClickMoveBinding);
-          for (var _iterator3 = _createForOfIteratorHelperLoose(bindings), _step3; !(_step3 = _iterator3()).done;) {
+          for (var _iterator3 = _createForOfIteratorHelperLoose(root.getComponentsInChildren(ClickMoveBinding)), _step3; !(_step3 = _iterator3()).done;) {
             var b = _step3.value;
             b.updateFromApi({
               title: piece.title,
               name: piece.name
             });
           }
-        };
-        _proto.setLabelByChildName = function setLabelByChildName(root, childName, text) {
-          var found = this.findChildCaseInsensitive(root, childName);
-          if (!found) return;
-          var lbl = found.getComponent(Label);
-          if (lbl) lbl.string = text != null ? text : '';
-        };
-        _proto.findChildCaseInsensitive = function findChildCaseInsensitive(root, name) {
-          var target = name.toLowerCase();
-          var stack = [root];
-          while (stack.length) {
-            var n = stack.pop();
-            if (n.name.toLowerCase() === target) return n;
-            stack.push.apply(stack, n.children);
-          }
-          return null;
         }
 
-        /* ========================== Нормализация / RNG ========================== */;
+        /* ===================== нормализация/утилиты ===================== */;
         _proto.safeReadText = /*#__PURE__*/
         function () {
-          var _safeReadText = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(resp) {
-            return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-              while (1) switch (_context2.prev = _context2.next) {
+          var _safeReadText = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(resp) {
+            return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+              while (1) switch (_context3.prev = _context3.next) {
                 case 0:
-                  _context2.prev = 0;
-                  _context2.next = 3;
+                  _context3.prev = 0;
+                  _context3.next = 3;
                   return resp.text();
                 case 3:
-                  return _context2.abrupt("return", _context2.sent);
+                  return _context3.abrupt("return", _context3.sent);
                 case 6:
-                  _context2.prev = 6;
-                  _context2.t0 = _context2["catch"](0);
-                  return _context2.abrupt("return", '');
+                  _context3.prev = 6;
+                  _context3.t0 = _context3["catch"](0);
+                  return _context3.abrupt("return", '');
                 case 9:
                 case "end":
-                  return _context2.stop();
+                  return _context3.stop();
               }
-            }, _callee2, null, [[0, 6]]);
+            }, _callee3, null, [[0, 6]]);
           }));
           function safeReadText(_x) {
             return _safeReadText.apply(this, arguments);
@@ -5739,25 +5786,22 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return safeReadText;
         }();
         _proto.strOrNull = function strOrNull(v) {
-          if (typeof v === 'string') {
-            var s = v.trim();
-            return s.length ? s : null;
-          }
-          return null;
+          if (typeof v !== 'string') return null;
+          var s = v.trim();
+          return s ? s : null;
         };
         _proto.numOrNull = function numOrNull(v) {
           if (typeof v === 'number' && Number.isFinite(v)) return v;
           if (typeof v === 'string') {
             var s = v.trim();
-            if (s === '') return null;
+            if (!s) return null;
             var n = Number(s);
             return Number.isFinite(n) ? n : null;
           }
           return null;
         };
-        _proto.isUuidLoose = function isUuidLoose(v) {
-          var s = v.trim();
-          return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+        _proto.isUuidLoose = function isUuidLoose(s) {
+          return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
         };
         _proto.isHexColor = function isHexColor(v) {
           return /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v.trim());
@@ -5770,30 +5814,51 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (s.length === 6) return '#' + s.toUpperCase();
           return s ? '#' + s.slice(0, 6).toUpperCase() : '#000000';
         };
+        _proto.formatDateTimeToYYYYMMDD_HHMMSS = function formatDateTimeToYYYYMMDD_HHMMSS(v) {
+          if (v == null) return null;
+          if (typeof v === 'string') {
+            var s = v.trim();
+            var m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+            if (m) {
+              var Y = m[1],
+                M = m[2],
+                D = m[3],
+                h = m[4],
+                m1 = m[5],
+                sec = m[6];
+              return Y + "-" + M + "-" + D + " " + h + ":" + m1 + ":" + (sec != null ? sec : '00');
+            }
+            var d = new Date(s);
+            return isNaN(d.getTime()) ? null : this.formatDate(d);
+          }
+          if (typeof v === 'number' && Number.isFinite(v)) {
+            var ts = v > 1e12 ? v : v * 1000;
+            var _d = new Date(ts);
+            return isNaN(_d.getTime()) ? null : this.formatDate(_d);
+          }
+          if (v instanceof Date && !isNaN(v.getTime())) return this.formatDate(v);
+          return null;
+        };
+        _proto.pad2 = function pad2(n) {
+          return n < 10 ? '0' + n : '' + n;
+        };
+        _proto.formatDate = function formatDate(d) {
+          var Y = d.getFullYear();
+          var M = this.pad2(d.getMonth() + 1);
+          var D = this.pad2(d.getDate());
+          var h = this.pad2(d.getHours());
+          var m = this.pad2(d.getMinutes());
+          var s = this.pad2(d.getSeconds());
+          return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
+        };
         _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
           var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _ref3, _raw$created_at, _ref4, _raw$moderate_status, _ref5, _ref6, _raw$file, _ref7, _raw$greeting_text, _raw$filling_id;
-          // uniq_id
           var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
-          if (uniq_id && !this.isUuidLoose(uniq_id)) {
-            console.warn('[API] uniq_id не UUID → null:', uniq_id);
-            uniq_id = null;
-          }
-
-          // hex_color
+          if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
           var hex_color = this.strOrNull((_raw$hex_color = raw == null ? void 0 : raw.hex_color) != null ? _raw$hex_color : raw == null ? void 0 : raw.color);
-          if (hex_color && this.isHexColor(hex_color)) {
-            hex_color = this.normalizeHex(hex_color);
-          } else {
-            hex_color = null;
-          }
-
-          // created_at → "YYYY-MM-DD HH:mm:ss"
+          hex_color = hex_color && this.isHexColor(hex_color) ? this.normalizeHex(hex_color) : null;
           var created_at = this.formatDateTimeToYYYYMMDD_HHMMSS((_ref3 = (_raw$created_at = raw == null ? void 0 : raw.created_at) != null ? _raw$created_at : raw == null ? void 0 : raw.createdAt) != null ? _ref3 : raw == null ? void 0 : raw.date);
-
-          // moderate_status — строка или null
           var moderate_status = this.strOrNull((_ref4 = (_raw$moderate_status = raw == null ? void 0 : raw.moderate_status) != null ? _raw$moderate_status : raw == null ? void 0 : raw.status) != null ? _ref4 : raw == null ? void 0 : raw.moderateStatus);
-
-          // file — ожидаем URL (если пришёл base64 — оставим как есть, но строкой)
           var file = this.strOrNull((_ref5 = (_ref6 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref6 : raw == null ? void 0 : raw.fileUrl) != null ? _ref5 : raw == null ? void 0 : raw.file_base64);
           return {
             uniq_id: uniq_id,
@@ -5808,125 +5873,52 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           };
         }
 
-        /** Приводит дату к "YYYY-MM-DD HH:mm:ss" (или null, если не распознано) */;
-        _proto.formatDateTimeToYYYYMMDD_HHMMSS = function formatDateTimeToYYYYMMDD_HHMMSS(v) {
-          if (v == null) return null;
-
-          // Уже в нужном формате?
-          if (typeof v === 'string') {
-            var s = v.trim();
-            // Поддержка "YYYY-MM-DD HH:mm" / "YYYY-MM-DDTHH:mm[:ss]" → нормализуем
-            var m1 = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
-            if (m1) {
-              var _ = m1[0],
-                Y = m1[1],
-                M = m1[2],
-                D = m1[3],
-                h = m1[4],
-                m = m1[5],
-                sec = m1[6];
-              var ss = sec != null ? sec : '00';
-              return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + ss;
-            }
-            // Попробуем распарсить как ISO/локальную дату
-            var d = new Date(s);
-            if (!isNaN(d.getTime())) return this.formatDate(d);
-            return null;
-          }
-
-          // Число → timestamp (секунды или миллисекунды)
-          if (typeof v === 'number' && Number.isFinite(v)) {
-            var ts = v > 1e12 ? v : v * 1000; // эвристика: если похоже на секунды — умножим
-            var _d = new Date(ts);
-            if (!isNaN(_d.getTime())) return this.formatDate(_d);
-          }
-
-          // Дата
-          if (v instanceof Date && !isNaN(v.getTime())) {
-            return this.formatDate(v);
-          }
-          return null;
-        };
-        _proto.pad2 = function pad2(n) {
-          return n < 10 ? '0' + n : '' + n;
-        };
-        _proto.formatDate = function formatDate(d) {
-          var Y = d.getFullYear();
-          var M = this.pad2(d.getMonth() + 1);
-          var D = this.pad2(d.getDate());
-          var h = this.pad2(d.getHours());
-          var m = this.pad2(d.getMinutes());
-          var s = this.pad2(d.getSeconds());
-          return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
-        }
-
-        /* ========================== Публичные утилиты индексации/поиска ========================== */
-
-        /** Сколько объектов на уровне (public helper) */;
+        /* ===== индексирование для внешнего кода ===== */;
         _proto.getObjectsPerLevel = function getObjectsPerLevel() {
-          return Math.max(1, this.spawn.objectsPerLevel);
-        }
-
-        /** Общее число доступных кусков (public helper) */;
+          return this.per;
+        };
         _proto.getPiecesCount = function getPiecesCount() {
           return this.getTotalPieces();
-        }
-
-        /** Маппинг: dataIndex (0..N-1) → {level, slot} с учётом headPad (partialAtTop) */;
+        };
         _proto.dataIndexToLevelSlot = function dataIndexToLevelSlot(dataIndex) {
-          var per = this.getObjectsPerLevel();
           var total = this.getTotalPieces();
           if (dataIndex < 0 || dataIndex >= total) return null;
-          var headPad = this.getHeadPad(per, total);
+          var headPad = this.getHeadPad(this.per, total);
           var gidx = dataIndex + headPad;
-          var level = Math.floor(gidx / per);
-          var slot = gidx % per;
           return {
-            level: level,
-            slot: slot
+            level: Math.floor(gidx / this.per),
+            slot: gidx % this.per
           };
-        }
-
-        /** Обратный маппинг: {level, slot} → dataIndex (с учётом headPad). Возвращает -1 если нет данных. */;
+        };
         _proto.levelSlotToDataIndex = function levelSlotToDataIndex(level, slot) {
-          var per = this.getObjectsPerLevel();
           var total = this.getTotalPieces();
-          var headPad = this.getHeadPad(per, total);
-          var gidx = level * per + slot;
-          var dataIndex = gidx - headPad;
-          return dataIndex >= 0 && dataIndex < total ? dataIndex : -1;
-        }
-
-        /** Достаёт piece по dataIndex (0..N-1). */;
+          var headPad = this.getHeadPad(this.per, total);
+          var gidx = level * this.per + slot;
+          var di = gidx - headPad;
+          return di >= 0 && di < total ? di : -1;
+        };
         _proto.getPieceByDataIndex = function getPieceByDataIndex(dataIndex) {
-          var idx = this.dataIndexToLevelSlot(dataIndex);
-          if (!idx) return null;
-          return this.getPieceFor(idx.level, idx.slot);
-        }
-
-        /** Случайный кусочек. Можно передать seed, иначе берём spawn.rngSeed. */;
+          var pos = this.dataIndexToLevelSlot(dataIndex);
+          return pos ? this.getPieceFor(pos.level, pos.slot) : null;
+        };
         _proto.getRandomPiece = function getRandomPiece(seed) {
           var total = this.getTotalPieces();
-          if (total <= 0) return null;
+          if (!total) return null;
           var rng = this.mulberry32((seed != null ? seed : this.spawn.rngSeed) >>> 0);
           var dataIndex = Math.floor(rng() * total);
           var pos = this.dataIndexToLevelSlot(dataIndex);
           if (!pos) return null;
           var piece = this.getPieceFor(pos.level, pos.slot);
-          if (!piece) return null; // на всякий
-          return {
+          return piece ? {
             level: pos.level,
             slot: pos.slot,
             dataIndex: dataIndex,
             piece: piece
-          };
-        }
-
-        /** Поиск первого кусочка по uniq_id. Возвращает позицию и сам piece. */;
+          } : null;
+        };
         _proto.findLevelSlotByUniqId = function findLevelSlotByUniqId(uniqId) {
           if (!uniqId) return null;
           var total = this.getTotalPieces();
-          if (total <= 0) return null;
           for (var di = 0; di < total; di++) {
             var p = this.cakesExpanded[di];
             if (p != null && p.uniq_id && p.uniq_id.toLowerCase() === uniqId.toLowerCase()) {
@@ -5941,49 +5933,24 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             }
           }
           return null;
-        }
-
-        /** Проскроллить к кусочку по uniq_id. true если удалось. */;
+        };
         _proto.scrollToUniqId = function scrollToUniqId(uniqId, opts) {
           var found = this.findLevelSlotByUniqId(uniqId);
-          if (!found) {
-            console.warn('[TowerLayout] Не найден кусочек с uniq_id=', uniqId);
-            return false;
-          }
+          if (!found) return false;
           this.scrollToLevel(found.level, opts);
           return true;
-        }
-
-        // уже есть у вас
-        ;
-
-        _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
-          if (targetOrigin === void 0) {
-            targetOrigin = '*';
-          }
-          try {
-            var _window$parent2;
-            (_window$parent2 = window.parent) == null || _window$parent2.postMessage(msg, targetOrigin);
-          } catch (_unused2) {}
-        }
-
-        // Внутри класса TowerLayoutController
-
-        /** Публично: получить piece + dataIndex по абсолютным level/slot */;
+        };
         _proto.getPieceInfoByLevelSlot = function getPieceInfoByLevelSlot(level, slot) {
           var di = this.levelSlotToDataIndex(level, slot);
           if (di < 0) return null;
           var piece = this.getPieceFor(level, slot);
-          if (!piece) return null;
-          return {
+          return piece ? {
             level: level,
             slot: slot,
             dataIndex: di,
             piece: piece
-          };
-        }
-
-        /** Удобный хелпер: проскроллить к случайному кусочку. Возвращает info или null. */;
+          } : null;
+        };
         _proto.scrollToRandomPiece = function scrollToRandomPiece(opts) {
           var rnd = this.getRandomPiece(opts == null ? void 0 : opts.seed);
           if (!rnd) return null;
@@ -5991,7 +5958,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return rnd;
         }
 
-        /** PRNG: mulberry32 — быстрый и стабильный от seed */;
+        /* ===================== RNG ===================== */;
         _proto.mulberry32 = function mulberry32(a) {
           return function () {
             var t = a += 0x6D2B79F5;
@@ -6003,13 +5970,41 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _proto.fisherYatesShuffle = function fisherYatesShuffle(arr, rng) {
           for (var i = arr.length - 1; i > 0; i--) {
             var j = Math.floor(rng() * (i + 1));
-            var tmp = arr[i];
-            arr[i] = arr[j];
-            arr[j] = tmp;
+            var _ref8 = [arr[j], arr[i]];
+            arr[i] = _ref8[0];
+            arr[j] = _ref8[1];
           }
         };
+        _createClass(TowerLayoutController, [{
+          key: "lib",
+          get: function get() {
+            var _instance;
+            return (_instance = ColorTextureLibrary == null ? void 0 : ColorTextureLibrary.instance) != null ? _instance : null;
+          }
+        }, {
+          key: "per",
+          get: function get() {
+            return Math.max(1, this.spawn.objectsPerLevel);
+          }
+        }, {
+          key: "vis",
+          get: function get() {
+            return Math.max(1, this.spawn.visibleLevels);
+          }
+        }, {
+          key: "basePieceScale",
+          get: function get() {
+            return this.spawn.targetVisualScale / Math.max(1e-6, this.spawn.baseScale);
+          }
+        }, {
+          key: "levelStep",
+          get: function get() {
+            var baseVisualHeight = this.spawn.baseHeight * this.spawn.baseScale * this.basePieceScale;
+            return baseVisualHeight + this.spawn.levelPaddingVisual;
+          }
+        }]);
         return TowerLayoutController;
-      }(Component), (_descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "spawn", [_dec24], {
+      }(Component), _class6.EPS = 1e-5, _class6), (_descriptor25 = _applyDecoratedDescriptor(_class5.prototype, "spawn", [_dec24], {
         configurable: true,
         enumerable: true,
         writable: true,
