@@ -1,5 +1,6 @@
 html {
   -ms-touch-action: none;
+  background: transparent !important;
 }
 
 body, canvas, div {
@@ -36,6 +37,7 @@ body {
   cursor: default;
   color: #888;
   background-color: #333;
+  background: transparent !important; /* делаем сайт под iframe видимым */
 
   text-align: center;
   font-family: Helvetica, Verdana, Arial, sans-serif;
@@ -46,6 +48,7 @@ body {
 
 canvas {
   background-color: rgba(0, 0, 0, 0);
+  background-color: transparent !important;
 }
 
 #GameDiv, #Cocos3dGameContainer, #GameCanvas {
