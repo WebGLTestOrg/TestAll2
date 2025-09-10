@@ -1177,7 +1177,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
 });
 
 System.register("chunks:///_virtual/AutoScaleCameraPosition.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, view, game, screen, Component, Size;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Vec3, Size, view, Component;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -1188,26 +1188,24 @@ System.register("chunks:///_virtual/AutoScaleCameraPosition.ts", ['./rollupPlugi
       cclegacy = module.cclegacy;
       _decorator = module._decorator;
       Vec3 = module.Vec3;
-      view = module.view;
-      game = module.game;
-      screen = module.screen;
-      Component = module.Component;
       Size = module.Size;
+      view = module.view;
+      Component = module.Component;
     }],
     execute: function () {
       var _dec, _dec2, _dec3, _dec4, _class, _class2, _descriptor, _descriptor2, _descriptor3;
       cclegacy._RF.push({}, "127bfVhJ3NP/LBgnQxROUZd", "AutoScaleCameraPosition", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
-      var AutoScaleCameraPositionWithLogs = exports('AutoScaleCameraPositionWithLogs', (_dec = ccclass('AutoScaleCameraPositionWithLogs'), _dec2 = property({
-        tooltip: 'Референсное разрешение (под которое выставлена камера в редакторе)'
+      var AutoScaleCameraZ_OnResizeOnly = exports('AutoScaleCameraZ_OnResizeOnly', (_dec = ccclass('AutoScaleCameraZ_OnResizeOnly'), _dec2 = property({
+        tooltip: 'Опционально для логов'
       }), _dec3 = property({
-        tooltip: 'Режим вычисления коэффициента масштаба: average/min/max'
+        tooltip: 'Агрегация масштаба: average/min/max'
       }), _dec4 = property({
-        tooltip: 'Включить подробные логи в консоль'
+        tooltip: 'Включить логи (логирует только при изменении размера)'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(AutoScaleCameraPositionWithLogs, _Component);
-        function AutoScaleCameraPositionWithLogs() {
+        _inheritsLoose(AutoScaleCameraZ_OnResizeOnly, _Component);
+        function AutoScaleCameraZ_OnResizeOnly() {
           var _this;
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
@@ -1217,45 +1215,48 @@ System.register("chunks:///_virtual/AutoScaleCameraPosition.ts", ['./rollupPlugi
           _initializerDefineProperty(_this, "scaleMode", _descriptor2, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "debugLogs", _descriptor3, _assertThisInitialized(_this));
           _this._basePos = new Vec3();
+          // стартовая позиция камеры (референс)
+          _this._refFrame = new Size(1, 1);
+          // референсный frame — фиксируем на старте
+          _this._lastFrame = new Size(0, 0);
+          // предыдущий frame для детекта изменения
           _this._lastScale = 0;
-          _this._onResize = function (tag) {
-            return function () {
-              _this._log("[event] " + tag);
-              _this._updateCameraPosition(tag);
-            };
-          };
           return _this;
         }
-        var _proto = AutoScaleCameraPositionWithLogs.prototype;
+        var _proto = AutoScaleCameraZ_OnResizeOnly.prototype;
         _proto.onEnable = function onEnable() {
+          // запоминаем базовую позицию
           this._basePos.set(this.node.position);
-          this._log('[onEnable] basePos =', this._basePos);
 
-          // события изменения экрана/окна
-          view.on('design-resolution-changed', this._onResize('design-resolution-changed'), this);
-          game.on(game.EVENT_GAME_RESIZE, this._onResize('EVENT_GAME_RESIZE'), this);
-          if (screen && screen.on) {
-            // cocos 3.8+: глобальные события экрана
-            screen.on('window-resize', this._onResize('window-resize'), this);
-            screen.on('orientation-change', this._onResize('orientation-change'), this);
+          // фиксируем референсный frame (текущее окно при старте)
+          var f0 = view.getFrameSize();
+          this._refFrame.width = Math.max(1, f0.width);
+          this._refFrame.height = Math.max(1, f0.height);
+
+          // сохраняем как "последний" — чтобы сразу не сработало
+          this._lastFrame.width = f0.width;
+          this._lastFrame.height = f0.height;
+          if (this.debugLogs) {
+            console.log('[AutoScaleCameraZ_OnResizeOnly] basePos=', this._basePos, ' refFrame=', this._refFrame.width + "x" + this._refFrame.height);
           }
 
-          // первичный пересчёт
-          this._updateCameraPosition('initial');
+          // первоначальная установка
+          this._applyForFrame(f0.width, f0.height, 'initial');
         };
-        _proto.onDisable = function onDisable() {
-          view.off('design-resolution-changed', this._onResize('design-resolution-changed'), this);
-          game.off(game.EVENT_GAME_RESIZE, this._onResize('EVENT_GAME_RESIZE'), this);
-          if (screen && screen.off) {
-            screen.off('window-resize', this._onResize('window-resize'), this);
-            screen.off('orientation-change', this._onResize('orientation-change'), this);
+        _proto.update = function update() {
+          var f = view.getFrameSize();
+          // реагируем ТОЛЬКО если реально изменился размер окна
+          if (f.width === this._lastFrame.width && f.height === this._lastFrame.height) {
+            return;
           }
+          this._lastFrame.width = f.width;
+          this._lastFrame.height = f.height;
+          this._applyForFrame(f.width, f.height, 'resize');
         };
-        _proto._updateCameraPosition = function _updateCameraPosition(source) {
-          var visible = view.getVisibleSize(); // логическая видимая область
-          var frame = view.getFrameSize(); // физический размер окна/экрана
-          var scaleX = visible.width / this.refResolution.width;
-          var scaleY = visible.height / this.refResolution.height;
+        _proto._applyForFrame = function _applyForFrame(w, h, source) {
+          // масштаб относительно референсного frame (зафиксирован на старте)
+          var scaleX = w / this._refFrame.width;
+          var scaleY = h / this._refFrame.height;
           var scale = 1;
           switch (this.scaleMode) {
             case 'min':
@@ -1270,19 +1271,21 @@ System.register("chunks:///_virtual/AutoScaleCameraPosition.ts", ['./rollupPlugi
             // average
           }
 
-          var newPos = new Vec3(this._basePos.x * scale, this._basePos.y * scale, this._basePos.z * scale);
-          this.node.setPosition(newPos);
-          this._log("[update from: " + source + "]", '\n  visible =', visible.width + "x" + visible.height, '\n  frame   =', frame.width + "x" + frame.height, '\n  ref     =', this.refResolution.width + "x" + this.refResolution.height, '\n  scaleX  =', scaleX.toFixed(4), '\n  scaleY  =', scaleY.toFixed(4), '\n  mode    =', this.scaleMode, '\n  scale   =', scale.toFixed(4), '\n  basePos =', this._basePos, '\n  newPos  =', newPos, this._lastScale !== scale ? '\n  (scale changed ✅)' : '\n  (scale unchanged)');
+          // Требование:
+          // - сужение (scale < 1): отдаляемся => z = z0 / scale (увеличиваем z)
+          // - расширение (scale > 1): приближаемся, но не ближе референса => z >= z0
+          var z0 = this._basePos.z;
+          var zNew = z0 / (scale || 1);
+          if (zNew < z0) zNew = z0; // кламп снизу: не ближе, чем в референсе
+
+          // x/y не трогаем
+          this.node.setPosition(this._basePos.x, this._basePos.y, zNew);
+          if (this.debugLogs) {
+            console.log('[AutoScaleCameraZ_OnResizeOnly]', "\n  source  = " + source, "\n  frame   = " + w + "x" + h, "\n  refFrm  = " + this._refFrame.width + "x" + this._refFrame.height, "\n  refRes  = " + this.refResolution.width + "x" + this.refResolution.height, "\n  scaleX  = " + scaleX.toFixed(4) + "  scaleY = " + scaleY.toFixed(4) + "  mode=" + this.scaleMode, "\n  scale   = " + scale.toFixed(4) + "  (prev=" + this._lastScale.toFixed(4) + ")", "\n  z0      = " + z0.toFixed(3) + "  zRaw=" + (z0 / (scale || 1)).toFixed(3) + "  => zNew=" + zNew.toFixed(3), '\n  (resized ✅)');
+          }
           this._lastScale = scale;
         };
-        _proto._log = function _log() {
-          var _console;
-          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-          }
-          if (this.debugLogs) (_console = console).log.apply(_console, ['[AutoScaleCameraPosition]'].concat(args));
-        };
-        return AutoScaleCameraPositionWithLogs;
+        return AutoScaleCameraZ_OnResizeOnly;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "refResolution", [_dec2], {
         configurable: true,
         enumerable: true,
@@ -1572,20 +1575,15 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
       var ClickMoveBinding = exports('ClickMoveBinding', (_dec = ccclass('ClickMoveBinding'), _dec2 = property({
-        type: Node,
-        tooltip: '���� ������� ��� ����� �� ����� �������'
+        type: Node
       }), _dec3 = property({
-        type: MeshRenderer,
-        tooltip: '������ �� MeshRenderer (��������, ��� ������ �����)'
+        type: MeshRenderer
       }), _dec4 = property({
-        type: Node,
-        tooltip: '���� ������, ������� ����� �������� ������� �� Y'
+        type: Node
       }), _dec5 = property({
-        type: Node,
-        tooltip: '�������: ���������� ��� ��������, ����������� ��� ��������'
+        type: Node
       }), _dec6 = property({
-        type: ArcTextMSDFTwoLinesSubmesh,
-        tooltip: '��������� ������ (2 ������)'
+        type: ArcTextMSDFTwoLinesSubmesh
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(ClickMoveBinding, _Component);
         function ClickMoveBinding() {
@@ -1599,43 +1597,46 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
           _initializerDefineProperty(_this, "model", _descriptor3, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "rim", _descriptor4, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "arcText", _descriptor5, _assertThisInitialized(_this));
-          // --- ����������� ��������� ���������� ---
           _this._startTargetPos = null;
-          // ��������� ������� target
           _this._startModelEuler = null;
-          // ��������� ������ ������
           _this._captured = false;
           return _this;
         }
         var _proto = ClickMoveBinding.prototype;
         _proto.onEnable = function onEnable() {
           this.ensureCaptured();
-        }
-
-        /** �������������� ����������� ��������� ���������� ���� ��� */;
+        };
         _proto.ensureCaptured = function ensureCaptured() {
           if (this._captured) return;
-          if (this.target) {
-            this._startTargetPos = this.target.getPosition().clone();
-          }
-          if (this.model) {
-            this._startModelEuler = this.model.eulerAngles.clone();
-          }
-          this._captured = !!this.target; // ������� �����������, ���� ���� ���� �������
-        };
-
-        _proto.updateFromApi = function updateFromApi(apiData) {
-          if (this.arcText) ;
+          if (this.target) this._startTargetPos = this.target.getPosition().clone();
+          if (this.model) this._startModelEuler = this.model.eulerAngles.clone();
+          this._captured = !!this.target;
         }
 
-        /** ���� ������� ��������� � ����� (��� �������) */;
+        /** ��������������� ������ ������: ���� ���� ArcText ��� disabled ��� freezeAfterBuild=true */;
+        _proto.updateFromApi = function updateFromApi(apiData) {
+          var t = this.arcText;
+          if (!t) return;
+          var wasEnabled = t.enabled;
+          // �������� �������� ���������, ����� ��������� rebuild/geometry
+          if (!wasEnabled) t.enabled = true;
+
+          // ��������� ������ (������ setText* ����������� instant-������ ��� �������)
+          t.applyApiData(apiData);
+
+          // �������������� ������ ����� ������ (��� �������� � schedule)
+          if (typeof t.rebuildNow === 'function') {
+            t.rebuildNow();
+          }
+
+          // ���������� �������� ���������: ���� ����� ����� ������� ��� ����������� � ��������
+          if (!wasEnabled && t.freezeAfterBuild) {
+            t.enabled = false;
+          }
+        };
         _proto.logWorld = function logWorld(label) {
-          if (this.target) {
-            console.log("[" + label + "] target world pos=", this.target.worldPosition.clone());
-          }
-          if (this.model) {
-            console.log("[" + label + "] model  world pos=", this.model.worldPosition.clone(), 'euler=', this.model.eulerAngles.clone());
-          }
+          if (this.target) console.log("[" + label + "] target world pos=", this.target.worldPosition.clone());
+          if (this.model) console.log("[" + label + "] model  world pos=", this.model.worldPosition.clone(), 'euler=', this.model.eulerAngles.clone());
         };
         return ClickMoveBinding;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "target", [_dec2], {
@@ -1934,6 +1935,128 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           });
         }
 
+        // === В ПОМОЩЬ: парсер HEX -> Color ===
+        ;
+
+        _proto._colorFromHex = function _colorFromHex(hex) {
+          if (!hex) return null;
+          var s = hex.trim();
+          if (!s) return null;
+          // Поддержим #RGB, #RRGGBB, #RRGGBBAA
+          var c = new Color();
+          try {
+            c.fromHEX(s.startsWith('#') ? s : '#' + s);
+            return c;
+          } catch (_unused) {
+            console.warn('[CTL] Неверный hex:', hex);
+            return null;
+          }
+        }
+
+        // === Поставить ОДИН hex-цвет в один юниформ ===
+        ;
+
+        _proto.applyHexColor = function applyHexColor(target, hex, uniform, matIndex) {
+          if (matIndex === void 0) {
+            matIndex = 0;
+          }
+          var col = this._colorFromHex(hex);
+          if (!col) return;
+          var mr = target instanceof MeshRenderer ? target : target.getComponent(MeshRenderer);
+          if (!mr) return;
+          var mat = mr.getMaterialInstance(matIndex);
+          if (!mat) return;
+          mat.setProperty(uniform, col);
+        }
+
+        // === Поставить ОДИН hex-цвет во ВСЕ цветовые юниформы ===
+        ;
+
+        _proto.applyHexColorToAll = function applyHexColorToAll(target, hex, matIndex) {
+          if (matIndex === void 0) {
+            matIndex = 0;
+          }
+          var col = this._colorFromHex(hex);
+          if (!col) return;
+          var mr = target instanceof MeshRenderer ? target : target.getComponent(MeshRenderer);
+          if (!mr) return;
+          var mat = mr.getMaterialInstance(matIndex);
+          if (!mat) return;
+          this.colorUniforms.forEach(function (u) {
+            if (u) mat.setProperty(u, col);
+          });
+        }
+
+        // === Поставить НЕСКОЛЬКО hex-цветов по порядку в uColor1..uColor4 ===
+        ;
+
+        _proto.applyHexColors = function applyHexColors(target, hexes, matIndex) {
+          var _this5 = this;
+          if (matIndex === void 0) {
+            matIndex = 0;
+          }
+          var mr = target instanceof MeshRenderer ? target : target.getComponent(MeshRenderer);
+          if (!mr) return;
+          var mat = mr.getMaterialInstance(matIndex);
+          if (!mat) return;
+          var cols = hexes.map(function (h) {
+            return _this5._colorFromHex(h);
+          }).filter(Boolean);
+          this.colorUniforms.forEach(function (u, i) {
+            if (u && cols[i]) mat.setProperty(u, cols[i]);
+          });
+        }
+
+        // === Текстуры ПО ИНДЕКСУ из paletteTextures ===
+        // (индекс — из API, например filling_id)
+        ;
+
+        _proto.applyTextureByIndex = function applyTextureByIndex(target, texIndex, uniform, matIndex) {
+          if (matIndex === void 0) {
+            matIndex = 0;
+          }
+          var mr = target instanceof MeshRenderer ? target : target.getComponent(MeshRenderer);
+          if (!mr) return;
+          var mat = mr.getMaterialInstance(matIndex);
+          if (!mat) return;
+          var n = this.paletteTextures.length;
+          if (n <= 0) {
+            console.warn('[CTL] Нет текстур в палитре');
+            return;
+          }
+          var i = (texIndex % n + n) % n;
+          var tex = this.paletteTextures[i];
+          if (!tex) return;
+          mat.setProperty(uniform, tex);
+        }
+
+        // === Расставить несколько текстур по порядку в uTex1..uTex2
+        ;
+
+        _proto.applyTexturesByIndices = function applyTexturesByIndices(target, indices, matIndex) {
+          var _this6 = this;
+          if (matIndex === void 0) {
+            matIndex = 0;
+          }
+          var mr = target instanceof MeshRenderer ? target : target.getComponent(MeshRenderer);
+          if (!mr) return;
+          var mat = mr.getMaterialInstance(matIndex);
+          if (!mat) return;
+          var n = this.paletteTextures.length;
+          if (n <= 0) {
+            console.warn('[CTL] Нет текстур в палитре');
+            return;
+          }
+          this.textureUniforms.forEach(function (u, k) {
+            if (!u) return;
+            var idx = indices[k];
+            if (idx == null) return;
+            var i = (idx % n + n) % n;
+            var tex = _this6.paletteTextures[i];
+            if (tex) mat.setProperty(u, tex);
+          });
+        }
+
         /**
          * Применить набор к каждому материалу MeshRenderer (если их несколько).
          * Удобно, если у меша несколько сабмешей/материалов.
@@ -2085,7 +2208,7 @@ System.register("chunks:///_virtual/DebugPanelToggle.ts", ['./rollupPluginModLoB
 });
 
 System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Camera, Node, input, Input, geometry, PhysicsSystem, Vec3, tween, Component, ClickMoveBinding, InteractionState, MOUSE_ID, RotateYByKeys, TowerLayoutController, TowerScrollController;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Camera, Node, input, Input, geometry, PhysicsSystem, Vec3, tween, Component, sys, ClickMoveBinding, InteractionState, MOUSE_ID, RotateYByKeys, TowerLayoutController, TowerScrollController;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -2106,6 +2229,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       Vec3 = module.Vec3;
       tween = module.tween;
       Component = module.Component;
+      sys = module.sys;
     }, function (module) {
       ClickMoveBinding = module.ClickMoveBinding;
     }, function (module) {
@@ -2120,7 +2244,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22;
       cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -2155,6 +2279,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       }), _dec8 = property({
         tooltip: 'Мировое расстояние выезда (ед.), одинаковое для всех уровней'
       }), _dec9 = property({
+        tooltip: 'Мировое расстояние выезда (ед.), одинаковое для всех уровней'
+      }), _dec10 = property({
         tooltip: 'Origin родителя для postMessage; оставь пустым для *'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(GlobalClickManager3D, _Component);
@@ -2182,20 +2308,21 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           // уровни ≥2
           // slide (компенсируем скейл)
           _initializerDefineProperty(_this, "openWorldDistance", _descriptor12, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideEasing", _descriptor13, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideDuration", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldDistanceMobile", _descriptor13, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideEasing", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideDuration", _descriptor15, _assertThisInitialized(_this));
           // поворот корня по слоту
-          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor16, _assertThisInitialized(_this));
           // 0=лицо по +Z, 90=по +X
-          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor16, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor17, _assertThisInitialized(_this));
           // +180°
-          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor18, _assertThisInitialized(_this));
           // поворот МОДЕЛИ при открытии/закрытии
-          _initializerDefineProperty(_this, "modelRotateDeg", _descriptor18, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor19, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor20, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDeg", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor20, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor21, _assertThisInitialized(_this));
           // NEW: куда постить события (оставь пусто для '*')
-          _initializerDefineProperty(_this, "parentOrigin", _descriptor21, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "parentOrigin", _descriptor22, _assertThisInitialized(_this));
           // state
           _this.fsm = State.Idle;
           // сделал public, раз мост читает
@@ -2434,7 +2561,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         function () {
           var _slideOutWithScaleComp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
             var _this$currentBinding$, _parent$worldScale$x;
-            var target, parent, sx, localDx, baseX, toX;
+            var target, parent, sx, isMobile, localDx, baseX, toX;
             return _regeneratorRuntime().wrap(function _callee2$(_context2) {
               while (1) switch (_context2.prev = _context2.next) {
                 case 0:
@@ -2447,13 +2574,18 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   target = (_this$currentBinding$ = this.currentBinding.target) != null ? _this$currentBinding$ : this.currentPiece; // мир.смещение = openWorldDistance → локальное ΔX = world / scaleX(parentToWorld)
                   parent = target.parent;
                   sx = (_parent$worldScale$x = parent == null ? void 0 : parent.worldScale.x) != null ? _parent$worldScale$x : 1; // у нас скейл равномерен → x=y=z
-                  localDx = this.openWorldDistance / Math.max(1e-6, sx);
+                  isMobile = sys.isMobile;
+                  if (isMobile) {
+                    localDx = this.openWorldDistanceMobile / Math.max(1e-6, sx);
+                  } else {
+                    localDx = this.openWorldDistance / Math.max(1e-6, sx);
+                  }
                   if (!this.baseLocalX.has(target)) this.baseLocalX.set(target, target.position.x);
                   baseX = this.baseLocalX.get(target);
                   toX = baseX + localDx;
-                  _context2.next = 11;
+                  _context2.next = 12;
                   return this.tweenLocalX(target, toX, this.slideDuration, this.slideEasing);
-                case 11:
+                case 12:
                 case "end":
                   return _context2.stop();
               }
@@ -2820,63 +2952,70 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [property], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistanceMobile", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.6;
+        }
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [property], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [property], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [property], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [property], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDeg", [property], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 90;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [property], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [property], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec9], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec10], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -3023,9 +3162,9 @@ System.register("chunks:///_virtual/InteractionState.ts", ['cc'], function (expo
   };
 });
 
-System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './DebugPanelToggle.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
+System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PlatformCameraSwitcher.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './DebugPanelToggle.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
   return {
-    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     execute: function () {}
   };
 });
@@ -3298,6 +3437,69 @@ System.register("chunks:///_virtual/PieceSpawner.ts", ['./rollupPluginModLoBabel
           return false;
         }
       }), _applyDecoratedDescriptor(_class2.prototype, "SpawnInEditor", [_dec10], Object.getOwnPropertyDescriptor(_class2.prototype, "SpawnInEditor"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "ClearSpawned", [_dec11], Object.getOwnPropertyDescriptor(_class2.prototype, "ClearSpawned"), _class2.prototype), _applyDecoratedDescriptor(_class2.prototype, "RecolorInEditor", [_dec12], Object.getOwnPropertyDescriptor(_class2.prototype, "RecolorInEditor"), _class2.prototype)), _class2)) || _class) || _class) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
+System.register("chunks:///_virtual/PlatformCameraSwitcher.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, sys, Component;
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Node = module.Node;
+      sys = module.sys;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _class, _class2, _descriptor, _descriptor2;
+      cclegacy._RF.push({}, "339078DsVBDcqU199OGeGSu", "PlatformCameraSwitcher", undefined);
+      var ccclass = _decorator.ccclass,
+        property = _decorator.property;
+      var MobileOrDesktopSwitcher = exports('MobileOrDesktopSwitcher', (_dec = ccclass('MobileOrDesktopSwitcher'), _dec2 = property({
+        type: Node
+      }), _dec3 = property({
+        type: Node
+      }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(MobileOrDesktopSwitcher, _Component);
+        function MobileOrDesktopSwitcher() {
+          var _this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          _initializerDefineProperty(_this, "mobileRoot", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "desktopRoot", _descriptor2, _assertThisInitialized(_this));
+          return _this;
+        }
+        var _proto = MobileOrDesktopSwitcher.prototype;
+        _proto.start = function start() {
+          var isMobile = sys.isMobile;
+          if (this.mobileRoot) this.mobileRoot.active = isMobile;
+          if (this.desktopRoot) this.desktopRoot.active = !isMobile;
+        };
+        return MobileOrDesktopSwitcher;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "mobileRoot", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "desktopRoot", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      })), _class2)) || _class));
       cclegacy._RF.pop();
     }
   };
@@ -5036,7 +5238,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _dec23, _dec24, _dec25, _class4, _class5, _descriptor25, _descriptor26, _class6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class4, _class5, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _class6;
       cclegacy._RF.push({}, "368ffNUv4lFSZtXbbDm9TB3", "TVS_SpawnLayout", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -5047,9 +5249,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       var TVS_SpawnLayout = exports('TVS_SpawnLayout', (_dec = ccclass('TVS_SpawnLayout'), _dec2 = property({
         type: Prefab
       }), _dec3 = property({
-        tooltip: 'Базовый масштаб геометрии префаба (Node.scale = 1 → это baseScale префаба)'
+        tooltip: 'Базовый масштаб префаба (Node.scale = 1 → это baseScale префаба)'
       }), _dec4 = property({
-        tooltip: 'Базовая геометрическая высота куска (до масштабов префаба и Node.scale)'
+        tooltip: 'Базовая геом. высота куска (до масштабов префаба и Node.scale)'
       }), _dec5 = property({
         tooltip: 'Целевой экранный масштаб «базового» куска'
       }), _dec6 = property({
@@ -5057,7 +5259,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       }), _dec7 = property({
         tooltip: 'Якорь Y (локально) — центр окна'
       }), _dec8 = property({
-        tooltip: 'Интенсивность градиента масштаба (0..1). 0 — одинаковые; 1 — максимум.'
+        tooltip: 'Интенсивность градиента масштаба (0..1)'
       }), _dec9 = property({
         tooltip: 'Коэф. по слоям r: r<1 — вниз мельче; r>1 — вниз крупнее.'
       }), _dec10 = property({
@@ -5074,17 +5276,17 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         type: Label,
         tooltip: 'Куда выводить глобальный счётчик пройденных кусочков'
       }), _dec16 = property({
-        tooltip: 'Сколько всего кусочков хотим показать (набираются случайно из API-результатов)'
+        tooltip: 'Сколько всего кусочков хотим показать'
       }), _dec17 = property({
-        tooltip: 'Seed для выбора/перемешивания кусков (стабильный рандом)'
+        tooltip: 'Seed для выборки/перемешивания кусков'
       }), _dec18 = property({
-        tooltip: 'Случайный «набор» (цвета/текстуры) на кусок по gidx через библиотеку'
+        tooltip: 'Случайный «набор» (цвета/текстуры) на кусок по gidx'
       }), _dec19 = property({
         tooltip: 'Seed для вычисления индекса набора из gidx'
       }), _dec20 = property({
-        tooltip: 'Доп. уровни прокрутки ПОСЛЕ последнего уровня (пустое пространство внизу)'
+        tooltip: 'Доп. уровни прокрутки ПОСЛЕ последнего уровня'
       }), _dec21 = property({
-        tooltip: 'Если true — последний неполный уровень будет прижат к верху окна'
+        tooltip: 'Если true — последний неполный уровень прижат к верху окна'
       }), _dec22 = property({
         tooltip: 'Делать неполный уровень в НАЧАЛЕ башни (сверху)'
       }), _dec(_class = (_class2 = function TVS_SpawnLayout() {
@@ -5291,17 +5493,21 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         try {
           var _window$parent;
           (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
-        } catch (e) {
-          console.warn('[postMessage] error:', e);
-        }
+        } catch (_unused) {}
       }
 
-      /* ===================== Контроллер башни ===================== */
+      /* ===================== Контроллер башни (ring buffer) ===================== */
       var TowerLayoutController = exports('TowerLayoutController', (_dec23 = ccclass('TowerLayoutController'), _dec24 = property({
         type: TVS_SpawnLayout
       }), _dec25 = property({
         type: TowerScrollController,
         tooltip: 'Ссылка на контроллер скролла'
+      }), _dec26 = property({
+        tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
+      }), _dec27 = property({
+        tooltip: 'Сколько текстов обновлять за кадр'
+      }), _dec28 = property({
+        tooltip: 'Логировать в консоль вход/выход окна в первые 4 уровня'
       }), _dec23(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerLayoutController, _Component);
         function TowerLayoutController() {
@@ -5312,15 +5518,21 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "spawn", _descriptor25, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "scrollCtrl", _descriptor26, _assertThisInitialized(_this));
-          /* внутренняя память */
+          /* пул: фикс. размер = vis*per; порядок — сверху вниз */
           _this.pool = [];
           _this.nodeLevelInfo = new Map();
+          /* данные/счётчики */
           _this.passedPieces = 0;
-          _this.top4VisibleNow = null;
-          /* данные */
           _this.cakesSource = [];
           _this.cakesExpanded = [];
-          /* ===================== события/скролл ===================== */
+          /* текстовая очередь */
+          _this.textUpdateQueue = [];
+          _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor27, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "textsPerFrame", _descriptor28, _assertThisInitialized(_this));
+          /* ring buffer состояние */
+          _this.prevTopBase = -1;
+          _this.top4VisibleNow = null;
+          /* ===================== scroll events ===================== */
           _this.onOffsetChanged = function (offset) {
             var _this$scrollCtrl;
             var max = _this.getMaxScrollableOffset();
@@ -5330,38 +5542,14 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             });
             _this.layoutByOffset(clamped);
           };
+          // === ВСТАВЬ в поля класса ===
+          _initializerDefineProperty(_this, "debugLogTop4", _descriptor29, _assertThisInitialized(_this));
           return _this;
         }
         var _proto = TowerLayoutController.prototype;
-        _proto._changed = function _changed(prev, next, eps) {
-          if (eps === void 0) {
-            eps = TowerLayoutController.EPS;
-          }
-          return prev === undefined || Math.abs(prev - next) > eps;
-        };
-        _proto._getNodeCache = function _getNodeCache(n) {
-          var _cache;
-          return (_cache = n.__cache) != null ? _cache : n.__cache = {
-            bindings: null,
-            mrs: null,
-            lastBaseSet: -1,
-            lastSetCount: -1,
-            lastGidx: -1,
-            lastScale: undefined,
-            lastY: undefined,
-            slot: undefined,
-            angleStep: undefined,
-            level: undefined
-          };
-        }
-
-        /* ===================== удобные геттеры ===================== */;
         /* ===================== lifecycle ===================== */
         _proto.onLoad = function onLoad() {
-          if (!this.scrollCtrl) console.warn('[TowerLayoutController] scrollCtrl не назначен');
-          if (!this.lib) {
-            console.warn('[TowerLayoutController] ColorTextureLibrary.instance не найден — добавьте компонент на сцену.');
-          }
+          if (!this.lib) console.warn('[TowerLayoutController] ColorTextureLibrary.instance не найден — добавьте компонент на сцену.');
         };
         _proto.onEnable = /*#__PURE__*/function () {
           var _onEnable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -5371,11 +5559,14 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
               while (1) switch (_context.prev = _context.next) {
                 case 0:
                   this.buildPool();
+                  this.prevTopBase = -1;
                   this.layoutByOffset((_this$scrollCtrl$offs = (_this$scrollCtrl2 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl2.offset) != null ? _this$scrollCtrl$offs : 0);
-                  _context.next = 4;
+                  _context.next = 5;
                   return this.initApiData();
-                case 4:
+                case 5:
                   this.rebuildExpandedCakes();
+                  this.forceRebindVisibleNow();
+                  this.primeVisibleTextsNow();
                   cur = (_this$scrollCtrl$offs2 = (_this$scrollCtrl3 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl3.offset) != null ? _this$scrollCtrl$offs2 : 0;
                   max = this.getMaxScrollableOffset();
                   clamped = Math.min(cur, max);
@@ -5384,7 +5575,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                   });
                   this.layoutByOffset(clamped);
                   (_this$scrollCtrl4 = this.scrollCtrl) == null || _this$scrollCtrl4.events.on('offset-changed', this.onOffsetChanged, this);
-                case 11:
+                case 14:
                 case "end":
                   return _context.stop();
               }
@@ -5399,10 +5590,18 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           var _this$scrollCtrl5;
           (_this$scrollCtrl5 = this.scrollCtrl) == null || _this$scrollCtrl5.events.off('offset-changed', this.onOffsetChanged, this);
         };
+        // === ЗАМЕНИ тело updateTop4Visibility на это ===
         _proto.updateTop4Visibility = function updateTop4Visibility(topBase) {
-          var now = topBase <= 3;
+          var now = topBase <= 3; // окно пересекает уровни [0..3]
           if (this.top4VisibleNow === null || now !== this.top4VisibleNow) {
             this.top4VisibleNow = now;
+
+            // Консольный лог (по желанию)
+            if (this.debugLogTop4) {
+              console.log("[TOP4] " + (now ? 'ENTERED' : 'EXITED') + " (topBase=" + topBase + ")");
+            }
+
+            // Внешнее событие в родителя (как и раньше)
             safePostToParent({
               type: 'TOP4_VISIBILITY',
               action: now ? 'ENTERED' : 'EXITED'
@@ -5410,23 +5609,33 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
         }
 
-        /* ===================== публичные API ===================== */;
+        /* ===================== ПУБЛИЧНЫЙ API (совместимость) ===================== */;
         _proto.getLevelStep = function getLevelStep() {
           return Math.max(1e-6, this.levelStep);
         };
-        _proto.getNodeLevel = function getNodeLevel(node) {
-          var _this$nodeLevelInfo$g, _this$nodeLevelInfo$g2;
-          return (_this$nodeLevelInfo$g = (_this$nodeLevelInfo$g2 = this.nodeLevelInfo.get(node)) == null ? void 0 : _this$nodeLevelInfo$g2.level) != null ? _this$nodeLevelInfo$g : null;
+        _proto.getObjectsPerLevel = function getObjectsPerLevel() {
+          return this.per;
+        };
+        _proto.getPiecesCount = function getPiecesCount() {
+          return this.getTotalPieces();
         };
         _proto.findMappedAncestor = function findMappedAncestor(node) {
           for (var cur = node; cur; cur = cur.parent) if (this.nodeLevelInfo.has(cur)) return cur;
           return null;
         };
+        _proto.getNodeLevel = function getNodeLevel(node) {
+          var _this$nodeLevelInfo$g, _this$nodeLevelInfo$g2;
+          return (_this$nodeLevelInfo$g = (_this$nodeLevelInfo$g2 = this.nodeLevelInfo.get(node)) == null ? void 0 : _this$nodeLevelInfo$g2.level) != null ? _this$nodeLevelInfo$g : null;
+        };
         _proto.getLevelForAny = function getLevelForAny(node) {
-          return this.findMappedAncestor(node) ? this.nodeLevelInfo.get(this.findMappedAncestor(node)).level : null;
+          var _this$nodeLevelInfo$g3, _this$nodeLevelInfo$g4;
+          var o = this.findMappedAncestor(node);
+          return o ? (_this$nodeLevelInfo$g3 = (_this$nodeLevelInfo$g4 = this.nodeLevelInfo.get(o)) == null ? void 0 : _this$nodeLevelInfo$g4.level) != null ? _this$nodeLevelInfo$g3 : null : null;
         };
         _proto.getSlotForAny = function getSlotForAny(node) {
-          return this.findMappedAncestor(node) ? this.nodeLevelInfo.get(this.findMappedAncestor(node)).slot : null;
+          var _this$nodeLevelInfo$g5, _this$nodeLevelInfo$g6;
+          var o = this.findMappedAncestor(node);
+          return o ? (_this$nodeLevelInfo$g5 = (_this$nodeLevelInfo$g6 = this.nodeLevelInfo.get(o)) == null ? void 0 : _this$nodeLevelInfo$g6.slot) != null ? _this$nodeLevelInfo$g5 : null : null;
         };
         _proto.findNodeByLevelSlot = function findNodeByLevelSlot(level, slot) {
           for (var _iterator = _createForOfIteratorHelperLoose(this.nodeLevelInfo), _step; !(_step = _iterator()).done;) {
@@ -5448,15 +5657,83 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return true;
         };
         _proto.scrollToNodeOrAncestorLevel = function scrollToNodeOrAncestorLevel(node, opts) {
-          var owner = this.findMappedAncestor(node);
-          return owner ? this.scrollToNodeLevel(owner, opts) : false;
+          var o = this.findMappedAncestor(node);
+          return o ? this.scrollToNodeLevel(o, opts) : false;
         };
-        _proto.getMaxScrollableOffset = function getMaxScrollableOffset() {
-          var totalLevels = this.getTotalLevels();
-          if (totalLevels === 0) return 0;
-          var pad = Math.max(0, this.spawn.padAfterLevels);
-          var maxTopBase = Math.max(0, totalLevels - this.vis + pad);
-          return (maxTopBase + 1) * this.levelStep;
+        _proto.dataIndexToLevelSlot = function dataIndexToLevelSlot(dataIndex) {
+          var total = this.getTotalPieces();
+          if (dataIndex < 0 || dataIndex >= total) return null;
+          var per = this.per;
+          var headPad = this.getHeadPad(per, total);
+          var gidx = dataIndex + headPad;
+          return {
+            level: Math.floor(gidx / per),
+            slot: gidx % per
+          };
+        };
+        _proto.levelSlotToDataIndex = function levelSlotToDataIndex(level, slot) {
+          var total = this.getTotalPieces();
+          var per = this.per;
+          var headPad = this.getHeadPad(per, total);
+          var gidx = level * per + slot;
+          var di = gidx - headPad;
+          return di >= 0 && di < total ? di : -1;
+        };
+        _proto.getPieceByDataIndex = function getPieceByDataIndex(dataIndex) {
+          var pos = this.dataIndexToLevelSlot(dataIndex);
+          return pos ? this.getPieceFor(pos.level, pos.slot) : null;
+        };
+        _proto.findLevelSlotByUniqId = function findLevelSlotByUniqId(uniqId) {
+          if (!uniqId) return null;
+          var total = this.getTotalPieces();
+          for (var di = 0; di < total; di++) {
+            var p = this.cakesExpanded[di];
+            if (p != null && p.uniq_id && p.uniq_id.toLowerCase() === uniqId.toLowerCase()) {
+              var pos = this.dataIndexToLevelSlot(di);
+              if (!pos) continue;
+              return {
+                level: pos.level,
+                slot: pos.slot,
+                dataIndex: di,
+                piece: p
+              };
+            }
+          }
+          return null;
+        };
+        _proto.scrollToUniqId = function scrollToUniqId(uniqId, opts) {
+          var found = this.findLevelSlotByUniqId(uniqId);
+          if (!found) return false;
+          this.scrollToLevel(found.level, opts);
+          return true;
+        };
+        _proto.getPieceInfoByLevelSlot = function getPieceInfoByLevelSlot(level, slot) {
+          var di = this.levelSlotToDataIndex(level, slot);
+          if (di < 0) return null;
+          var piece = this.getPieceFor(level, slot);
+          return piece ? {
+            level: level,
+            slot: slot,
+            dataIndex: di,
+            piece: piece
+          } : null;
+        };
+        _proto.scrollToRandomPiece = function scrollToRandomPiece(opts) {
+          var _opts$seed;
+          var total = this.getTotalPieces();
+          if (!total) return null;
+          var rng = this.mulberry32(((_opts$seed = opts == null ? void 0 : opts.seed) != null ? _opts$seed : this.spawn.rngSeed) >>> 0);
+          var dataIndex = Math.floor(rng() * total);
+          var pos = this.dataIndexToLevelSlot(dataIndex);
+          if (!pos) return null;
+          this.scrollToLevel(pos.level, opts);
+          var piece = this.getPieceFor(pos.level, pos.slot);
+          return piece ? {
+            level: pos.level,
+            slot: pos.slot,
+            dataIndex: dataIndex,
+            piece: piece
+          } : null;
         }
 
         /* ===================== API-данные ===================== */;
@@ -5498,7 +5775,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                 case 15:
                   raw = _context2.sent;
                   items = Array.isArray(raw == null ? void 0 : raw.cakes) ? raw.cakes : [];
-                  this.cakesSource = items.map(function (it, i) {
+                  this.cakesSource = items.map(function (it) {
                     return _this2.normalizeCakePiece(it);
                   });
                   _context2.next = 24;
@@ -5518,22 +5795,45 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             return _initApiData.apply(this, arguments);
           }
           return initApiData;
-        }() /** Собрать расширенный массив до targetPieces, с детерминированным перемешиванием */;
+        }() /** Собрать массив на targetPieces: API + фейки (__fake=true) + стабильное перемешивание */;
         _proto.rebuildExpandedCakes = function rebuildExpandedCakes() {
           var want = Math.max(0, Math.floor(this.spawn.targetPieces));
           var src = this.cakesSource.filter(Boolean);
-          if (!want || !src.length) {
+          if (!want) {
             this.cakesExpanded = [];
             return;
           }
           var rng = this.mulberry32(this.spawn.rngSeed >>> 0);
-          var out = Array.from({
-            length: want
-          }, function () {
-            return src[Math.floor(rng() * src.length)];
-          });
-          this.fisherYatesShuffle(out, rng);
+          var out = [];
+
+          // 1) заполняем API (как есть, без перемешивания всего списка)
+          while (out.length < Math.min(want, src.length)) {
+            out.push(src[Math.floor(rng() * src.length)]);
+          }
+
+          // 2) добиваем фейками
+          for (var i = out.length; i < want; i++) out.push(this.makeFakePiece(i));
+
+          // 3) НИЧЕГО НЕ ПЕРЕМЕШИВАЕМ, чтобы порядок был: API → фейки
           this.cakesExpanded = out;
+        };
+        _proto.makeFakePiece = function makeFakePiece(i) {
+          var _this$makeFakeText = this.makeFakeText(i),
+            title = _this$makeFakeText.title,
+            name = _this$makeFakeText.name;
+          var fake = {
+            uniq_id: null,
+            hex_color: null,
+            name: name,
+            title: title,
+            greeting_text: null,
+            filling_id: null,
+            file: null,
+            created_at: null,
+            moderate_status: null
+          };
+          fake.__fake = true;
+          return fake;
         }
 
         /* ===================== доступ к данным ===================== */;
@@ -5541,13 +5841,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (!this.spawn.partialAtTop || per <= 0 || total <= 0) return 0;
           var rem = total % per;
           return rem === 0 ? 0 : per - rem;
-        };
-        _proto.getPieceFor = function getPieceFor(level, slot) {
-          var total = this.getTotalPieces();
-          if (!total) return null;
-          var headPad = this.getHeadPad(this.per, total);
-          var dataIndex = level * this.per + slot - headPad;
-          return dataIndex >= 0 && dataIndex < total ? this.cakesExpanded[dataIndex] : null;
         };
         _proto.getTotalPieces = function getTotalPieces() {
           return this.cakesExpanded.length | 0;
@@ -5557,14 +5850,18 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           var headPad = this.getHeadPad(this.per, total);
           return Math.ceil((headPad + total) / this.per);
         };
+        _proto.getPieceFor = function getPieceFor(level, slot) {
+          var total = this.getTotalPieces();
+          if (!total) return null;
+          var headPad = this.getHeadPad(this.per, total);
+          var dataIndex = level * this.per + slot - headPad;
+          return dataIndex >= 0 && dataIndex < total ? this.cakesExpanded[dataIndex] : null;
+        };
         _proto.globalIndexOf = function globalIndexOf(level, slot) {
           return level * this.per + slot;
         }
 
-        /* ===================== раскладка/отрисовка ===================== */
-        // === ЗАМЕНИ метод layoutByOffset целиком ===
-        ;
-
+        /* ===================== RING BUFFER РАСКЛАДКА ===================== */;
         _proto.layoutByOffset = function layoutByOffset(offset) {
           var _this3 = this;
           if (!this.spawn.prefab || !this.pool.length) return;
@@ -5586,7 +5883,48 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             if (this.spawn.counterLabel) this.spawn.counterLabel.string = String(this.passedPieces);
           }
 
-          // масштаб
+          // 1) если topBase изменился — перекидываем ровно один слой за шаг delta
+          if (this.prevTopBase < 0) {
+            // первичная привязка
+            for (var L = 0; L < this.vis; L++) {
+              var abs = topBase + L;
+              for (var j = 0; j < this.per; j++) {
+                var n = this.pool[L * this.per + j];
+                this.bindNodeFor(abs, j, n);
+              }
+            }
+            this.prevTopBase = topBase;
+          } else if (topBase !== this.prevTopBase) {
+            var delta = topBase - this.prevTopBase;
+            if (delta > 0) {
+              // вниз: верхнюю пачку вниз
+              for (var stepCount = 0; stepCount < delta; stepCount++) {
+                var _this$pool;
+                var taken = this.pool.splice(0, this.per);
+                (_this$pool = this.pool).push.apply(_this$pool, taken);
+                var newBottomAbs = this.prevTopBase + this.vis + stepCount;
+                for (var _j = 0; _j < this.per; _j++) {
+                  var _n = this.pool[(this.vis - 1) * this.per + _j];
+                  this.bindNodeFor(newBottomAbs, _j, _n);
+                }
+              }
+            } else {
+              // вверх: нижнюю пачку вверх
+              for (var _stepCount = 0; _stepCount < -delta; _stepCount++) {
+                var _this$pool2;
+                var _taken = this.pool.splice(this.pool.length - this.per, this.per);
+                (_this$pool2 = this.pool).unshift.apply(_this$pool2, _taken);
+                var newTopAbs = this.prevTopBase - 1 - _stepCount;
+                for (var _j2 = 0; _j2 < this.per; _j2++) {
+                  var _n2 = this.pool[_j2];
+                  this.bindNodeFor(newTopAbs, _j2, _n2);
+                }
+              }
+            }
+            this.prevTopBase = topBase;
+          }
+
+          // 2) позиции/масштабы для всех (контент НЕ меняем)
           var sGrad = this.spawn.scaleInWindow;
           var rSafe = Math.max(1e-6, this.spawn.r);
           var clampScale = function clampScale(x) {
@@ -5598,127 +5936,150 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           var desiredScaleAtRel = function desiredScaleAtRel(rel) {
             return clampScale(_this3.basePieceScale * Math.pow(rSafe, -rel * sGrad));
           };
-
-          // начальный вертикальный сдвиг
           var relTop = topBase - depth;
           var topScale = desiredScaleAtRel(relTop);
           var topVisualHeight = this.spawn.baseHeight * this.spawn.baseScale * topScale;
           var accY = -frac * (topVisualHeight + this.spawn.levelPaddingVisual);
-          var poolIdx = 0;
           var angleStep = this.spawn.angleStep;
-          for (var L = 0; L < this.vis; L++) {
-            var abs = topBase + L;
-            if (clampWhenData && abs >= totalLevels) {
-              // выключаем остаток пула и выходим
-              for (; poolIdx < this.pool.length; poolIdx++) {
-                var n = this.pool[poolIdx];
-                if (!n) continue;
-                if (n.active) n.active = false;
-                this.nodeLevelInfo["delete"](n);
-              }
-              break;
-            }
-            var rel = abs - depth;
+          for (var _L = 0; _L < this.vis; _L++) {
+            var _abs = topBase + _L;
+            var rel = _abs - depth;
             var pieceS = desiredScaleAtRel(rel);
             var yTop = this.spawn.anchorY - accY;
-            for (var j = 0; j < this.per; j++, poolIdx++) {
-              var _n = this.pool[poolIdx];
-              if (!_n) {
-                _n = instantiate(this.spawn.prefab);
-                _n.setParent(this.node);
-                this.pool[poolIdx] = _n;
-              }
-              var gidx = this.globalIndexOf(abs, j);
-              var piece = this.getPieceFor(abs, j);
-              if (!piece) {
-                if (_n.active) _n.active = false;
-                this.nodeLevelInfo["delete"](_n);
-                _n.__boundIndex = undefined;
-                continue;
-              }
-              var cache = this._getNodeCache(_n);
-              var prevIdx = _n.__boundIndex;
-              var needRebind = prevIdx !== gidx;
-
-              // активируем только если надо
-              if (!_n.active) _n.active = true;
-
-              // Поворот зависит от j и angleStep → меняем лишь при смене
-              if (cache.slot !== j || this._changed(cache.angleStep, angleStep)) {
-                _n.setRotationFromEuler(0, j * angleStep, 0);
-                cache.slot = j;
+            for (var _j3 = 0; _j3 < this.per; _j3++) {
+              var _n3 = this.pool[_L * this.per + _j3];
+              var cache = this._getNodeCache(_n3);
+              if (cache.slot !== _j3 || cache.angleStep !== angleStep) {
+                _n3.setRotationFromEuler(0, _j3 * angleStep, 0);
+                cache.slot = _j3;
                 cache.angleStep = angleStep;
               }
-
-              // Позиция
-              if (this._changed(cache.lastY, yTop)) {
-                _n.setPosition(0, yTop, 0);
+              if (cache.lastY === undefined || Math.abs(cache.lastY - yTop) > TowerLayoutController.EPS) {
+                _n3.setPosition(0, yTop, 0);
                 cache.lastY = yTop;
               }
-
-              // Масштаб
-              if (this._changed(cache.lastScale, pieceS)) {
-                _n.setScale(pieceS, pieceS, pieceS);
+              if (cache.lastScale === undefined || Math.abs(cache.lastScale - pieceS) > TowerLayoutController.EPS) {
+                _n3.setScale(pieceS, pieceS, pieceS);
                 cache.lastScale = pieceS;
               }
-
-              // Цвета/материалы + тексты — только при смене gidx
-              if (needRebind) {
-                this.applyLibrarySetForIndex(_n, gidx, piece);
-                this.applyPieceToNode(_n, piece);
-                _n.__boundIndex = gidx;
-              }
-
-              // level/slot — обновляем при изменении уровня
-              if (cache.level !== abs) {
-                this.nodeLevelInfo.set(_n, {
-                  level: abs,
-                  slot: j
+              if (!this.nodeLevelInfo.has(_n3) || this.nodeLevelInfo.get(_n3).level !== _abs || this.nodeLevelInfo.get(_n3).slot !== _j3) {
+                this.nodeLevelInfo.set(_n3, {
+                  level: _abs,
+                  slot: _j3
                 });
-                cache.level = abs;
+                cache.level = _abs;
               }
             }
             var visualHeight = this.spawn.baseHeight * this.spawn.baseScale * pieceS;
             accY += visualHeight + this.spawn.levelPaddingVisual;
           }
 
-          // остаток пула выключить
-          for (; poolIdx < this.pool.length; poolIdx++) {
-            var _n2 = this.pool[poolIdx];
-            if (!_n2) continue;
-            if (_n2.active) _n2.active = false;
-            this.nodeLevelInfo["delete"](_n2);
-          }
-        };
-        _proto.buildPool = function buildPool() {
-          if (!this.spawn.prefab) {
-            console.warn('TowerLayoutController: prefab не назначен');
-            return;
-          }
-          var need = this.vis * this.per;
-          if (this.pool.length >= need) return;
-          for (var i = this.pool.length; i < need; i++) {
-            var n = instantiate(this.spawn.prefab);
-            n.setParent(this.node);
-            n.active = true;
-            this.pool.push(n);
-          }
+          // партия текстов в «зоне активации»
+          this.flushTextQueue(topBase);
         }
 
-        /* ===================== цвет/текстуры ===================== */
-        // === ЗАМЕНИ метод applyLibrarySetForIndex целиком ===
-        ;
+        /** Привязать контент к узлу для указанного уровня/слота (только при входе уровня в окно) */;
+        _proto.bindNodeFor = function bindNodeFor(absLevel, slot, n, immediateText) {
+          if (immediateText === void 0) {
+            immediateText = false;
+          }
+          var piece = this.getPieceFor(absLevel, slot);
+          if (!piece) {
+            n.active = false;
+            this.nodeLevelInfo["delete"](n);
+            n.__boundIndex = undefined;
+            return;
+          }
+          if (!n.active) n.active = true;
+          var gidx = this.globalIndexOf(absLevel, slot);
+          var cache = this._getNodeCache(n);
+          this.applyLibrarySetForIndex(n, gidx, piece);
+          if (immediateText) {
+            // ← моментально, без очереди
+            this.applyPieceTextIfChanged(n, piece, gidx);
+          } else {
+            // ← как раньше: отложенно, партиями
+            cache.textEnqueued = true;
+            this.textUpdateQueue.push({
+              node: n,
+              piece: piece,
+              absLevel: absLevel
+            });
+          }
+          n.__boundIndex = gidx;
+          this.nodeLevelInfo.set(n, {
+            level: absLevel,
+            slot: slot
+          });
+          cache.level = absLevel;
+          cache.slot = slot;
+        }
 
+        /** Мгновенно проставляет текст всем видимым уровням (обходит очередь/скролл). */;
+        _proto.primeVisibleTextsNow = function primeVisibleTextsNow() {
+          var _this$scrollCtrl$offs3, _this$scrollCtrl7;
+          if (!this.pool.length) return;
+          var off = (_this$scrollCtrl$offs3 = (_this$scrollCtrl7 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl7.offset) != null ? _this$scrollCtrl$offs3 : 0;
+          var step = Math.max(1e-6, this.levelStep);
+          var depth = off / step;
+          var topBase = Math.max(0, Math.floor(depth));
+          for (var L = 0; L < this.vis; L++) {
+            var abs = topBase + L;
+            for (var j = 0; j < this.per; j++) {
+              var n = this.pool[L * this.per + j];
+              var piece = this.getPieceFor(abs, j);
+              if (!n || !piece) continue;
+              var gidx = this.globalIndexOf(abs, j);
+
+              // красим материалы как обычно
+              this.applyLibrarySetForIndex(n, gidx, piece);
+
+              // ГЛАВНОЕ: ставим текст сразу, минуя очередь
+              this.applyPieceTextIfChanged(n, piece, gidx);
+
+              // актуализируем метки уровня/слота (полезно для внешнего API)
+              this.nodeLevelInfo.set(n, {
+                level: abs,
+                slot: j
+              });
+              n.__boundIndex = gidx;
+              var cache = this._getNodeCache(n);
+              cache.level = abs;
+              cache.slot = j;
+            }
+          }
+
+          // зафиксируем ring-buffer на текущем основании
+          this.prevTopBase = topBase;
+
+          // и разложим позиции/масштабы для консистентности
+          this.layoutByOffset(off);
+        }
+
+        /* ===================== цвет/текстуры ===================== */;
+        _proto._getNodeCache = function _getNodeCache(n) {
+          var _cache;
+          return (_cache = n.__cache) != null ? _cache : n.__cache = {
+            bindings: null,
+            mrs: null,
+            lastBaseSet: -1,
+            lastSetCount: -1,
+            lastGidx: -1,
+            lastScale: undefined,
+            lastY: undefined,
+            slot: undefined,
+            angleStep: undefined,
+            level: undefined,
+            lastTitle: undefined,
+            lastName: undefined,
+            textEnqueued: false
+          };
+        };
         _proto.applyLibrarySetForIndex = function applyLibrarySetForIndex(root, gidx, piece) {
-          var _piece$hex_color, _cache$mrs;
+          var _cache$mrs;
           var lib = this.lib;
           if (!lib) return;
-          var count = typeof lib.getSetsCount === 'function' ? lib.getSetsCount() : this.spawn.colorSetsFallback;
-          var baseKey = this.spawn.randomizeColors ? (this.spawn.rngSeedColors ^ gidx) >>> 0 : this.hash32str(((_piece$hex_color = piece.hex_color) != null ? _piece$hex_color : 'NOHEX') + '#' + gidx);
-          var baseSetIndex = count > 0 ? baseKey % count : 0;
           var cache = this._getNodeCache(root);
-          // если базовый индекс и количество сетов не изменились, повторно не красим
-          if (cache.lastBaseSet === baseSetIndex && cache.lastSetCount === count) return;
           if (!cache.bindings) {
             cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
             cache.mrs = cache.bindings.map(function (b) {
@@ -5726,36 +6087,95 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             }).filter(Boolean);
           }
           var mrs = (_cache$mrs = cache.mrs) != null ? _cache$mrs : [];
-          var k = 0;
-          var denom = Math.max(1, count);
+          var isFake = !!(piece && piece.__fake === true);
           for (var _iterator2 = _createForOfIteratorHelperLoose(mrs), _step2; !(_step2 = _iterator2()).done;) {
             var mr = _step2.value;
-            var idx = (baseSetIndex + k++) % denom;
-            lib.applySetByIndex(mr, this.spawn.materialIndex, idx);
+            if (!isFake) {
+              // 1) ТЕКСТУРА: filling_id → индекс в палитре текстур
+              if (piece.filling_id != null && Number.isFinite(piece.filling_id)) {
+                // если хочешь только uTex1:
+                // lib.applyTextureByIndex(mr, piece.filling_id, lib.textureUniforms[0], this.spawn.materialIndex);
+
+                // если хочешь заполнить uTex1..uTex2 по порядку одним и тем же индексом (или разными, если будут):
+                lib.applyTexturesByIndices(mr, [piece.filling_id, piece.filling_id], this.spawn.materialIndex);
+              }
+
+              // 2) ЦВЕТ: hex_color → во все цветовые юниформы
+              if (piece.hex_color) {
+                lib.applyHexColorToAll(mr, piece.hex_color, this.spawn.materialIndex);
+              }
+            } else {
+              // ФЕЙКИ: как хочешь — например, старый рандом:
+              lib.applyRandomSet(mr, this.spawn.materialIndex);
+            }
           }
-          cache.lastBaseSet = baseSetIndex;
-          cache.lastSetCount = count;
-        };
-        _proto.hash32str = function hash32str(s) {
-          var h = 2166136261 >>> 0;
-          for (var i = 0; i < s.length; i++) {
-            h ^= s.charCodeAt(i);
-            h = Math.imul(h, 16777619);
-          }
-          return h >>> 0;
         }
 
-        /* ===================== биндинг текста ===================== */;
-        _proto.applyPieceToNode = function applyPieceToNode(root, piece) {
+        /* ===================== текст: очередь + фейки ===================== */;
+        _proto.flushTextQueue = function flushTextQueue(topBase) {
+          var margin = Math.max(0, this.textActivationMarginLevels);
+          var minL = Math.max(0, topBase - margin);
+          var maxL = topBase + this.vis - 1 + margin;
+          var i = 0,
+            updated = 0;
+          while (i < this.textUpdateQueue.length && updated < this.textsPerFrame) {
+            var _this$nodeLevelInfo$g7, _this$nodeLevelInfo$g8;
+            var item = this.textUpdateQueue[i];
+            if (!item.node || !item.node.isValid || !item.node.activeInHierarchy) {
+              this.textUpdateQueue.splice(i, 1);
+              continue;
+            }
+            if (item.absLevel < minL || item.absLevel > maxL) {
+              i++;
+              continue;
+            }
+            var slot = (_this$nodeLevelInfo$g7 = (_this$nodeLevelInfo$g8 = this.nodeLevelInfo.get(item.node)) == null ? void 0 : _this$nodeLevelInfo$g8.slot) != null ? _this$nodeLevelInfo$g7 : 0;
+            var gidx = this.globalIndexOf(item.absLevel, slot);
+            this.applyPieceTextIfChanged(item.node, item.piece, gidx);
+            this.textUpdateQueue.splice(i, 1);
+            updated++;
+          }
+          var HARD_LIMIT = this.vis * this.per * 4;
+          if (this.textUpdateQueue.length > HARD_LIMIT) this.textUpdateQueue.length = HARD_LIMIT;
+        };
+        _proto.applyPieceTextIfChanged = function applyPieceTextIfChanged(root, piece, gidx) {
+          var _piece$title, _piece$name;
+          var cache = this._getNodeCache(root);
           root.__piece = piece != null ? piece : null;
-          if (!piece) return;
-          for (var _iterator3 = _createForOfIteratorHelperLoose(root.getComponentsInChildren(ClickMoveBinding)), _step3; !(_step3 = _iterator3()).done;) {
-            var b = _step3.value;
+          var nextTitle = (_piece$title = piece == null ? void 0 : piece.title) != null ? _piece$title : '';
+          var nextName = (_piece$name = piece == null ? void 0 : piece.name) != null ? _piece$name : '';
+          var isFake = !!(piece && piece.__fake === true);
+          if (isFake) {
+            var f = this.makeFakeText(gidx);
+            nextTitle = f.title;
+            nextName = f.name;
+          }
+          if (cache.lastTitle === nextTitle && cache.lastName === nextName) {
+            cache.textEnqueued = false;
+            return;
+          }
+          if (!cache.bindings) cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
+          for (var _i = 0, _arr = cache.bindings; _i < _arr.length; _i++) {
+            var b = _arr[_i];
             b.updateFromApi({
-              title: piece.title,
-              name: piece.name
+              title: nextTitle,
+              name: nextName
             });
           }
+          cache.lastTitle = nextTitle;
+          cache.lastName = nextName;
+          cache.textEnqueued = false;
+        };
+        _proto.makeFakeText = function makeFakeText(gidx) {
+          var r = this.mulberry32((this.spawn.rngSeedColors ^ gidx * 2654435761) >>> 0);
+          var firsts = ['Алиса', 'Борис', 'Вика', 'Гриша', 'Даша', 'Егор', 'Жанна', 'Зоя', 'Илья', 'Катя', 'Лёва', 'Мила', 'Никита', 'Оля', 'Паша', 'Рита', 'Света', 'Таня', 'Федя', 'Юля', 'Яна'];
+          var titles = ['С Днём рождения!', 'Удачи!', 'Сладкой жизни!', 'Поздравляю!', 'Хорошего дня!', 'Супердень!', 'Лови радость!', 'Будь счастлив!'];
+          var title = titles[Math.floor(r() * titles.length)];
+          var name = firsts[Math.floor(r() * firsts.length)]; // ← только имя, без фамилии
+          return {
+            title: title,
+            name: name
+          };
         }
 
         /* ===================== нормализация/утилиты ===================== */;
@@ -5803,16 +6223,43 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _proto.isUuidLoose = function isUuidLoose(s) {
           return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
         };
-        _proto.isHexColor = function isHexColor(v) {
-          return /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v.trim());
+        _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
+          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _ref3, _raw$created_at, _ref4, _raw$moderate_status, _ref5, _ref6, _raw$file, _ref7, _raw$greeting_text, _raw$filling_id;
+          var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
+          if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
+          var hex_color = this.strOrNull((_raw$hex_color = raw == null ? void 0 : raw.hex_color) != null ? _raw$hex_color : raw == null ? void 0 : raw.color);
+          if (hex_color) {
+            var s = (hex_color.startsWith('#') ? hex_color.slice(1) : hex_color).trim().toLowerCase();
+            hex_color = s.length === 3 ? '#' + s.split('').map(function (ch) {
+              return ch + ch;
+            }).join('').toUpperCase() : s.length === 6 ? '#' + s.toUpperCase() : null;
+          }
+          var created_at = this.formatDateTimeToYYYYMMDD_HHMMSS((_ref3 = (_raw$created_at = raw == null ? void 0 : raw.created_at) != null ? _raw$created_at : raw == null ? void 0 : raw.createdAt) != null ? _ref3 : raw == null ? void 0 : raw.date);
+          var moderate_status = this.strOrNull((_ref4 = (_raw$moderate_status = raw == null ? void 0 : raw.moderate_status) != null ? _raw$moderate_status : raw == null ? void 0 : raw.status) != null ? _ref4 : raw == null ? void 0 : raw.moderateStatus);
+          var file = this.strOrNull((_ref5 = (_ref6 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref6 : raw == null ? void 0 : raw.fileUrl) != null ? _ref5 : raw == null ? void 0 : raw.file_base64);
+          return {
+            uniq_id: uniq_id,
+            hex_color: hex_color,
+            name: this.strOrNull(raw == null ? void 0 : raw.name),
+            title: this.strOrNull(raw == null ? void 0 : raw.title),
+            greeting_text: this.strOrNull((_ref7 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref7 : raw == null ? void 0 : raw.greeting),
+            filling_id: this.numOrNull((_raw$filling_id = raw == null ? void 0 : raw.filling_id) != null ? _raw$filling_id : raw == null ? void 0 : raw.fillingId),
+            file: file,
+            created_at: created_at,
+            moderate_status: moderate_status
+          };
         };
-        _proto.normalizeHex = function normalizeHex(v) {
-          var s = (v.startsWith('#') ? v.slice(1) : v).trim().toLowerCase();
-          if (s.length === 3) return '#' + s.split('').map(function (ch) {
-            return ch + ch;
-          }).join('').toUpperCase();
-          if (s.length === 6) return '#' + s.toUpperCase();
-          return s ? '#' + s.slice(0, 6).toUpperCase() : '#000000';
+        _proto.pad2 = function pad2(n) {
+          return n < 10 ? '0' + n : '' + n;
+        };
+        _proto.formatDate = function formatDate(d) {
+          var Y = d.getFullYear();
+          var M = this.pad2(d.getMonth() + 1);
+          var D = this.pad2(d.getDate());
+          var h = this.pad2(d.getHours());
+          var m = this.pad2(d.getMinutes());
+          var s = this.pad2(d.getSeconds());
+          return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
         };
         _proto.formatDateTimeToYYYYMMDD_HHMMSS = function formatDateTimeToYYYYMMDD_HHMMSS(v) {
           if (v == null) return null;
@@ -5838,124 +6285,54 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
           if (v instanceof Date && !isNaN(v.getTime())) return this.formatDate(v);
           return null;
-        };
-        _proto.pad2 = function pad2(n) {
-          return n < 10 ? '0' + n : '' + n;
-        };
-        _proto.formatDate = function formatDate(d) {
-          var Y = d.getFullYear();
-          var M = this.pad2(d.getMonth() + 1);
-          var D = this.pad2(d.getDate());
-          var h = this.pad2(d.getHours());
-          var m = this.pad2(d.getMinutes());
-          var s = this.pad2(d.getSeconds());
-          return Y + "-" + M + "-" + D + " " + h + ":" + m + ":" + s;
-        };
-        _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
-          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _ref3, _raw$created_at, _ref4, _raw$moderate_status, _ref5, _ref6, _raw$file, _ref7, _raw$greeting_text, _raw$filling_id;
-          var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
-          if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
-          var hex_color = this.strOrNull((_raw$hex_color = raw == null ? void 0 : raw.hex_color) != null ? _raw$hex_color : raw == null ? void 0 : raw.color);
-          hex_color = hex_color && this.isHexColor(hex_color) ? this.normalizeHex(hex_color) : null;
-          var created_at = this.formatDateTimeToYYYYMMDD_HHMMSS((_ref3 = (_raw$created_at = raw == null ? void 0 : raw.created_at) != null ? _raw$created_at : raw == null ? void 0 : raw.createdAt) != null ? _ref3 : raw == null ? void 0 : raw.date);
-          var moderate_status = this.strOrNull((_ref4 = (_raw$moderate_status = raw == null ? void 0 : raw.moderate_status) != null ? _raw$moderate_status : raw == null ? void 0 : raw.status) != null ? _ref4 : raw == null ? void 0 : raw.moderateStatus);
-          var file = this.strOrNull((_ref5 = (_ref6 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref6 : raw == null ? void 0 : raw.fileUrl) != null ? _ref5 : raw == null ? void 0 : raw.file_base64);
-          return {
-            uniq_id: uniq_id,
-            hex_color: hex_color,
-            name: this.strOrNull(raw == null ? void 0 : raw.name),
-            title: this.strOrNull(raw == null ? void 0 : raw.title),
-            greeting_text: this.strOrNull((_ref7 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref7 : raw == null ? void 0 : raw.greeting),
-            filling_id: this.numOrNull((_raw$filling_id = raw == null ? void 0 : raw.filling_id) != null ? _raw$filling_id : raw == null ? void 0 : raw.fillingId),
-            file: file,
-            created_at: created_at,
-            moderate_status: moderate_status
-          };
         }
 
-        /* ===== индексирование для внешнего кода ===== */;
-        _proto.getObjectsPerLevel = function getObjectsPerLevel() {
-          return this.per;
-        };
-        _proto.getPiecesCount = function getPiecesCount() {
-          return this.getTotalPieces();
-        };
-        _proto.dataIndexToLevelSlot = function dataIndexToLevelSlot(dataIndex) {
-          var total = this.getTotalPieces();
-          if (dataIndex < 0 || dataIndex >= total) return null;
-          var headPad = this.getHeadPad(this.per, total);
-          var gidx = dataIndex + headPad;
-          return {
-            level: Math.floor(gidx / this.per),
-            slot: gidx % this.per
-          };
-        };
-        _proto.levelSlotToDataIndex = function levelSlotToDataIndex(level, slot) {
-          var total = this.getTotalPieces();
-          var headPad = this.getHeadPad(this.per, total);
-          var gidx = level * this.per + slot;
-          var di = gidx - headPad;
-          return di >= 0 && di < total ? di : -1;
-        };
-        _proto.getPieceByDataIndex = function getPieceByDataIndex(dataIndex) {
-          var pos = this.dataIndexToLevelSlot(dataIndex);
-          return pos ? this.getPieceFor(pos.level, pos.slot) : null;
-        };
-        _proto.getRandomPiece = function getRandomPiece(seed) {
-          var total = this.getTotalPieces();
-          if (!total) return null;
-          var rng = this.mulberry32((seed != null ? seed : this.spawn.rngSeed) >>> 0);
-          var dataIndex = Math.floor(rng() * total);
-          var pos = this.dataIndexToLevelSlot(dataIndex);
-          if (!pos) return null;
-          var piece = this.getPieceFor(pos.level, pos.slot);
-          return piece ? {
-            level: pos.level,
-            slot: pos.slot,
-            dataIndex: dataIndex,
-            piece: piece
-          } : null;
-        };
-        _proto.findLevelSlotByUniqId = function findLevelSlotByUniqId(uniqId) {
-          if (!uniqId) return null;
-          var total = this.getTotalPieces();
-          for (var di = 0; di < total; di++) {
-            var p = this.cakesExpanded[di];
-            if (p != null && p.uniq_id && p.uniq_id.toLowerCase() === uniqId.toLowerCase()) {
-              var pos = this.dataIndexToLevelSlot(di);
-              if (!pos) continue;
-              return {
-                level: pos.level,
-                slot: pos.slot,
-                dataIndex: di,
-                piece: p
-              };
-            }
+        // Хэш для стабильного выбора набора материалов/цветов
+        ;
+
+        _proto.hash32str = function hash32str(s) {
+          var h = 2166136261 >>> 0; // FNV-1a 32-bit
+          for (var i = 0; i < s.length; i++) {
+            h ^= s.charCodeAt(i);
+            h = Math.imul(h, 16777619);
           }
-          return null;
+          return h >>> 0;
+        }
+
+        // Максимально прокручиваемая высота (в тех же ед., что offset)
+        ;
+
+        _proto.getMaxScrollableOffset = function getMaxScrollableOffset() {
+          var totalLevels = this.getTotalLevels();
+          if (totalLevels === 0) return 0;
+          var pad = Math.max(0, this.spawn.padAfterLevels);
+          var maxTopBase = Math.max(0, totalLevels - this.vis + pad);
+          return (maxTopBase + 1) * this.levelStep;
+        }
+
+        // Построение пула (ровно vis*per нод, порядок — сверху вниз)
+        ;
+
+        _proto.buildPool = function buildPool() {
+          var need = this.vis * this.per;
+          if (!this.spawn.prefab) {
+            console.warn('TowerLayoutController: prefab не назначен');
+            return;
+          }
+          if (this.pool.length === need) return;
+          this.pool.length = 0;
+          for (var i = 0; i < need; i++) {
+            var n = instantiate(this.spawn.prefab);
+            n.setParent(this.node);
+            n.active = true;
+            this.pool.push(n);
+          }
         };
-        _proto.scrollToUniqId = function scrollToUniqId(uniqId, opts) {
-          var found = this.findLevelSlotByUniqId(uniqId);
-          if (!found) return false;
-          this.scrollToLevel(found.level, opts);
-          return true;
-        };
-        _proto.getPieceInfoByLevelSlot = function getPieceInfoByLevelSlot(level, slot) {
-          var di = this.levelSlotToDataIndex(level, slot);
-          if (di < 0) return null;
-          var piece = this.getPieceFor(level, slot);
-          return piece ? {
-            level: level,
-            slot: slot,
-            dataIndex: di,
-            piece: piece
-          } : null;
-        };
-        _proto.scrollToRandomPiece = function scrollToRandomPiece(opts) {
-          var rnd = this.getRandomPiece(opts == null ? void 0 : opts.seed);
-          if (!rnd) return null;
-          this.scrollToLevel(rnd.level, opts);
-          return rnd;
+        _proto.forceRebindVisibleNow = function forceRebindVisibleNow() {
+          var _this$scrollCtrl$offs4, _this$scrollCtrl8;
+          var off = (_this$scrollCtrl$offs4 = (_this$scrollCtrl8 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl8.offset) != null ? _this$scrollCtrl$offs4 : 0;
+          this.prevTopBase = -1; // заставляем layout сделать полную первичную привязку
+          this.layoutByOffset(off); // и сразу же применяем
         }
 
         /* ===================== RNG ===================== */;
@@ -5977,7 +6354,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         };
         _createClass(TowerLayoutController, [{
           key: "lib",
-          get: function get() {
+          get: /* геттеры */
+          function get() {
             var _instance;
             return (_instance = ColorTextureLibrary == null ? void 0 : ColorTextureLibrary.instance) != null ? _instance : null;
           }
@@ -6017,6 +6395,27 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         writable: true,
         initializer: function initializer() {
           return null;
+        }
+      }), _descriptor27 = _applyDecoratedDescriptor(_class5.prototype, "textActivationMarginLevels", [_dec26], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1;
+        }
+      }), _descriptor28 = _applyDecoratedDescriptor(_class5.prototype, "textsPerFrame", [_dec27], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 6;
+        }
+      }), _descriptor29 = _applyDecoratedDescriptor(_class5.prototype, "debugLogTop4", [_dec28], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return false;
         }
       })), _class5)) || _class4));
       cclegacy._RF.pop();
