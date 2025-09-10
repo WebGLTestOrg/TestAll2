@@ -1552,6 +1552,193 @@ System.register("chunks:///_virtual/CakeApiExample.ts", ['./rollupPluginModLoBab
   };
 });
 
+System.register("chunks:///_virtual/CameraTuner.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Camera, Node, EditBox, Component;
+  return {
+    setters: [function (module) {
+      _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
+      _inheritsLoose = module.inheritsLoose;
+      _initializerDefineProperty = module.initializerDefineProperty;
+      _assertThisInitialized = module.assertThisInitialized;
+    }, function (module) {
+      cclegacy = module.cclegacy;
+      _decorator = module._decorator;
+      Camera = module.Camera;
+      Node = module.Node;
+      EditBox = module.EditBox;
+      Component = module.Component;
+    }],
+    execute: function () {
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9;
+      cclegacy._RF.push({}, "c3cf46KIGlMI5X2BRz/vNd6", "CameraTuner", undefined);
+      var ccclass = _decorator.ccclass,
+        property = _decorator.property;
+      var CameraTuner = exports('CameraTuner', (_dec = ccclass('CameraTuner'), _dec2 = property({
+        type: Camera,
+        tooltip: '������, ������� �����������'
+      }), _dec3 = property({
+        type: Node,
+        tooltip: '�������� ������ (���� �� ������ � ������ parent � camera.node)'
+      }), _dec4 = property({
+        tooltip: 'Z-������� �������� ������ (���������)'
+      }), _dec5 = property({
+        tooltip: '������� ������ �� X (� ��������)'
+      }), _dec6 = property({
+        tooltip: '���� ������ ������ FOV (� ��������, 1�170)'
+      }), _dec7 = property({
+        tooltip: '��������� ��������� ��� ������ �����'
+      }), _dec8 = property({
+        type: EditBox,
+        tooltip: 'EditBox ��� ����� Z ��������'
+      }), _dec9 = property({
+        type: EditBox,
+        tooltip: 'EditBox ��� ����� X-�������� (deg)'
+      }), _dec10 = property({
+        type: EditBox,
+        tooltip: 'EditBox ��� ����� FOV (deg)'
+      }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
+        _inheritsLoose(CameraTuner, _Component);
+        function CameraTuner() {
+          var _this;
+          for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+          _this = _Component.call.apply(_Component, [this].concat(args)) || this;
+          // --- ������ ---
+          _initializerDefineProperty(_this, "camera", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "cameraParent", _descriptor2, _assertThisInitialized(_this));
+          // --- �������� �� ��������� (��� ����������) ---
+          _initializerDefineProperty(_this, "parentZ", _descriptor3, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "rotationXDeg", _descriptor4, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fovDeg", _descriptor5, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "applyOnStart", _descriptor6, _assertThisInitialized(_this));
+          // --- �������� UI (�������������) ---
+          _initializerDefineProperty(_this, "uiParentZ", _descriptor7, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "uiRotX", _descriptor8, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "uiFov", _descriptor9, _assertThisInitialized(_this));
+          return _this;
+        }
+        var _proto = CameraTuner.prototype;
+        // ������ � UI ������������ � ������ onApplyFromUI()
+        _proto.onLoad = function onLoad() {
+          // ���� cameraParent �� �����, ���������� parent ���� ������
+          if (!this.cameraParent && this.camera) {
+            this.cameraParent = this.camera.node.parent || null;
+          }
+        };
+        _proto.start = function start() {
+          if (this.applyOnStart) {
+            this.applyValues(this.parentZ, this.rotationXDeg, this.fovDeg);
+          }
+        }
+
+        /** ��������� �������� (�������� �����) */;
+        _proto.applyValues = function applyValues(parentZ, rotXDeg, fovDeg) {
+          if (!this.camera) {
+            console.warn('[CameraTuner] Camera �� ���������');
+            return;
+          }
+          var parent = this.cameraParent;
+          if (!parent) {
+            console.warn('[CameraTuner] �������� ������ �� ������');
+          } else {
+            var p = parent.getPosition();
+            parent.setPosition(p.x, p.y, parentZ);
+          }
+
+          // ������� �� X
+          var e = this.camera.node.eulerAngles.clone();
+          e.x = rotXDeg;
+          this.camera.node.eulerAngles = e;
+
+          // FOV (������ ��� ������������� ������)
+          // ��������� � �������� ��������
+          var clampedFov = Math.min(170, Math.max(1, fovDeg));
+          this.camera.fov = clampedFov;
+
+          // �������� ��� �������� ��� ������� (����� ��������� ��������� ��������)
+          this.parentZ = parentZ;
+          this.rotationXDeg = rotXDeg;
+          this.fovDeg = clampedFov;
+        }
+
+        /** ���������� ������ UI: ������� �� EditBox'�� � ��������� */;
+        _proto.onApplyFromUI = function onApplyFromUI() {
+          var _this$uiParentZ, _this$uiRotX, _this$uiFov;
+          var z = this.parseNumber((_this$uiParentZ = this.uiParentZ) == null ? void 0 : _this$uiParentZ.string, this.parentZ);
+          var rx = this.parseNumber((_this$uiRotX = this.uiRotX) == null ? void 0 : _this$uiRotX.string, this.rotationXDeg);
+          var fov = this.parseNumber((_this$uiFov = this.uiFov) == null ? void 0 : _this$uiFov.string, this.fovDeg);
+          this.applyValues(z, rx, fov);
+        };
+        _proto.parseNumber = function parseNumber(s, fallback) {
+          if (s == null) return fallback;
+          var v = Number(s.replace(',', '.'));
+          return Number.isFinite(v) ? v : fallback;
+        };
+        return CameraTuner;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "camera", [_dec2], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "cameraParent", [_dec3], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "parentZ", [_dec4], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0;
+        }
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "rotationXDeg", [_dec5], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0;
+        }
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "fovDeg", [_dec6], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 60;
+        }
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "applyOnStart", [_dec7], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "uiParentZ", [_dec8], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "uiRotX", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "uiFov", [_dec10], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: null
+      })), _class2)) || _class));
+      cclegacy._RF.pop();
+    }
+  };
+});
+
 System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ArcTextMesh.ts'], function (exports) {
   var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, cclegacy, _decorator, Node, MeshRenderer, Component, ArcTextMSDFTwoLinesSubmesh;
   return {
@@ -3162,9 +3349,9 @@ System.register("chunks:///_virtual/InteractionState.ts", ['cc'], function (expo
   };
 });
 
-System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PlatformCameraSwitcher.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './DebugPanelToggle.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
+System.register("chunks:///_virtual/main", ['./ArcTextMesh.ts', './AddCake.ts', './AutoScaleCameraPosition.ts', './CakeApiExample.ts', './CameraTuner.ts', './ClickMoveBinding.ts', './ColorLibrary.ts', './GlobalClickManager.ts', './InteractionState.ts', './PlatformCameraSwitcher.ts', './PointerIds.ts', './RotateYByKeys.ts', './StartApp.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './DebugPanelToggle.ts', './PieceSpawner.ts', './TowerQueriesTester.ts', './cake.types.ts'], function () {
   return {
-    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    setters: [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     execute: function () {}
   };
 });
