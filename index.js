@@ -17,7 +17,6 @@ System.register(["./application.js"], function (_export, _context) {
       canvas.height = bcr.height;
 
       // ==== Новый код для фокуса canvas ====
-      canvas.tabIndex = 0;    // делаем фокусируемым
       canvas.focus();         // сразу фокусируем
 
       
