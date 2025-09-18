@@ -15,6 +15,12 @@ System.register(["./application.js"], function (_export, _context) {
       bcr = $p.getBoundingClientRect();
       canvas.width = bcr.width;
       canvas.height = bcr.height;
+
+      // ==== Новый код для фокуса canvas ====
+      canvas.tabIndex = 0;    // делаем фокусируемым
+      canvas.focus();         // сразу фокусируем
+
+      
       application = new Application();
       topLevelImport('cc').then(function (engine) {
         return application.init(engine);

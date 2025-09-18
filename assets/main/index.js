@@ -6245,25 +6245,19 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           }
         }
 
-        /** Собираем полезную нагрузку по уровню/слоту, включая полную piece */;
+        /** Собираем полезную нагрузку по уровню/слоту, включая слим-представление piece */;
         _proto.buildPiecePayload = function buildPiecePayload(level, slot) {
           var lc = this.layoutCtrl;
           try {
-            var _piece$uniq_id, _piece$hex_color, _piece$name, _piece$title, _piece$greeting_text, _piece$filling_id, _piece$file, _piece$created_at, _piece$moderate_statu;
+            var _piece$uniq_id, _piece$hex_color, _piece$name, _piece$filling_id, _piece$file;
             var di = lc.levelSlotToDataIndex(level, slot);
             var piece = di >= 0 ? lc.getPieceByDataIndex(di) : null;
-
-            // НОВОЕ: возвращаем только нужные публичные поля, если piece существует
             var slim = piece ? {
               uniq_id: (_piece$uniq_id = piece.uniq_id) != null ? _piece$uniq_id : null,
               hex_color: (_piece$hex_color = piece.hex_color) != null ? _piece$hex_color : null,
               name: (_piece$name = piece.name) != null ? _piece$name : null,
-              title: (_piece$title = piece.title) != null ? _piece$title : null,
-              greeting_text: (_piece$greeting_text = piece.greeting_text) != null ? _piece$greeting_text : null,
               filling_id: (_piece$filling_id = piece.filling_id) != null ? _piece$filling_id : null,
-              file: (_piece$file = piece.file) != null ? _piece$file : null,
-              created_at: (_piece$created_at = piece.created_at) != null ? _piece$created_at : null,
-              moderate_status: (_piece$moderate_statu = piece.moderate_status) != null ? _piece$moderate_statu : null
+              file: (_piece$file = piece.file) != null ? _piece$file : null
             } : null;
             return {
               level: level,
@@ -6296,59 +6290,71 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         _proto.isBusy = function isBusy() {
           var cm = this.clickMgr;
           return !cm || cm.fsm !== 'Idle';
-        };
-        _proto.openRandom = /*#__PURE__*/function () {
-          var _openRandom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-            var lc, cm, seed, rnd;
+        }
+
+        /** Если открыт кусочек — закрываем, чтобы можно было открыть новый */;
+        _proto.ensureReadyForOpen = /*#__PURE__*/
+        function () {
+          var _ensureReadyForOpen = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+            var cm, level, slot, payload;
             return _regeneratorRuntime().wrap(function _callee2$(_context2) {
               while (1) switch (_context2.prev = _context2.next) {
                 case 0:
-                  lc = this.layoutCtrl;
                   cm = this.clickMgr;
-                  if (!(!lc || !cm || !cm.scrollCtrl || !cm.rotatingRoot || !cm.sceneCamera)) {
-                    _context2.next = 4;
+                  if (cm) {
+                    _context2.next = 3;
                     break;
                   }
                   return _context2.abrupt("return", false);
-                case 4:
-                  if (!(cm.fsm !== 'Idle')) {
-                    _context2.next = 6;
+                case 3:
+                  if (!(cm.fsm === 'LockedOut')) {
+                    _context2.next = 20;
                     break;
                   }
-                  return _context2.abrupt("return", false);
-                case 6:
-                  seed = Math.random() * 0xFFFFFFFF >>> 0;
-                  rnd = lc.scrollToRandomPiece({
-                    duration: cm.heightCenterDuration,
-                    easing: 'quadOut',
-                    clamp: true,
-                    seed: seed
-                  });
-                  if (rnd) {
-                    _context2.next = 10;
-                    break;
-                  }
-                  return _context2.abrupt("return", false);
+                  level = cm == null ? void 0 : cm.clickedLevel;
+                  slot = cm == null ? void 0 : cm.clickedSlot;
+                  payload = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) : null;
+                  _context2.prev = 7;
+                  _context2.next = 10;
+                  return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
                 case 10:
-                  _context2.next = 12;
-                  return this.openAt(rnd.level, rnd.slot);
-                case 12:
-                  return _context2.abrupt("return", _context2.sent);
+                  this.safePostToParent({
+                    type: 'CLOSED',
+                    payload: payload != null ? payload : {
+                      level: level,
+                      slot: slot
+                    },
+                    meta: {
+                      reason: 'switch'
+                    }
+                  });
+                  _context2.next = 17;
+                  break;
                 case 13:
+                  _context2.prev = 13;
+                  _context2.t0 = _context2["catch"](7);
+                  console.warn('[OpenPieceBridge] не удалось закрыть перед открытием:', _context2.t0);
+                  return _context2.abrupt("return", false);
+                case 17:
+                  _context2.prev = 17;
+                  cm.fsm = 'Idle';
+                  return _context2.finish(17);
+                case 20:
+                  return _context2.abrupt("return", cm.fsm === 'Idle');
+                case 21:
                 case "end":
                   return _context2.stop();
               }
-            }, _callee2, this);
+            }, _callee2, this, [[7, 13, 17, 20]]);
           }));
-          function openRandom() {
-            return _openRandom.apply(this, arguments);
+          function ensureReadyForOpen() {
+            return _ensureReadyForOpen.apply(this, arguments);
           }
-          return openRandom;
-        }() /** НОВОЕ: открытие по uniq_id */;
-        _proto.openByUniqId = /*#__PURE__*/
-        function () {
-          var _openByUniqId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(uniqId) {
-            var lc, cm, q, hit;
+          return ensureReadyForOpen;
+        }();
+        _proto.openRandom = /*#__PURE__*/function () {
+          var _openRandom = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+            var lc, cm, seed, rnd;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
               while (1) switch (_context3.prev = _context3.next) {
                 case 0:
@@ -6360,41 +6366,96 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context3.abrupt("return", false);
                 case 4:
-                  if (!(cm.fsm !== 'Idle')) {
-                    _context3.next = 6;
+                  _context3.next = 6;
+                  return this.ensureReadyForOpen();
+                case 6:
+                  if (_context3.sent) {
+                    _context3.next = 8;
                     break;
                   }
                   return _context3.abrupt("return", false);
+                case 8:
+                  seed = Math.random() * 0xFFFFFFFF >>> 0;
+                  rnd = lc.scrollToRandomPiece({
+                    duration: cm.heightCenterDuration,
+                    easing: 'quadOut',
+                    clamp: true,
+                    seed: seed
+                  });
+                  if (rnd) {
+                    _context3.next = 12;
+                    break;
+                  }
+                  return _context3.abrupt("return", false);
+                case 12:
+                  _context3.next = 14;
+                  return this.openAt(rnd.level, rnd.slot);
+                case 14:
+                  return _context3.abrupt("return", _context3.sent);
+                case 15:
+                case "end":
+                  return _context3.stop();
+              }
+            }, _callee3, this);
+          }));
+          function openRandom() {
+            return _openRandom.apply(this, arguments);
+          }
+          return openRandom;
+        }() /** Открытие по uniq_id с автозакрытием, если уже что-то открыто */;
+        _proto.openByUniqId = /*#__PURE__*/
+        function () {
+          var _openByUniqId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(uniqId) {
+            var lc, cm, q, hit;
+            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+              while (1) switch (_context4.prev = _context4.next) {
+                case 0:
+                  lc = this.layoutCtrl;
+                  cm = this.clickMgr;
+                  if (!(!lc || !cm || !cm.scrollCtrl || !cm.rotatingRoot || !cm.sceneCamera)) {
+                    _context4.next = 4;
+                    break;
+                  }
+                  return _context4.abrupt("return", false);
+                case 4:
+                  _context4.next = 6;
+                  return this.ensureReadyForOpen();
                 case 6:
+                  if (_context4.sent) {
+                    _context4.next = 8;
+                    break;
+                  }
+                  return _context4.abrupt("return", false);
+                case 8:
                   q = (uniqId != null ? uniqId : '').trim();
                   if (q) {
-                    _context3.next = 9;
+                    _context4.next = 11;
                     break;
                   }
-                  return _context3.abrupt("return", false);
-                case 9:
+                  return _context4.abrupt("return", false);
+                case 11:
                   hit = lc.findLevelSlotByUniqId(q);
                   if (hit) {
-                    _context3.next = 13;
+                    _context4.next = 15;
                     break;
                   }
                   console.warn('[OpenPieceBridge] uniq_id не найден:', q);
-                  return _context3.abrupt("return", false);
-                case 13:
+                  return _context4.abrupt("return", false);
+                case 15:
                   lc.scrollToLevel(hit.level, {
                     duration: cm.heightCenterDuration,
                     easing: 'quadOut',
                     clamp: true
                   });
-                  _context3.next = 16;
+                  _context4.next = 18;
                   return this.openAt(hit.level, hit.slot);
-                case 16:
-                  return _context3.abrupt("return", _context3.sent);
-                case 17:
+                case 18:
+                  return _context4.abrupt("return", _context4.sent);
+                case 19:
                 case "end":
-                  return _context3.stop();
+                  return _context4.stop();
               }
-            }, _callee3, this);
+            }, _callee4, this);
           }));
           function openByUniqId(_x2) {
             return _openByUniqId.apply(this, arguments);
@@ -6403,17 +6464,17 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         }() /** УСТАРЕВШЕЕ: алиас для обратной совместимости */;
         _proto.openByUserId = /*#__PURE__*/
         function () {
-          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(userId) {
-            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
-              while (1) switch (_context4.prev = _context4.next) {
+          var _openByUserId = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(userId) {
+            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
+              while (1) switch (_context5.prev = _context5.next) {
                 case 0:
                   console.warn('[OpenPieceBridge] openByUserId устарел — используйте openByUniqId.');
-                  return _context4.abrupt("return", this.openByUniqId(userId));
+                  return _context5.abrupt("return", this.openByUniqId(userId));
                 case 2:
                 case "end":
-                  return _context4.stop();
+                  return _context5.stop();
               }
-            }, _callee4, this);
+            }, _callee5, this);
           }));
           function openByUserId(_x3) {
             return _openByUserId.apply(this, arguments);
@@ -6421,14 +6482,14 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           return openByUserId;
         }();
         _proto.openAt = /*#__PURE__*/function () {
-          var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(level, slot) {
+          var _openAt = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6(level, slot) {
             var lc, cm, info, bias, step, targetHeight, owner, binding;
-            return _regeneratorRuntime().wrap(function _callee5$(_context5) {
-              while (1) switch (_context5.prev = _context5.next) {
+            return _regeneratorRuntime().wrap(function _callee6$(_context6) {
+              while (1) switch (_context6.prev = _context6.next) {
                 case 0:
                   lc = this.layoutCtrl;
                   cm = this.clickMgr;
-                  _context5.prev = 2;
+                  _context6.prev = 2;
                   cm.lockControls == null || cm.lockControls();
                   cm.clickedLevel = level;
                   cm.clickedSlot = slot;
@@ -6445,32 +6506,32 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   bias = level <= 1 ? cm.levelBiasTop : cm.levelBiasRest;
                   step = lc.getLevelStep();
                   targetHeight = (level + bias) * step;
-                  _context5.next = 14;
+                  _context6.next = 14;
                   return cm.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, cm.heightCenterDuration, cm.heightNudgeDuration, 'quadOut', true);
                 case 14:
-                  _context5.next = 16;
+                  _context6.next = 16;
                   return cm.rotateRootToBringSlotToCamera == null ? void 0 : cm.rotateRootToBringSlotToCamera(slot);
                 case 16:
                   // биндинг узла
                   owner = lc.findNodeByLevelSlot(level, slot);
                   if (owner) {
-                    _context5.next = 21;
+                    _context6.next = 21;
                     break;
                   }
                   cm.unlockControls == null || cm.unlockControls();
                   cm.fsm = 'Idle';
-                  return _context5.abrupt("return", false);
+                  return _context6.abrupt("return", false);
                 case 21:
                   binding = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding);
                   cm.currentPiece = owner;
                   cm.currentBinding = binding;
 
                   // выезд/бортик/поворот
-                  _context5.next = 26;
+                  _context6.next = 26;
                   return cm.slideOutWithScaleComp == null ? void 0 : cm.slideOutWithScaleComp();
                 case 26:
                   cm.setRimActive == null || cm.setRimActive(true);
-                  _context5.next = 29;
+                  _context6.next = 29;
                   return cm.rotateModelOpen == null ? void 0 : cm.rotateModelOpen();
                 case 29:
                   // открыт
@@ -6479,11 +6540,11 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     payload: info
                   });
                   cm.fsm = 'LockedOut';
-                  return _context5.abrupt("return", true);
+                  return _context6.abrupt("return", true);
                 case 34:
-                  _context5.prev = 34;
-                  _context5.t0 = _context5["catch"](2);
-                  console.warn('[OpenPieceBridge] ошибка открытия:', _context5.t0);
+                  _context6.prev = 34;
+                  _context6.t0 = _context6["catch"](2);
+                  console.warn('[OpenPieceBridge] ошибка открытия:', _context6.t0);
                   try {
                     cm.unlockControls == null || cm.unlockControls();
                   } catch (_unused4) {}
@@ -6493,15 +6554,15 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     payload: {
                       level: level,
                       slot: slot,
-                      error: String(_context5.t0 || 'unknown')
+                      error: String(_context6.t0 || 'unknown')
                     }
                   });
-                  return _context5.abrupt("return", false);
+                  return _context6.abrupt("return", false);
                 case 41:
                 case "end":
-                  return _context5.stop();
+                  return _context6.stop();
               }
-            }, _callee5, this, [[2, 34]]);
+            }, _callee6, this, [[2, 34]]);
           }));
           function openAt(_x4, _x5) {
             return _openAt.apply(this, arguments);
@@ -6509,30 +6570,29 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           return openAt;
         }();
         _proto.closeOpened = /*#__PURE__*/function () {
-          var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee6() {
+          var _closeOpened = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee7() {
             var cm, level, slot, info;
-            return _regeneratorRuntime().wrap(function _callee6$(_context6) {
-              while (1) switch (_context6.prev = _context6.next) {
+            return _regeneratorRuntime().wrap(function _callee7$(_context7) {
+              while (1) switch (_context7.prev = _context7.next) {
                 case 0:
-                  this.layoutCtrl;
                   cm = this.clickMgr;
                   if (cm) {
-                    _context6.next = 4;
+                    _context7.next = 3;
                     break;
                   }
-                  return _context6.abrupt("return", false);
-                case 4:
+                  return _context7.abrupt("return", false);
+                case 3:
                   // берём, что именно было открыто (работает и для вручную открытого)
                   level = cm == null ? void 0 : cm.clickedLevel;
                   slot = cm == null ? void 0 : cm.clickedSlot;
                   info = typeof level === 'number' && typeof slot === 'number' ? this.buildPiecePayload(level, slot) : null;
                   if (!(cm.fsm === 'LockedOut')) {
-                    _context6.next = 12;
+                    _context7.next = 11;
                     break;
                   }
-                  _context6.next = 10;
+                  _context7.next = 9;
                   return cm.closeAndInsert == null ? void 0 : cm.closeAndInsert();
-                case 10:
+                case 9:
                   this.safePostToParent({
                     type: 'CLOSED',
                     payload: info != null ? info : {
@@ -6540,14 +6600,14 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                       slot: slot
                     }
                   });
-                  return _context6.abrupt("return", true);
+                  return _context7.abrupt("return", true);
+                case 11:
+                  return _context7.abrupt("return", false);
                 case 12:
-                  return _context6.abrupt("return", false);
-                case 13:
                 case "end":
-                  return _context6.stop();
+                  return _context7.stop();
               }
-            }, _callee6, this);
+            }, _callee7, this);
           }));
           function closeOpened() {
             return _closeOpened.apply(this, arguments);
@@ -6602,57 +6662,61 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
       MOUSE_ID$1 = module.MOUSE_ID;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _dec19, _dec20, _class4, _class5, _descriptor18;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _dec21, _dec22, _class4, _class5, _descriptor20;
       cclegacy._RF.push({}, "10ce5Y/EABEKJf4+gRbbg26", "TowerScrollController", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
 
-      // fallback, ���� ��� PointerIds
+      // fallback, если нет PointerIds
       var MOUSE_ID = MOUSE_ID$1;
 
-      /** ������ ������� */
+      /** Конфиг скролла */
       var TVS_Scroll = exports('TVS_Scroll', (_dec = ccclass('TVS_Scroll'), _dec2 = property({
-        tooltip: '��������� offset (��.) ��� ��'
+        tooltip: 'Стартовый offset (ед.) для ПК'
       }), _dec3 = property({
-        tooltip: '��������� offset (��.) ��� ������'
+        tooltip: 'Стартовый offset (ед.) для мобилы'
       }), _dec4 = property({
-        tooltip: '���. offset ��� ��'
+        tooltip: 'Мин. offset для ПК'
       }), _dec5 = property({
-        tooltip: '���. offset ��� ������'
+        tooltip: 'Мин. offset для мобилы'
       }), _dec6 = property({
-        tooltip: '����. offset'
+        tooltip: 'Макс. offset'
       }), _dec7 = property({
-        tooltip: '��. offset �� ������� �����'
+        tooltip: 'Ед. offset на пиксель драга'
       }), _dec8 = property({
-        tooltip: '��. offset �� ��� ������� (120 �����)'
+        tooltip: 'Ед. offset на шаг колёсика (120 тиков)'
       }), _dec9 = property({
-        tooltip: '����� ��������, ����� �������� ������� drag � ����������� ����'
+        tooltip: 'Порог пикселей, после которого считаем drag и захватываем жест'
       }), _dec10 = property({
-        tooltip: '�������� ����������� �����'
+        tooltip: 'Включить инерционный доезд'
       }), _dec11 = property({
-        tooltip: '����. ������ (1/���): ������ � ������� ���������������'
+        tooltip: 'Коэф. трения (1/сек): больше — быстрее останавливается'
       }), _dec12 = property({
-        tooltip: '����� ��������� (��./���)'
+        tooltip: 'Порог остановки (ед./сек)'
       }), _dec13 = property({
-        tooltip: '���� ������ �� ������ (� ��������)'
+        tooltip: 'Сила «пинка» от колеса (в скорость)'
       }), _dec14 = property({
-        tooltip: '������������ �������� �������/������ (��./���)'
+        tooltip: 'Максимальная скорость инерции/клавиш (ед./сек)'
       }), _dec15 = property({
-        tooltip: 'Deadzone ��� ������ (��. offset)'
+        tooltip: 'Deadzone для колеса (ед. offset)'
       }), _dec16 = property({
-        tooltip: '����� deadzone, ���� ������� ������ (��)'
+        tooltip: 'Сброс deadzone, если колёсико молчит (мс)'
       }), _dec17 = property({
-        tooltip: '��������� ��� ��������� W/S (��./���^2)'
+        tooltip: 'Ускорение при удержании W/S (ед./сек^2)'
       }), _dec18 = property({
-        tooltip: '����. �������� �� W/S'
+        tooltip: 'Макс. скорость от W/S'
+      }), _dec19 = property({
+        tooltip: 'Порог offset, ниже/равно которому считаем, что на самом верху (ENTERED)'
+      }), _dec20 = property({
+        tooltip: 'Порог offset, выше которого выходим из состояния самого верха (EXITED). Должен быть >= topEnterOffset'
       }), _dec(_class = (_class2 = /*#__PURE__*/function () {
         function TVS_Scroll() {
-          // === ��/������ �������� ===
+          // === ПК/Мобила варианты ===
           _initializerDefineProperty(this, "startOffsetPC", _descriptor, this);
           _initializerDefineProperty(this, "startOffsetMobile", _descriptor2, this);
           _initializerDefineProperty(this, "minOffsetPC", _descriptor3, this);
           _initializerDefineProperty(this, "minOffsetMobile", _descriptor4, this);
-          // === ��������� ��������� ��� ��������� ===
+          // === Остальные настройки без изменений ===
           _initializerDefineProperty(this, "maxOffset", _descriptor5, this);
           _initializerDefineProperty(this, "unitsPerPixel", _descriptor6, this);
           _initializerDefineProperty(this, "unitsPerWheelTick", _descriptor7, this);
@@ -6666,11 +6730,14 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           _initializerDefineProperty(this, "wheelDeadzoneResetMs", _descriptor15, this);
           _initializerDefineProperty(this, "keyAccel", _descriptor16, this);
           _initializerDefineProperty(this, "keyMaxSpeed", _descriptor17, this);
+          _initializerDefineProperty(this, "topEnterOffset", _descriptor18, this);
+          _initializerDefineProperty(this, "topExitOffset", _descriptor19, this);
         }
         _createClass(TVS_Scroll, [{
           key: "startOffset",
           get:
-          // === ������� ��� ����������� ������� ��� ������ ===
+          // например «чуть-чуть проскролили» на 6 ед.
+          // === Геттеры для прозрачного доступа как раньше ===
           function get() {
             return sys.isMobile ? this.startOffsetMobile : this.startOffsetPC;
           }
@@ -6800,18 +6867,43 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
         initializer: function initializer() {
           return 200;
         }
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "topEnterOffset", [_dec19], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.0;
+        }
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "topExitOffset", [_dec20], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 6.0;
+        }
       })), _class2)) || _class));
 
       /**
-       * TowerScrollController � �������� ������ �� ����/�������/�������� � �������� offset.
-       * ������ �������:
+       * TowerScrollController — отвечает только за ввод/инерцию/анимации и значение offset.
+       * Эмитит события:
        *  - 'offset-changed': (offset:number)=>void
        *  - 'scroll-start'
        *  - 'scroll-end'
        */
-      var TowerScrollController = exports('TowerScrollController', (_dec19 = ccclass('TowerScrollController'), _dec20 = property({
+      // рядом с импортами
+      function safePostToParent(msg, targetOrigin) {
+        if (targetOrigin === void 0) {
+          targetOrigin = '*';
+        }
+        console.log(msg);
+        try {
+          var _window$parent;
+          (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
+        } catch (_unused) {}
+      }
+      var TowerScrollController = exports('TowerScrollController', (_dec21 = ccclass('TowerScrollController'), _dec22 = property({
         type: TVS_Scroll
-      }), _dec19(_class4 = (_class5 = /*#__PURE__*/function (_Component) {
+      }), _dec21(_class4 = (_class5 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerScrollController, _Component);
         function TowerScrollController() {
           var _this;
@@ -6819,15 +6911,17 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             args[_key] = arguments[_key];
           }
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-          _initializerDefineProperty(_this, "scroll", _descriptor18, _assertThisInitialized(_this));
-          /** ���� ������� */
+          _initializerDefineProperty(_this, "scroll", _descriptor20, _assertThisInitialized(_this));
+          /** Шина событий */
           _this.events = new EventTarget();
-          // === ��������� ===
+          /** Состояние «у самого верха скролла» с гистерезисом. */
+          _this.atTopEntered = null;
+          // === состояние ===
           _this._offset = 0;
           _this.velocity = 0;
-          // ��./���
+          // ед./сек
           _this.inertiaActive = false;
-          // ���������� ���������� ������� �����
+          // глобальная блокировка внешним кодом
           _this._inputEnabled = true;
           // mouse
           _this.mouseHeld = false;
@@ -6843,13 +6937,13 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           _this.touchDragging = false;
           _this.touchActive = false;
           _this.touchClaimed = false;
-          // ������� ����� �����
+          // инерция после драга
           _this.moveSamples = [];
           _this.maxSamples = 6;
-          // ������
+          // колесо
           _this.wheelAccumUnits = 0;
           _this.wheelDeadzoneLastTs = 0;
-          // ����������
+          // клавиатура
           _this.keyHeldW = false;
           _this.keyHeldS = false;
           // tween
@@ -6887,9 +6981,12 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
         };
         _proto.start = function start() {
           this.setOffset(this.clamp(this.scroll.startOffset, this.scroll.minOffset, this.scroll.maxOffset), true);
+
+          // первичная инициализация состояния верха
+          this.updateTopEdgeEntered(this._offset, true);
         };
         _proto.update = function update(dt) {
-          // ���� ������ ������������� � ������ ����� �������
+          // если внешне заблокированы — просто гасим инерцию
           if (!this._inputEnabled) {
             this.inertiaActive = false;
             this.velocity = 0;
@@ -6901,7 +6998,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             return;
           }
 
-          // �������
+          // клавиши
           var inputAccel = 0;
           if (this.keyHeldW) inputAccel -= this.scroll.keyAccel;
           if (this.keyHeldS) inputAccel += this.scroll.keyAccel;
@@ -6910,7 +7007,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             var vmax = Math.min(this.scroll.keyMaxSpeed, this.scroll.maxInertiaSpeed);
             this.velocity = this.clamp(this.velocity, -vmax, vmax);
             this.inertiaActive = true;
-            // ����� ������� � ����� ������� ������� �������
+            // старт инерции — можно считать началом скролла
             this.events.emit('scroll-start');
           }
           if (!this.inertiaActive && Math.abs(this.velocity) < this.scroll.stopVelocity) return;
@@ -6920,7 +7017,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           if (next <= this.scroll.minOffset && this.velocity < 0) this.velocity = 0;
           if (next >= this.scroll.maxOffset && this.velocity > 0) this.velocity = 0;
 
-          // ������
+          // трение
           var decay = Math.exp(-this.scroll.friction * dt);
           this.velocity *= decay;
           if (inputAccel === 0 && Math.abs(this.velocity) < this.scroll.stopVelocity) {
@@ -6933,8 +7030,8 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           if (next !== prev) this.setOffset(next, true);
         }
 
-        // ===== ��������� ������ =====
-        /** ���������� ��������� offset (� �������). */;
+        // ===== публичные методы =====
+        /** Немедленно выставить offset (с клэмпом). */;
         _proto.setOffset = function setOffset(height, emit) {
           if (emit === void 0) {
             emit = true;
@@ -6942,17 +7039,55 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           var clamped = this.clamp(height, this.scroll.minOffset, this.scroll.maxOffset);
           if (clamped === this._offset) return;
           this._offset = clamped;
+          this.updateTopEdgeEntered(this._offset);
           if (emit) this.events.emit('offset-changed', this._offset);
         }
 
-        /** �������������/�������������� ���������������� ����. ��� ����� � ����� ������� � ������������� �����. */;
+        /** Гистерезисная логика «у самого верха скролла». */;
+        _proto.updateTopEdgeEntered = function updateTopEdgeEntered(offset, forceEmitOnInit) {
+          if (forceEmitOnInit === void 0) {
+            forceEmitOnInit = false;
+          }
+          var enterTh = Math.min(this.scroll.topEnterOffset, this.scroll.topExitOffset);
+          var exitTh = Math.max(this.scroll.topEnterOffset, this.scroll.topExitOffset);
+          var next;
+          if (this.atTopEntered === null) {
+            // первое вычисление — просто по enterTh
+            next = offset <= enterTh;
+          } else if (this.atTopEntered) {
+            // сейчас в состоянии ENTERED → выходим только если ушли выше exitTh
+            next = offset <= exitTh;
+          } else {
+            // сейчас в состоянии EXITED → заходим только если ≤ enterTh
+            next = offset <= enterTh;
+          }
+          if (this.atTopEntered === null) {
+            this.atTopEntered = next;
+            if (forceEmitOnInit) {
+              safePostToParent({
+                type: 'TOP_EDGE_STATE',
+                state: next ? 'ENTERED' : 'EXITED'
+              });
+            }
+            return;
+          }
+          if (next !== this.atTopEntered) {
+            this.atTopEntered = next;
+            safePostToParent({
+              type: 'TOP_EDGE_STATE',
+              state: next ? 'ENTERED' : 'EXITED'
+            });
+          }
+        }
+
+        /** Заблокировать/разблокировать пользовательский ввод. При блоке — гасит инерцию и останавливает твины. */;
         _proto.setInputEnabled = function setInputEnabled(enabled) {
           if (this._inputEnabled === enabled) return;
           this._inputEnabled = enabled;
           if (!enabled) this.stopAll();
         }
 
-        /** ��������� ����������: �������, �����, �����. */;
+        /** Полностью остановить: инерция, твины, жесты. */;
         _proto.stopAll = function stopAll() {
           this.inertiaActive = false;
           this.velocity = 0;
@@ -6965,7 +7100,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             this._pendingResolve();
             this._pendingResolve = null;
           }
-          // ����� ������
+          // сброс жестов
           this.mouseHeld = false;
           this.mouseDragging = false;
           this.mouseActive = false;
@@ -6977,7 +7112,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           InteractionState.hardReset == null || InteractionState.hardReset();
         }
 
-        /** ������ � ���������� ������ (� ��� �� ��������, ��� offset). */;
+        /** Скролл к абсолютной высоте (в тех же единицах, что offset). */;
         _proto.scrollToHeight = function scrollToHeight(height, opts) {
           var _this2 = this;
           if (opts === void 0) {
@@ -7026,14 +7161,14 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           }).start();
         }
 
-        /** Promise-������ scrollToHeight. */;
+        /** Promise-версия scrollToHeight. */;
         _proto.scrollToHeightAsync = function scrollToHeightAsync(height, opts) {
           var _this3 = this;
           if (opts === void 0) {
             opts = {};
           }
           return new Promise(function (resolve) {
-            // ���� ��� ���� ������ ������ � ��������� ���, ����� �� �������
+            // если уже есть ждущий промис — закрываем его, чтобы не повисал
             if (_this3._pendingResolve) {
               _this3._pendingResolve();
               _this3._pendingResolve = null;
@@ -7087,7 +7222,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           });
         }
 
-        /** ��� �����: �������� ������ + �������� ����� ��� ������� ���������. */;
+        /** Два этапа: основной скролл + короткий «нюдж» для точного попадания. */;
         _proto.scrollToHeightWithNudgeAsync = /*#__PURE__*/
         function () {
           var _scrollToHeightWithNudgeAsync = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(height, mainDuration, nudgeDuration, easing, clamp) {
@@ -7398,7 +7533,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           }
         }
 
-        // �������
+        // клавиши
         ;
 
         _proto.onKeyDown = function onKeyDown(e) {
@@ -7414,7 +7549,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
         _createClass(TowerScrollController, [{
           key: "offset",
           get:
-          // ��.
+          // ед.
           function get() {
             return this._offset;
           }
@@ -7426,13 +7561,13 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
         }, {
           key: "isBusy",
           get:
-          // ������� ����
+          // удобный флаг
           function get() {
             return !!this.scrollTween || this.inertiaActive || Math.abs(this.velocity) > this.scroll.stopVelocity;
           }
         }]);
         return TowerScrollController;
-      }(Component), _descriptor18 = _applyDecoratedDescriptor(_class5.prototype, "scroll", [_dec20], {
+      }(Component), _descriptor20 = _applyDecoratedDescriptor(_class5.prototype, "scroll", [_dec22], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -7473,7 +7608,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _class6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _class6;
       cclegacy._RF.push({}, "368ffNUv4lFSZtXbbDm9TB3", "TVS_SpawnLayout", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -7783,17 +7918,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         }
       })), _class2)) || _class));
 
-      /* безопасный postMessage в родителя (в браузере/встраивании) */
-      function safePostToParent(msg, targetOrigin) {
-        if (targetOrigin === void 0) {
-          targetOrigin = '*';
-        }
-        try {
-          var _window$parent;
-          (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
-        } catch (_unused) {}
-      }
-
       /* ===================== Контроллер башни (ring buffer) ===================== */
       var TowerLayoutController = exports('TowerLayoutController', (_dec29 = ccclass('TowerLayoutController'), _dec30 = property({
         type: TVS_SpawnLayout
@@ -7804,8 +7928,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
       }), _dec33 = property({
         tooltip: 'Сколько текстов обновлять за кадр'
-      }), _dec34 = property({
-        tooltip: 'Логировать в консоль вход/выход окна в первые 4 уровня'
       }), _dec29(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerLayoutController, _Component);
         function TowerLayoutController() {
@@ -7829,7 +7951,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _initializerDefineProperty(_this, "textsPerFrame", _descriptor34, _assertThisInitialized(_this));
           /* ring buffer состояние */
           _this.prevTopBase = -1;
-          _this.top4VisibleNow = null;
           /* ===================== scroll events ===================== */
           _this.onOffsetChanged = function (offset) {
             var _this$scrollCtrl;
@@ -7840,7 +7961,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             });
             _this.layoutByOffset(clamped);
           };
-          _initializerDefineProperty(_this, "debugLogTop4", _descriptor35, _assertThisInitialized(_this));
           return _this;
         }
         var _proto = TowerLayoutController.prototype;
@@ -7923,19 +8043,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           var _this$scrollCtrl5;
           (_this$scrollCtrl5 = this.scrollCtrl) == null || _this$scrollCtrl5.events.off('offset-changed', this.onOffsetChanged, this);
         };
-        _proto.updateTop4Visibility = function updateTop4Visibility(topBase) {
-          var now = topBase <= 3; // окно пересекает уровни [0..3]
-          if (this.top4VisibleNow === null || now !== this.top4VisibleNow) {
-            this.top4VisibleNow = now;
-            if (this.debugLogTop4) console.log("[TOP4] " + (now ? 'ENTERED' : 'EXITED') + " (topBase=" + topBase + ")");
-            safePostToParent({
-              type: 'TOP4_VISIBILITY',
-              action: now ? 'ENTERED' : 'EXITED'
-            });
-          }
-        }
-
-        /* ===================== ПУБЛИЧНЫЙ API ===================== */;
+        /* ===================== ПУБЛИЧНЫЙ API ===================== */
         _proto.getLevelStep = function getLevelStep() {
           return Math.max(1e-6, this.levelStep);
         };
@@ -8195,7 +8303,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           var depth = clampWhenData ? Math.min(depthRaw, maxTopBase) : depthRaw;
           var topBase = Math.max(0, Math.floor(depth));
           var frac = depth - topBase;
-          this.updateTop4Visibility(topBase);
 
           // глобальный счётчик
           var newPassed = topBase * this.per;
@@ -8522,7 +8629,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
         };
         _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
-          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _raw$filling_id, _ref3, _ref4, _raw$file;
+          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _raw$filling_id, _ref3, _ref4, _raw$file, _ref5, _raw$greeting_text;
           // uniq_id (UUID-строка)
           var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
           if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
@@ -8553,12 +8660,16 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
           // file (url/base64/путь)
           var file = this.strOrNull((_ref3 = (_ref4 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref4 : raw == null ? void 0 : raw.fileUrl) != null ? _ref3 : raw == null ? void 0 : raw.file_base64);
+
+          // greeting_text
+          var greeting_text = this.strOrNull((_ref5 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref5 : raw == null ? void 0 : raw.greeting);
           return {
             uniq_id: uniq_id,
             hex_color: hex_color,
             name: name,
             filling_id: filling_id,
-            file: file
+            file: file,
+            greeting_text: greeting_text
           };
         }
 
@@ -8612,9 +8723,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _proto.fisherYatesShuffle = function fisherYatesShuffle(arr, rng) {
           for (var i = arr.length - 1; i > 0; i--) {
             var j = Math.floor(rng() * (i + 1));
-            var _ref5 = [arr[j], arr[i]];
-            arr[i] = _ref5[0];
-            arr[j] = _ref5[1];
+            var _ref6 = [arr[j], arr[i]];
+            arr[i] = _ref6[0];
+            arr[j] = _ref6[1];
           }
         };
         _createClass(TowerLayoutController, [{
@@ -8674,13 +8785,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         writable: true,
         initializer: function initializer() {
           return 6;
-        }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class5.prototype, "debugLogTop4", [_dec34], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return false;
         }
       })), _class5)) || _class4));
       cclegacy._RF.pop();
