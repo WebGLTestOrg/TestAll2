@@ -3228,7 +3228,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       ColorTextureLibrary = module.ColorTextureLibrary;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _descriptor42, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _descriptor42, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52;
       cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -3315,294 +3315,301 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         },
         displayOrder: 2
       }), _dec11 = property({
-        tooltip: 'Длительность анимации скейла bloor',
+        tooltip: 'Длительность анимации показа bloor',
         group: {
           name: 'BLOOR / OVERLAY',
           id: 'bloor'
         },
         displayOrder: 3
       }), _dec12 = property({
-        tooltip: 'Easing анимации скейла bloor',
+        tooltip: 'Длительность анимации скрытия bloor',
         group: {
           name: 'BLOOR / OVERLAY',
           id: 'bloor'
         },
         displayOrder: 4
       }), _dec13 = property({
-        type: Node,
-        tooltip: 'Объект, который включаем после скейла bloor',
+        tooltip: 'Easing анимации скейла bloor',
         group: {
           name: 'BLOOR / OVERLAY',
           id: 'bloor'
         },
         displayOrder: 5
       }), _dec14 = property({
+        type: Node,
+        tooltip: 'Объект, который включаем после скейла bloor',
+        group: {
+          name: 'BLOOR / OVERLAY',
+          id: 'bloor'
+        },
+        displayOrder: 6
+      }), _dec15 = property({
         tooltip: 'Длительность смещения к центру по высоте',
         group: {
           name: 'TIMINGS',
           id: 'timings'
         },
         displayOrder: 1
-      }), _dec15 = property({
+      }), _dec16 = property({
         tooltip: 'Длительность маленького подталкивания',
         group: {
           name: 'TIMINGS',
           id: 'timings'
         },
         displayOrder: 2
-      }), _dec16 = property({
+      }), _dec17 = property({
         tooltip: 'Длительность поворота корня по слоту',
         group: {
           name: 'TIMINGS',
           id: 'timings'
         },
         displayOrder: 3
-      }), _dec17 = property({
+      }), _dec18 = property({
         tooltip: 'Смещение центра по высоте для уровней 0..1 (ПК)',
         group: {
           name: 'BIAS: DESKTOP',
           id: 'bias_pc'
         },
         displayOrder: 1
-      }), _dec18 = property({
+      }), _dec19 = property({
         tooltip: 'Смещение центра по высоте для уровней ≥2 (ПК)',
         group: {
           name: 'BIAS: DESKTOP',
           id: 'bias_pc'
         },
         displayOrder: 2
-      }), _dec19 = property({
+      }), _dec20 = property({
         tooltip: 'Смещение центра по высоте для уровней 0..1 (Мобилка)',
         group: {
           name: 'BIAS: MOBILE',
           id: 'bias_mob'
         },
         displayOrder: 1
-      }), _dec20 = property({
+      }), _dec21 = property({
         tooltip: 'Смещение центра по высоте для уровней ≥2 (Мобилка)',
         group: {
           name: 'BIAS: MOBILE',
           id: 'bias_mob'
         },
         displayOrder: 2
-      }), _dec21 = property({
+      }), _dec22 = property({
         tooltip: 'Мировое расстояние выезда (ед.) ПК',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 1
-      }), _dec22 = property({
+      }), _dec23 = property({
         tooltip: 'Мировое расстояние выезда (ед.) Мобилка',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 2
-      }), _dec23 = property({
+      }), _dec24 = property({
         tooltip: 'Easing для выезда/заезда',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 3
-      }), _dec24 = property({
+      }), _dec25 = property({
         tooltip: 'Длительность выезда/заезда',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 4
-      }), _dec25 = property({
+      }), _dec26 = property({
         tooltip: 'Локальный угол «лицом» (0=+Z, 90=+X)',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 1
-      }), _dec26 = property({
+      }), _dec27 = property({
         tooltip: '+180° инверт оси модели',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 2
-      }), _dec27 = property({
+      }), _dec28 = property({
         tooltip: 'Фазовый сдвиг слота',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 3
-      }), _dec28 = property({
+      }), _dec29 = property({
         tooltip: 'Длительность возврата модели к базе',
         group: {
           name: 'MODEL CLOSE',
           id: 'mclose'
         },
         displayOrder: 1
-      }), _dec29 = property({
+      }), _dec30 = property({
         tooltip: 'Easing возврата модели',
         group: {
           name: 'MODEL CLOSE',
           id: 'mclose'
         },
         displayOrder: 2
-      }), _dec30 = property({
+      }), _dec31 = property({
         tooltip: 'Origin родителя для postMessage; пусто = *',
         group: {
           name: 'INTEGRATION',
           id: 'events'
         },
         displayOrder: 1
-      }), _dec31 = property({
+      }), _dec32 = property({
         tooltip: 'Грузить картинку при клике на кусок',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 1
-      }), _dec32 = property({
+      }), _dec33 = property({
         tooltip: 'Индекс материала для MainTexture',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 2
-      }), _dec33 = property({
+      }), _dec34 = property({
         tooltip: 'Имя юниформа текстуры в шейдере',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 3
-      }), _dec34 = property({
+      }), _dec35 = property({
         tooltip: 'Подсказка расширения, если URL без него',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 4
-      }), _dec35 = property({
+      }), _dec36 = property({
         tooltip: 'Очищать MainTexture при закрытии',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 5
-      }), _dec36 = property({
+      }), _dec37 = property({
         tooltip: 'Длительность полного оборота (360°)',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 1
-      }), _dec37 = property({
+      }), _dec38 = property({
         tooltip: 'Доп. доворот после 360° (deg)',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 2
-      }), _dec38 = property({
+      }), _dec39 = property({
         tooltip: 'Длительность доп. доворота',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 3
-      }), _dec39 = property({
+      }), _dec40 = property({
         tooltip: 'Easing для 360°+extra',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 4
-      }), _dec40 = property({
+      }), _dec41 = property({
         tooltip: 'Включать idle-анимацию после открытия',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 1
-      }), _dec41 = property({
+      }), _dec42 = property({
         tooltip: 'Амплитуда idle по X (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 2
-      }), _dec42 = property({
+      }), _dec43 = property({
         tooltip: 'Амплитуда idle по Y (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 3
-      }), _dec43 = property({
+      }), _dec44 = property({
         tooltip: 'Амплитуда idle по Z (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 4
-      }), _dec44 = property({
+      }), _dec45 = property({
         tooltip: 'Длительность одного полного idle-цикла (сек)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 5
-      }), _dec45 = property({
+      }), _dec46 = property({
         tooltip: 'Включить доп.пинг-понг по Y (поверх синуса)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 6
-      }), _dec46 = property({
+      }), _dec47 = property({
         tooltip: 'Минимальный относительный угол по Y (deg) для пинг-понга',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 7
-      }), _dec47 = property({
+      }), _dec48 = property({
         tooltip: 'Максимальный относительный угол по Y (deg) для пинг-понга',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 8
-      }), _dec48 = property({
+      }), _dec49 = property({
         tooltip: 'Фазовый сдвиг синуса по Y (рад)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 9
-      }), _dec49 = property({
+      }), _dec50 = property({
         tooltip: 'Длительность плавного входа в idle (сек)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 10
-      }), _dec50 = property({
+      }), _dec51 = property({
         tooltip: 'Кривизна easing при входе (0..1)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 11
-      }), _dec51 = property({
+      }), _dec52 = property({
         tooltip: 'Скорость именно пинг-понга по Y (множитель)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 12
-      }), _dec52 = property({
+      }), _dec53 = property({
         tooltip: 'Idle: стартовать к дальнему углу (а не к ближайшему)',
         group: {
           name: 'IDLE',
@@ -3629,57 +3636,58 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           _initializerDefineProperty(_this, "bloorScaleDesktop", _descriptor8, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "bloorScaleMobile", _descriptor9, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "bloorScaleDuration", _descriptor10, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "bloorScaleEasing", _descriptor11, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "afterBloorObject", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bloorHideDuration", _descriptor11, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bloorScaleEasing", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "afterBloorObject", _descriptor13, _assertThisInitialized(_this));
           // ===================== [CENTERING / ROTATE TIMINGS] =====================
-          _initializerDefineProperty(_this, "heightCenterDuration", _descriptor13, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "heightNudgeDuration", _descriptor14, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "rotateDuration", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "heightCenterDuration", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "heightNudgeDuration", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "rotateDuration", _descriptor16, _assertThisInitialized(_this));
           // ===================== [BIAS: DESKTOP] =====================
-          _initializerDefineProperty(_this, "levelBiasTop", _descriptor16, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "levelBiasRest", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasTop", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasRest", _descriptor18, _assertThisInitialized(_this));
           // ===================== [BIAS: MOBILE] =====================
-          _initializerDefineProperty(_this, "levelBiasTopMobile", _descriptor18, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "levelBiasRestMobile", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasTopMobile", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "levelBiasRestMobile", _descriptor20, _assertThisInitialized(_this));
           // ===================== [SLIDE OUT/IN] =====================
-          _initializerDefineProperty(_this, "openWorldDistance", _descriptor20, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "openWorldDistanceMobile", _descriptor21, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideEasing", _descriptor22, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideDuration", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldDistance", _descriptor21, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldDistanceMobile", _descriptor22, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideEasing", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideDuration", _descriptor24, _assertThisInitialized(_this));
           // ===================== [ROOT FACING / SLOT ALIGN] =====================
-          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor24, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor25, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor25, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor27, _assertThisInitialized(_this));
           // ===================== [MODEL CLOSE BACK TO BASE] =====================
-          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor27, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor28, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor28, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor29, _assertThisInitialized(_this));
           // ===================== [EVENTS / INTEGRATION] =====================
-          _initializerDefineProperty(_this, "parentOrigin", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "parentOrigin", _descriptor30, _assertThisInitialized(_this));
           // ===================== [IMAGE LOADER] =====================
-          _initializerDefineProperty(_this, "loadImageOnClick", _descriptor30, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageMatIndex", _descriptor31, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageUniform", _descriptor32, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageFallbackExt", _descriptor33, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "clearImageOnClose", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "loadImageOnClick", _descriptor31, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageMatIndex", _descriptor32, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageUniform", _descriptor33, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageFallbackExt", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "clearImageOnClose", _descriptor35, _assertThisInitialized(_this));
           // ===================== [OPEN SPIN (360° + EXTRA)] =====================
-          _initializerDefineProperty(_this, "modelSpin360Duration", _descriptor35, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelExtraYawDeg", _descriptor36, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelExtraYawDuration", _descriptor37, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelSpinEasing", _descriptor38, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelSpin360Duration", _descriptor36, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelExtraYawDeg", _descriptor37, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelExtraYawDuration", _descriptor38, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelSpinEasing", _descriptor39, _assertThisInitialized(_this));
           // ===================== [IDLE ANIMATION] =====================
-          _initializerDefineProperty(_this, "enableIdleAnimation", _descriptor39, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpX", _descriptor40, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpY", _descriptor41, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpZ", _descriptor42, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleCycleSeconds", _descriptor43, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeEnabled", _descriptor44, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeMinDeg", _descriptor45, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeMaxDeg", _descriptor46, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idlePhaseY", _descriptor47, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleBlendInSeconds", _descriptor48, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleBlendCurve", _descriptor49, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeSpeed", _descriptor50, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleStartFar", _descriptor51, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "enableIdleAnimation", _descriptor40, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpX", _descriptor41, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpY", _descriptor42, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpZ", _descriptor43, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleCycleSeconds", _descriptor44, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeEnabled", _descriptor45, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeMinDeg", _descriptor46, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeMaxDeg", _descriptor47, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idlePhaseY", _descriptor48, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleBlendInSeconds", _descriptor49, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleBlendCurve", _descriptor50, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeSpeed", _descriptor51, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleStartFar", _descriptor52, _assertThisInitialized(_this));
           // ======= STATE =======
           _this.fsm = State.Idle;
           _this.clickedLevel = 0;
@@ -3861,7 +3869,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.showBloor = /*#__PURE__*/function () {
           var _showBloor = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
             var _this2 = this;
-            var n, target, drv;
+            var n, targetLocal, drv;
             return _regeneratorRuntime().wrap(function _callee2$(_context2) {
               while (1) switch (_context2.prev = _context2.next) {
                 case 0:
@@ -3876,9 +3884,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                     this.bloorTween.stop();
                     this.bloorTween = null;
                   }
-                  target = this.getBloorTargetScale();
+                  targetLocal = this.getBloorTargetScale();
                   n.active = true;
-                  n.setScale(new Vec3(0, 0, 0));
+                  n.setScale(0, 0, 0);
                   drv = {
                     t: 0
                   };
@@ -3889,7 +3897,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                     }, {
                       easing: _this2.bloorScaleEasing,
                       onUpdate: function onUpdate() {
-                        var s = drv.t * target;
+                        var s = drv.t * targetLocal;
                         n.setScale(s, s, s);
                       }
                     }).call(function () {
@@ -3912,7 +3920,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.hideBloor = /*#__PURE__*/function () {
           var _hideBloor = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
             var _this3 = this;
-            var n, start, drv;
+            var n, startLocal, drv;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
               while (1) switch (_context3.prev = _context3.next) {
                 case 0:
@@ -3927,24 +3935,26 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                     this.bloorTween.stop();
                     this.bloorTween = null;
                   }
-                  start = n.worldScale.x;
+                  startLocal = n.scale.x; // локальный scale — без worldScale
                   drv = {
-                    t: 1
+                    t: 0
                   };
                   _context3.next = 8;
                   return new Promise(function (resolve) {
-                    _this3.bloorTween = tween(drv).to(_this3.bloorScaleDuration, {
-                      t: 0
+                    var _this3$bloorHideDurat;
+                    _this3.bloorTween = tween(drv).to((_this3$bloorHideDurat = _this3.bloorHideDuration) != null ? _this3$bloorHideDurat : _this3.bloorScaleDuration, {
+                      t: 1
                     }, {
+                      // fallback на show-длительность
                       easing: _this3.bloorScaleEasing,
                       onUpdate: function onUpdate() {
-                        var s = drv.t * start;
+                        var s = (1 - drv.t) * startLocal;
                         n.setScale(s, s, s);
                       }
                     }).call(function () {
                       _this3.bloorTween = null;
                       n.active = false;
-                      n.setScale(new Vec3(0, 0, 0));
+                      n.setScale(0, 0, 0);
                       resolve();
                     }).start();
                   });
@@ -4676,287 +4686,294 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         initializer: function initializer() {
           return 0.2;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "bloorScaleEasing", [_dec12], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "bloorHideDuration", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.15;
+        }
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "bloorScaleEasing", [_dec13], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "afterBloorObject", [_dec13], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "afterBloorObject", [_dec14], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "heightCenterDuration", [_dec14], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "heightCenterDuration", [_dec15], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.35;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "heightNudgeDuration", [_dec15], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "heightNudgeDuration", [_dec16], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.10;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "rotateDuration", [_dec16], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "rotateDuration", [_dec17], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.35;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTop", [_dec17], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTop", [_dec18], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -3;
         }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRest", [_dec18], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRest", [_dec19], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -4;
         }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTopMobile", [_dec19], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasTopMobile", [_dec20], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -3;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRestMobile", [_dec20], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "levelBiasRestMobile", [_dec21], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -4;
         }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistance", [_dec21], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistance", [_dec22], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistanceMobile", [_dec22], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "openWorldDistanceMobile", [_dec23], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [_dec23], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [_dec24], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [_dec24], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [_dec25], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [_dec25], {
+      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [_dec26], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [_dec26], {
+      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [_dec27], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [_dec27], {
+      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [_dec28], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [_dec28], {
+      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [_dec29], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [_dec29], {
+      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [_dec30], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec30], {
+      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec31], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return '';
         }
-      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "loadImageOnClick", [_dec31], {
+      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "loadImageOnClick", [_dec32], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "imageMatIndex", [_dec32], {
+      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "imageMatIndex", [_dec33], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1;
         }
-      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "imageUniform", [_dec33], {
+      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "imageUniform", [_dec34], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'MainTexture';
         }
-      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "imageFallbackExt", [_dec34], {
+      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "imageFallbackExt", [_dec35], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return '.jpg';
         }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "clearImageOnClose", [_dec35], {
+      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "clearImageOnClose", [_dec36], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "modelSpin360Duration", [_dec36], {
+      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "modelSpin360Duration", [_dec37], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDeg", [_dec37], {
+      }), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDeg", [_dec38], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 30;
         }
-      }), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDuration", [_dec38], {
+      }), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDuration", [_dec39], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.25;
         }
-      }), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "modelSpinEasing", [_dec39], {
+      }), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "modelSpinEasing", [_dec40], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 'quadOut';
         }
-      }), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "enableIdleAnimation", [_dec40], {
+      }), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "enableIdleAnimation", [_dec41], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpX", [_dec41], {
+      }), _descriptor41 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpX", [_dec42], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 5;
         }
-      }), _descriptor41 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpY", [_dec42], {
+      }), _descriptor42 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpY", [_dec43], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 10;
         }
-      }), _descriptor42 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpZ", [_dec43], {
+      }), _descriptor43 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpZ", [_dec44], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 5;
         }
-      }), _descriptor43 = _applyDecoratedDescriptor(_class2.prototype, "idleCycleSeconds", [_dec44], {
+      }), _descriptor44 = _applyDecoratedDescriptor(_class2.prototype, "idleCycleSeconds", [_dec45], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 3.0;
         }
-      }), _descriptor44 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeEnabled", [_dec45], {
+      }), _descriptor45 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeEnabled", [_dec46], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor45 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMinDeg", [_dec46], {
+      }), _descriptor46 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMinDeg", [_dec47], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return -10;
         }
-      }), _descriptor46 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMaxDeg", [_dec47], {
+      }), _descriptor47 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMaxDeg", [_dec48], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 10;
         }
-      }), _descriptor47 = _applyDecoratedDescriptor(_class2.prototype, "idlePhaseY", [_dec48], {
+      }), _descriptor48 = _applyDecoratedDescriptor(_class2.prototype, "idlePhaseY", [_dec49], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return Math.PI / 3;
         }
-      }), _descriptor48 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendInSeconds", [_dec49], {
+      }), _descriptor49 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendInSeconds", [_dec50], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.4;
         }
-      }), _descriptor49 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendCurve", [_dec50], {
+      }), _descriptor50 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendCurve", [_dec51], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.0;
         }
-      }), _descriptor50 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeSpeed", [_dec51], {
+      }), _descriptor51 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeSpeed", [_dec52], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor51 = _applyDecoratedDescriptor(_class2.prototype, "idleStartFar", [_dec52], {
+      }), _descriptor52 = _applyDecoratedDescriptor(_class2.prototype, "idleStartFar", [_dec53], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -7073,7 +7090,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             this.atTopEntered = next;
             if (forceEmitOnInit) {
               safePostToParent({
-                type: 'TOP_EDGE_STATE',
+                type: 'TOP4_VISIBILITY',
                 state: next ? 'ENTERED' : 'EXITED'
               });
             }
@@ -7082,7 +7099,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           if (next !== this.atTopEntered) {
             this.atTopEntered = next;
             safePostToParent({
-              type: 'TOP_EDGE_STATE',
+              type: 'TOP4_VISIBILITY',
               state: next ? 'ENTERED' : 'EXITED'
             });
           }
