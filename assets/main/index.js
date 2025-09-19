@@ -342,7 +342,7 @@ System.register("chunks:///_virtual/ArcTextColorTest.ts", ['./rollupPluginModLoB
 });
 
 System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, cclegacy, _decorator, Enum, JsonAsset, Texture2D, Material, Color, Layers, MeshRenderer, Vec3, gfx, Mesh, math, Component;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, cclegacy, _decorator, Enum, JsonAsset, Texture2D, Material, Color, Layers, MeshRenderer, gfx, Mesh, math, Vec3, Component;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -361,14 +361,14 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
       Color = module.Color;
       Layers = module.Layers;
       MeshRenderer = module.MeshRenderer;
-      Vec3 = module.Vec3;
       gfx = module.gfx;
       Mesh = module.Mesh;
       math = module.math;
+      Vec3 = module.Vec3;
       Component = module.Component;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30;
       cclegacy._RF.push({}, "28184xX3rNPcJTTJ6RRKcou", "ArcTextMesh", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property,
@@ -400,358 +400,194 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
         return BendMode;
       }(BendMode || {});
       Enum(BendMode);
-      var ArcTextMSDFTwoLinesSubmesh = exports('ArcTextMSDFTwoLinesSubmesh', (_dec = ccclass('ArcTextMSDFTwoLinesSubmesh'), _dec2 = executeInEditMode(), _dec3 = disallowMultiple(), _dec4 = property({
-        tooltip: 'В редакторе автоматически пересобирать при изменении свойств'
+      var ArcTextMSDF = exports('ArcTextMSDF', (_dec = ccclass('ArcTextMSDFOneLine'), _dec2 = executeInEditMode(), _dec3 = disallowMultiple(), _dec4 = property({
+        type: JsonAsset
       }), _dec5 = property({
-        tooltip: 'В рантайме собрать в start()'
+        type: Texture2D
       }), _dec6 = property({
-        tooltip: 'После сборки отключить компонент (0 оверхеда)'
+        type: Material
       }), _dec7 = property({
-        slide: true,
-        range: [0, 240],
-        step: 1
+        type: Color
       }), _dec8 = property({
-        tooltip: 'Поставь true -> пересборка прямо сейчас'
-      }), _dec9 = property({
-        type: JsonAsset
-      }), _dec10 = property({
-        type: Texture2D
-      }), _dec11 = property({
-        type: Material
-      }), _dec12 = property({
-        type: Color
-      }), _dec13 = property({
-        type: JsonAsset
-      }), _dec14 = property({
-        type: Texture2D
-      }), _dec15 = property({
-        type: Material
-      }), _dec16 = property({
-        type: Color
-      }), _dec17 = property({
         type: BendMode
-      }), _dec18 = property({
+      }), _dec9 = property({
         type: ArcPlane
-      }), _dec19 = property({
+      }), _dec10 = property({
         type: ArcAlign
-      }), _dec20 = property({
+      }), _dec11 = property({
         type: ArcBend
-      }), _dec21 = property({
-        tooltip: 'Держать постоянный радиус (работает и при ArcAngle)'
-      }), _dec22 = property({
-        tooltip: 'Радиус цилиндра/торта (мировые ед.)'
-      }), _dec23 = property({
-        tooltip: 'Смещение вершин вдоль нормали (+ наружу, − внутрь)'
-      }), _dec24 = property({
+      }), _dec12 = property({
         slide: true,
         range: [2, 64],
         step: 1
-      }), _dec25 = property({
+      }), _dec13 = property({
         slide: true,
         range: [1, 32],
         step: 1
-      }), _dec26 = property({
+      }), _dec14 = property({
         slide: true,
         range: [1, 128],
         step: 1
-      }), _dec27 = property({
-        tooltip: 'Центрировать только когда активны обе строки'
+      }), _dec15 = property({
+        slide: true,
+        range: [0, 240],
+        step: 1
+      }), _dec16 = property({
+        tooltip: 'Поставь true → пересборка прямо сейчас'
       }), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(ArcTextMSDFTwoLinesSubmesh, _Component);
-        function ArcTextMSDFTwoLinesSubmesh() {
+        _inheritsLoose(ArcTextMSDF, _Component);
+        function ArcTextMSDF() {
           var _this;
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
           }
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-          _initializerDefineProperty(_this, "editorLiveUpdate", _descriptor, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "buildOnStart", _descriptor2, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "freezeAfterBuild", _descriptor3, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "maxRebuildRate", _descriptor4, _assertThisInitialized(_this));
-          _this._forceRebuild = false;
-          // Строка 1
-          _initializerDefineProperty(_this, "text1", _descriptor5, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fontJson1", _descriptor6, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "atlas1", _descriptor7, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "material1", _descriptor8, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pixelScale1", _descriptor9, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "spacingScale1", _descriptor10, _assertThisInitialized(_this));
-          // ⚪ по умолчанию БЕЛЫЙ — чтобы не чернило при первом старте
-          _initializerDefineProperty(_this, "color1", _descriptor11, _assertThisInitialized(_this));
-          // Строка 2
-          _initializerDefineProperty(_this, "text2", _descriptor12, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fontJson2", _descriptor13, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "atlas2", _descriptor14, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "material2", _descriptor15, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pixelScale2", _descriptor16, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "spacingScale2", _descriptor17, _assertThisInitialized(_this));
-          // ⚪ по умолчанию БЕЛЫЙ
-          _initializerDefineProperty(_this, "color2", _descriptor18, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "lineSpacing", _descriptor19, _assertThisInitialized(_this));
-          // MSDF/UV
-          _initializerDefineProperty(_this, "invertV", _descriptor20, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "mirrorX", _descriptor21, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "mirrorY", _descriptor22, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "autoPxRange", _descriptor23, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "msdfSoftness", _descriptor24, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "alphaClip", _descriptor25, _assertThisInitialized(_this));
-          // Кривизна/раскладка
-          _initializerDefineProperty(_this, "bendMode", _descriptor26, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "radius", _descriptor27, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor28, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "plane", _descriptor29, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "align", _descriptor30, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "bend", _descriptor31, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "faceOutward", _descriptor32, _assertThisInitialized(_this));
-          // Фиксированный радиус и отступ
-          _initializerDefineProperty(_this, "lockRadius", _descriptor33, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fixedRadius", _descriptor34, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pushAlongNormal", _descriptor35, _assertThisInitialized(_this));
-          // Сегментация
-          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor36, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor37, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor38, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "centerVertByBounds", _descriptor39, _assertThisInitialized(_this));
-          // perf helpers
-          _this._rebuildQueued = false;
-          _this._lastRebuildAt = 0;
-          _this._lastSignature = '';
-          _this._line1Has = false;
-          _this._line2Has = false;
+          // ---- входные данные
+          _initializerDefineProperty(_this, "text", _descriptor, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fontJson", _descriptor2, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "atlas", _descriptor3, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "material", _descriptor4, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pixelScale", _descriptor5, _assertThisInitialized(_this));
+          // пиксели шрифта -> мировые единицы
+          _initializerDefineProperty(_this, "spacingScale", _descriptor6, _assertThisInitialized(_this));
+          // множитель xadvance
+          _initializerDefineProperty(_this, "color", _descriptor7, _assertThisInitialized(_this));
+          // UV / MSDF
+          _initializerDefineProperty(_this, "invertV", _descriptor8, _assertThisInitialized(_this));
+          // ВАЖНО: по умолчанию НЕ инвертируем (BMFont.y от верха)
+          _initializerDefineProperty(_this, "mirrorX", _descriptor9, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "mirrorY", _descriptor10, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "autoPxRange", _descriptor11, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "msdfSoftness", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "alphaClip", _descriptor13, _assertThisInitialized(_this));
+          //@property({ tooltip:'Показать градиент UV вместо текста (диагностика)' }) debugUV = false;
+          // геометрия дуги
+          _initializerDefineProperty(_this, "bendMode", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "radius", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor16, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "plane", _descriptor17, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "align", _descriptor18, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bend", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceOutward", _descriptor20, _assertThisInitialized(_this));
+          // фикс-радиус/отступ
+          _initializerDefineProperty(_this, "lockRadius", _descriptor21, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fixedRadius", _descriptor22, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pushAlongNormal", _descriptor23, _assertThisInitialized(_this));
+          // сегментация
+          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor24, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor25, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor26, _assertThisInitialized(_this));
+          // поведение
+          _initializerDefineProperty(_this, "editorLiveUpdate", _descriptor27, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "buildOnStart", _descriptor28, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "freezeAfterBuild", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "maxRebuildRate", _descriptor30, _assertThisInitialized(_this));
+          // кнопка Force_Rebuild
+          _this._force = false;
+          // внутрянка
+          _this._lastSig = '';
+          _this._queued = false;
+          _this._lastAt = 0;
           _this._fontCache = new Map();
-          _this._doQueuedRebuild = function () {
-            _this._rebuildQueued = false;
-            _this.rebuildNow();
-          };
           return _this;
         }
-        var _proto = ArcTextMSDFTwoLinesSubmesh.prototype;
+        var _proto = ArcTextMSDF.prototype;
+        // ---- lifecycle
         _proto.onLoad = function onLoad() {
           this.node.layer = 1 << Layers.Enum.DEFAULT;
           if (!this.node.getComponent(MeshRenderer)) this.node.addComponent(MeshRenderer);
         };
         _proto.start = function start() {
           if (this.buildOnStart) {
-            this.rebuildNow();
+            this.rebuildNow(true);
             if (this.freezeAfterBuild) this.enabled = false;
           }
         };
-        _proto.onValidate = function onValidate() {};
-        _proto.requestRebuild = function requestRebuild() {
-          var _globalThis$performan,
-            _globalThis$performan2,
-            _this2 = this;
-          if (this._rebuildQueued) return;
-          var now = (_globalThis$performan = (_globalThis$performan2 = globalThis.performance) == null || _globalThis$performan2.now == null ? void 0 : _globalThis$performan2.now()) != null ? _globalThis$performan : Date.now();
-          var minDelay = this.maxRebuildRate > 0 ? 1000 / this.maxRebuildRate : 0;
-          var dueIn = Math.max(0, this._lastRebuildAt + minDelay - now);
-          this._rebuildQueued = true;
-          if (dueIn <= 0) this.scheduleOnce(this._doQueuedRebuild, 0);else setTimeout(function () {
-            if (_this2.isValid) _this2.scheduleOnce(_this2._doQueuedRebuild, 0);
-          }, dueIn);
-        };
-        _proto.rebuildNow = function rebuildNow() {
-          var _globalThis$performan3, _globalThis$performan4;
-          var sig = this._makeSignature();
-          if (sig === this._lastSignature) return;
-          this._rebuild();
-          this._lastSignature = sig;
-          this._lastRebuildAt = (_globalThis$performan3 = (_globalThis$performan4 = globalThis.performance) == null || _globalThis$performan4.now == null ? void 0 : _globalThis$performan4.now()) != null ? _globalThis$performan3 : Date.now();
-        };
-        _proto._makeSignature = function _makeSignature() {
-          var _uuid, _this$fontJson, _uuid2, _this$fontJson2, _uuid3, _this$material, _uuid4, _this$material2;
-          var j1 = (_uuid = (_this$fontJson = this.fontJson1) == null ? void 0 : _this$fontJson.uuid) != null ? _uuid : '0';
-          var j2 = (_uuid2 = (_this$fontJson2 = this.fontJson2) == null ? void 0 : _this$fontJson2.uuid) != null ? _uuid2 : '0';
-          var a1 = this._texSig(this.atlas1);
-          var a2 = this._texSig(this.atlas2);
-          var m1 = (_uuid3 = (_this$material = this.material1) == null ? void 0 : _this$material.uuid) != null ? _uuid3 : '0';
-          var m2 = (_uuid4 = (_this$material2 = this.material2) == null ? void 0 : _this$material2.uuid) != null ? _uuid4 : '0';
-          return [this.text1, this.text2, j1, j2, a1, a2, m1, m2, this.pixelScale1, this.pixelScale2, this.spacingScale1, this.spacingScale2, this.lineSpacing, this.invertV, this.mirrorX, this.mirrorY, this.autoPxRange, this.msdfSoftness, this.alphaClip, this.bendMode, this.radius, this.arcAngleDeg, this.plane, this.align, this.bend, this.faceOutward, this.segmentWidthPx, this.minSegmentsPerGlyph, this.maxSegmentsPerGlyph, this._line1Has ? 1 : 0, this._line2Has ? 1 : 0, this.centerVertByBounds ? 1 : 0, this.lockRadius ? 1 : 0, this.fixedRadius, this.pushAlongNormal].join('|');
+        _proto.onValidate = function onValidate() {}
+
+        // ---- пересборка
+        ;
+
+        _proto._signature = function _signature() {
+          var _uuid, _this$fontJson, _uuid2, _this$material;
+          var jj = (_uuid = (_this$fontJson = this.fontJson) == null ? void 0 : _this$fontJson.uuid) != null ? _uuid : '0';
+          var aa = this._texSig(this.atlas);
+          var mm = (_uuid2 = (_this$material = this.material) == null ? void 0 : _this$material.uuid) != null ? _uuid2 : '0';
+          return [this.text, jj, aa, mm, this.pixelScale, this.spacingScale, this.invertV, this.mirrorX, this.mirrorY, this.autoPxRange, this.msdfSoftness, this.alphaClip, this.debugUV, this.bendMode, this.radius, this.arcAngleDeg, this.plane, this.align, this.bend, this.faceOutward, this.lockRadius, this.fixedRadius, this.pushAlongNormal, this.segmentWidthPx, this.minSegmentsPerGlyph, this.maxSegmentsPerGlyph].join('|');
         };
         _proto._texSig = function _texSig(t) {
           var _ref, _format;
           if (!t) return '0';
-          var fmt = (_ref = (_format = t._format) != null ? _format : t.format) != null ? _ref : 'fmt';
-          return t.width + "x" + t.height + ":" + fmt;
-        }
-
-        // ====== runtime-методы цвета текста ======
-        ;
-
-        _proto._applyTintToMaterialIndex = function _applyTintToMaterialIndex(mi, color) {
-          var mr = this.node.getComponent(MeshRenderer);
-          if (!mr) return;
-          var inst = mr.getMaterialInstance(mi);
-          if (!inst) return;
-          // В твоём шейдере цвет называется tintColor (по логам)
-          try {
-            inst.setProperty('tintColor', color);
-          } catch (_unused) {/* noop */}
+          var f = (_ref = (_format = t._format) != null ? _format : t.format) != null ? _ref : 'fmt';
+          return t.width + "x" + t.height + ":" + f;
         };
-        _proto.setTextColor = function setTextColor(line, color) {
-          if (line === 1) {
-            this.color1 = new Color(color.r, color.g, color.b, color.a);
-            this._applyTintToMaterialIndex(0, this.color1);
-          } else {
-            this.color2 = new Color(color.r, color.g, color.b, color.a);
-            this._applyTintToMaterialIndex(1, this.color2);
+        _proto._requestRebuild = function _requestRebuild() {
+          var _globalThis$performan,
+            _globalThis$performan2,
+            _this2 = this;
+          if (this._queued) return;
+          this._queued = true;
+          var now = (_globalThis$performan = (_globalThis$performan2 = globalThis.performance) == null || _globalThis$performan2.now == null ? void 0 : _globalThis$performan2.now()) != null ? _globalThis$performan : Date.now();
+          var delay = this.maxRebuildRate > 0 ? Math.max(0, this._lastAt + 1000 / this.maxRebuildRate - now) : 0;
+          if (delay <= 0) this.scheduleOnce(function () {
+            _this2._queued = false;
+            _this2.rebuildNow();
+          }, 0);else setTimeout(function () {
+            if (_this2.isValid) _this2.scheduleOnce(function () {
+              _this2._queued = false;
+              _this2.rebuildNow();
+            }, 0);
+          }, delay);
+        };
+        _proto.rebuildNow = function rebuildNow(ignore) {
+          var _globalThis$performan3, _globalThis$performan4;
+          if (ignore === void 0) {
+            ignore = false;
           }
-        };
-        _proto.setTextColors = function setTextColors(color1, color2) {
-          if (color1) this.setTextColor(1, color1);
-          if (color2) this.setTextColor(2, color2);
-        };
-        _proto.applyTextColorFromTheme = function applyTextColorFromTheme(theme) {
-          if (!(theme != null && theme.textColor)) return;
-          this.setTextColors(theme.textColor, theme.textColor);
+          var sig = this._signature();
+          if (!ignore && sig === this._lastSig) return;
+          this._build();
+          this._lastSig = sig;
+          this._lastAt = (_globalThis$performan3 = (_globalThis$performan4 = globalThis.performance) == null || _globalThis$performan4.now == null ? void 0 : _globalThis$performan4.now()) != null ? _globalThis$performan3 : Date.now();
         }
 
-        // ---------- сборка ----------
+        // ---- сборка меша
         ;
 
-        _proto._rebuild = function _rebuild() {
-          var has1 = !!(this.text1 && this.fontJson1 && this.atlas1 && this.material1);
-          var has2 = !!(this.text2 && this.fontJson2 && this.atlas2 && this.material2);
-          this._line1Has = !!(this.text1 && this.text1.length);
-          this._line2Has = !!(this.text2 && this.text2.length);
+        _proto._build = function _build() {
           var mr = this.node.getComponent(MeshRenderer);
-          if (!has1 && !has2) {
+          if (!this.text || !this.fontJson || !this.atlas || !this.material) {
             mr.mesh = null;
             mr.materials = [];
             return;
           }
-          var half = this.lineSpacing * 0.5;
-          var geo1 = has1 ? this._buildLine(this.text1, this.fontJson1, this.atlas1, this.pixelScale1, this.spacingScale1, +half) : null;
-          var geo2 = has2 ? this._buildLine(this.text2, this.fontJson2, this.atlas2, this.pixelScale2, this.spacingScale2, -half) : null;
-          var positions = [];
-          var normals = [];
-          var uvs = [];
-          var indices0 = [];
-          var indices1 = [];
-          var minPos = new Vec3(1e9, 1e9, 1e9);
-          var maxPos = new Vec3(-1e9, -1e9, -1e9);
-          if (geo1) {
-            positions.push.apply(positions, geo1.positions);
-            normals.push.apply(normals, geo1.normals);
-            uvs.push.apply(uvs, geo1.uvs);
-            indices0 = geo1.indices;
-            minPos.x = Math.min(minPos.x, geo1.minPos.x);
-            minPos.y = Math.min(minPos.y, geo1.minPos.y);
-            minPos.z = Math.min(minPos.z, geo1.minPos.z);
-            maxPos.x = Math.max(maxPos.x, geo1.maxPos.x);
-            maxPos.y = Math.max(maxPos.y, geo1.maxPos.y);
-            maxPos.z = Math.max(maxPos.z, geo1.maxPos.z);
-          }
-          var vtxOffset1 = positions.length / 3;
-          if (geo2) {
-            positions.push.apply(positions, geo2.positions);
-            normals.push.apply(normals, geo2.normals);
-            uvs.push.apply(uvs, geo2.uvs);
-            indices1 = geo2.indices.map(function (i) {
-              return i + vtxOffset1;
-            });
-            minPos.x = Math.min(minPos.x, geo2.minPos.x);
-            minPos.y = Math.min(minPos.y, geo2.minPos.y);
-            minPos.z = Math.min(minPos.z, geo2.minPos.z);
-            maxPos.x = Math.max(maxPos.x, geo2.maxPos.x);
-            maxPos.y = Math.max(maxPos.y, geo2.maxPos.y);
-            maxPos.z = Math.max(maxPos.z, geo2.maxPos.z);
-          }
+          var geo = this._buildLine(this.text, this.fontJson, this.atlas, this.pixelScale, this.spacingScale);
 
-          // Центр по высоте — только если 2 строки
-          var shouldCenter = this.centerVertByBounds && !!geo1 && !!geo2;
-          if (shouldCenter && positions.length >= 3) {
-            var vIdx = this.plane === ArcPlane.YZ ? 2 : 1;
-            var vMin = 1e9,
-              vMax = -1e9;
-            for (var i = vIdx; i < positions.length; i += 3) {
-              var v = positions[i];
-              if (v < vMin) vMin = v;
-              if (v > vMax) vMax = v;
-            }
-            var vMid = (vMin + vMax) * 0.5;
-            for (var _i = vIdx; _i < positions.length; _i += 3) positions[_i] -= vMid;
-            var minX = 1e9,
-              minY = 1e9,
-              minZ = 1e9,
-              maxX = -1e9,
-              maxY = -1e9,
-              maxZ = -1e9;
-            for (var _i2 = 0; _i2 < positions.length; _i2 += 3) {
-              var x = positions[_i2],
-                y = positions[_i2 + 1],
-                z = positions[_i2 + 2];
-              if (x < minX) minX = x;
-              if (y < minY) minY = y;
-              if (z < minZ) minZ = z;
-              if (x > maxX) maxX = x;
-              if (y > maxY) maxY = y;
-              if (z > maxZ) maxZ = z;
-            }
-            minPos.set(minX, minY, minZ);
-            maxPos.set(maxX, maxY, maxZ);
+          // VB: pos3 normal3 uv2
+          var stride = 8 * 4,
+            vc = geo.positions.length / 3;
+          var ab = new ArrayBuffer(vc * stride);
+          var f32 = new Float32Array(ab);
+          for (var i = 0; i < vc; i++) {
+            var _geo$normals, _geo$normals2, _geo$normals3, _geo$uvs, _geo$uvs2;
+            var d = i * 8;
+            f32[d] = geo.positions[i * 3];
+            f32[d + 1] = geo.positions[i * 3 + 1];
+            f32[d + 2] = geo.positions[i * 3 + 2];
+            f32[d + 3] = (_geo$normals = geo.normals[i * 3]) != null ? _geo$normals : 0;
+            f32[d + 4] = (_geo$normals2 = geo.normals[i * 3 + 1]) != null ? _geo$normals2 : 0;
+            f32[d + 5] = (_geo$normals3 = geo.normals[i * 3 + 2]) != null ? _geo$normals3 : 1;
+            f32[d + 6] = (_geo$uvs = geo.uvs[i * 2]) != null ? _geo$uvs : 0;
+            f32[d + 7] = (_geo$uvs2 = geo.uvs[i * 2 + 1]) != null ? _geo$uvs2 : 0;
           }
-
-          // --- VB
-          var stride = 8 * 4;
-          var vertCount = positions.length / 3;
-          var vbAB = new ArrayBuffer(vertCount * stride);
-          var vbF32 = new Float32Array(vbAB);
-          for (var _i3 = 0; _i3 < vertCount; _i3++) {
-            var _normals, _normals2, _normals3, _uvs, _uvs2;
-            var dst = _i3 * 8;
-            vbF32[dst] = positions[_i3 * 3];
-            vbF32[dst + 1] = positions[_i3 * 3 + 1];
-            vbF32[dst + 2] = positions[_i3 * 3 + 2];
-            vbF32[dst + 3] = (_normals = normals[_i3 * 3]) != null ? _normals : 0;
-            vbF32[dst + 4] = (_normals2 = normals[_i3 * 3 + 1]) != null ? _normals2 : 0;
-            vbF32[dst + 5] = (_normals3 = normals[_i3 * 3 + 2]) != null ? _normals3 : 1;
-            vbF32[dst + 6] = (_uvs = uvs[_i3 * 2]) != null ? _uvs : 0;
-            vbF32[dst + 7] = (_uvs2 = uvs[_i3 * 2 + 1]) != null ? _uvs2 : 0;
-          }
-          var vbBytes = new Uint8Array(vbAB);
-
-          // --- IB (склеенный)
-          var totalIdx = indices0.length + indices1.length;
-          var indAll = new Uint32Array(totalIdx);
-          indAll.set(indices0, 0);
-          if (indices1.length) indAll.set(indices1, indices0.length);
-          var ibBytes = new Uint8Array(indAll.buffer);
-
-          // общий data
-          var joined = new Uint8Array(vbBytes.byteLength + ibBytes.byteLength);
-          joined.set(vbBytes, 0);
-          joined.set(ibBytes, vbBytes.byteLength);
+          var vb = new Uint8Array(ab);
+          var ib = new Uint8Array(new Uint32Array(geo.indices).buffer);
+          var joined = new Uint8Array(vb.byteLength + ib.byteLength);
+          joined.set(vb, 0);
+          joined.set(ib, vb.byteLength);
           var vbOffset = 0,
-            ibOffset = vbBytes.byteLength;
-
-          // атрибуты
+            ibOffset = vb.byteLength;
           var attrs = [new gfx.Attribute(gfx.AttributeName.ATTR_POSITION, gfx.Format.RGB32F, false, 0, false, 0), new gfx.Attribute(gfx.AttributeName.ATTR_NORMAL, gfx.Format.RGB32F, false, 0, false, 1), new gfx.Attribute(gfx.AttributeName.ATTR_TEX_COORD, gfx.Format.RG32F, false, 0, false, 2)];
-
-          // 🔸 Примитивы: по одному на строку
-          var prims = [];
-          prims.push({
-            primitiveMode: gfx.PrimitiveMode.TRIANGLE_LIST,
-            vertexBundelIndices: [0],
-            indexView: {
-              offset: ibOffset,
-              length: indices0.length * 4,
-              count: indices0.length,
-              stride: 4
-            }
-          });
-          if (indices1.length) {
-            prims.push({
-              primitiveMode: gfx.PrimitiveMode.TRIANGLE_LIST,
-              vertexBundelIndices: [0],
-              indexView: {
-                offset: ibOffset + indices0.length * 4,
-                length: indices1.length * 4,
-                count: indices1.length,
-                stride: 4
-              }
-            });
-          }
           var mesh = new Mesh();
           mesh.reset({
             struct: {
@@ -759,52 +595,50 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
                 attributes: attrs,
                 view: {
                   offset: vbOffset,
-                  length: vbBytes.byteLength,
-                  count: vertCount,
+                  length: vb.byteLength,
+                  count: vc,
                   stride: stride
                 }
               }],
-              primitives: prims,
-              minPosition: minPos,
-              maxPosition: maxPos
+              primitives: [{
+                primitiveMode: gfx.PrimitiveMode.TRIANGLE_LIST,
+                vertexBundelIndices: [0],
+                indexView: {
+                  offset: ibOffset,
+                  length: ib.byteLength,
+                  count: geo.indices.length,
+                  stride: 4
+                }
+              }],
+              minPosition: geo.minPos,
+              maxPosition: geo.maxPos
             },
             data: joined
           });
-
-          // материалы 1:1 с primitives
           mr.mesh = mesh;
-          mr.materials = prims.length === 1 ? [this.material1] : [this.material1, this.material2];
-
-          // применяем обязательные свойства к материалам (без перезатирания tint!)
-          var mi0 = mr.getMaterialInstance(0);
-          this._applyMatProps(mi0, this.fontJson1, this.atlas1 /*, this.color1*/);
-          if (prims.length === 2) {
-            var mi1 = mr.getMaterialInstance(1);
-            this._applyMatProps(mi1, this.fontJson2, this.atlas2 /*, this.color2*/);
-          }
-
-          // Лог для контроля
-          // console.log('[ArcText] prims=', prims.length, 'materials=', mr.materials.length, 'idx0=', indices0.length, 'idx1=', indices1.length);
+          mr.materials = [this.material];
+          var mi = mr.getMaterialInstance(0);
+          this._applyMatProps(mi, this.fontJson, this.atlas, this.color);
+          //try { mi.setProperty('debugMode', this.debugUV ? 1 : 0); } catch {}
         }
 
-        // ---------- геометрия одной строки ----------
+        // ---- геометрия линии
         ;
 
-        _proto._buildLine = function _buildLine(text, json, atlas, pixelScale, spacingScale, baselineOffsetY) {
+        _proto._buildLine = function _buildLine(text, json, atlas, pixelScale, spacingScale) {
           var _fd$common$base,
             _this3 = this;
-          var fd = this._getFontData(json);
-          var glyphMap = fd.glyphMap;
-          var kernMap = fd.kernMap;
-          var kern = function kern(prev, curr) {
-            var _kernMap$get;
-            return (_kernMap$get = kernMap.get(prev << 16 | curr)) != null ? _kernMap$get : 0;
+          var fd = this._getFont(json);
+          var glyph = fd.glyphMap,
+            kern = fd.kernMap;
+          var kernPx = function kernPx(a, b) {
+            var _kern$get;
+            return (_kern$get = kern.get(a << 16 | b)) != null ? _kern$get : 0;
           };
           var S = Math.max(1e-4, pixelScale);
           var texW = Math.max(1, atlas.width),
             texH = Math.max(1, atlas.height);
-          var lineH = fd.common.lineHeight || 0;
-          var base = (_fd$common$base = fd.common.base) != null ? _fd$common$base : Math.round(lineH * 0.5);
+          var base = (_fd$common$base = fd.common.base) != null ? _fd$common$base : Math.round((fd.common.lineHeight || 0) * 0.5);
           var baselineY = base * S;
           var infos = [];
           var penX = 0,
@@ -816,14 +650,14 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             codes.push(ch.codePointAt(0));
           }
           for (var i = 0; i < codes.length; i++) {
-            var _glyphMap$get;
-            var g = (_glyphMap$get = glyphMap.get(codes[i])) != null ? _glyphMap$get : glyphMap.get(63);
+            var _glyph$get;
+            var g = (_glyph$get = glyph.get(codes[i])) != null ? _glyph$get : glyph.get(63);
             if (!g) continue;
-            var advPx = (g.xadvance + (i > 0 ? kern(codes[i - 1], g.id) : 0)) * S * spacingScale;
-            var left = penX + g.xoffset * S;
-            var right = left + g.width * S;
-            var yTop = (base - g.yoffset) * S;
-            var yBot = yTop - g.height * S;
+            var adv = (g.xadvance + (i > 0 ? kernPx(codes[i - 1], g.id) : 0)) * S * spacingScale;
+            var left = penX + g.xoffset * S,
+              right = left + g.width * S;
+            var yTop = (base - g.yoffset) * S,
+              yBot = yTop - g.height * S;
             infos.push({
               g: g,
               left: left,
@@ -833,13 +667,13 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             });
             if (left < minX) minX = left;
             if (right > maxX) maxX = right;
-            penX += advPx;
+            penX += adv;
           }
           var span = Math.max(1e-4, maxX - minX);
 
-          // кривизна (lockRadius имеет приоритет)
-          var totalArc = 0;
-          var R = this.radius;
+          // кривизна
+          var totalArc = 0,
+            R = this.radius;
           if (this.lockRadius) {
             R = Math.max(1e-3, this.fixedRadius);
             totalArc = span / R;
@@ -847,8 +681,8 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             R = Math.max(1e-3, this.radius);
             totalArc = span / R;
           } else {
-            var ang = math.toRadian(this.arcAngleDeg);
-            totalArc = Math.max(0, ang);
+            var a = math.toRadian(this.arcAngleDeg);
+            totalArc = Math.max(0, a);
             R = totalArc < 1e-6 ? 1e12 : span / totalArc;
           }
           var startAngle = 0;
@@ -856,22 +690,22 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           var sign = this.bend === ArcBend.Convex ? 1 : -1;
           var C0 = new Vec3(),
             C1 = new Vec3();
-          var tmpQ0 = new math.Quat(),
-            tmpQ1 = new math.Quat();
-          var pointOnArcOut = function pointOnArcOut(theta, r, out) {
+          var Q0 = new math.Quat(),
+            Q1 = new math.Quat();
+          var pointOnArc = function pointOnArc(t, r, out) {
             switch (_this3.plane) {
               case ArcPlane.XY:
-                out.set(Math.cos(theta) * r, Math.sin(theta) * r, 0);
+                out.set(Math.cos(t) * r, Math.sin(t) * r, 0);
                 break;
               case ArcPlane.XZ:
-                out.set(Math.cos(theta) * r, 0, Math.sin(theta) * r);
+                out.set(Math.cos(t) * r, 0, Math.sin(t) * r);
                 break;
               case ArcPlane.YZ:
-                out.set(0, Math.cos(theta) * r, Math.sin(theta) * r);
+                out.set(0, Math.cos(t) * r, Math.sin(t) * r);
                 break;
             }
           };
-          var rotQuatDegOut = function rotQuatDegOut(deg, out) {
+          var rotDeg = function rotDeg(deg, out) {
             var add = _this3.faceOutward ? 90 : 0;
             switch (_this3.plane) {
               case ArcPlane.XY:
@@ -887,84 +721,60 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           };
           var anchor = totalArc < 1e-6 ? new Vec3(minX + span * 0.5, baselineY, 0) : function () {
             var a = new Vec3();
-            pointOnArcOut((startAngle + totalArc * 0.5) * sign, R, a);
+            pointOnArc((startAngle + totalArc * 0.5) * sign, R, a);
             return a;
           }();
-
-          // вертикальный сдвиг слота
-          var vAxis = this.plane === ArcPlane.YZ ? new Vec3(0, 0, 1) : new Vec3(0, 1, 0);
-          var offX = vAxis.x * baselineOffsetY,
-            offY = vAxis.y * baselineOffsetY,
-            offZ = vAxis.z * baselineOffsetY;
-          var baseNormal = this.plane === ArcPlane.XY ? new Vec3(0, 0, 1) : this.plane === ArcPlane.XZ ? new Vec3(0, 1, 0) : new Vec3(1, 0, 0);
+          var baseN = this.plane === ArcPlane.XY ? new Vec3(0, 0, 1) : this.plane === ArcPlane.XZ ? new Vec3(0, 1, 0) : new Vec3(1, 0, 0);
           var n0 = new Vec3(),
             n1 = new Vec3();
-          var positions = [];
-          var normals = [];
-          var uvs = [];
-          var indices = [];
-          var lt0 = new Vec3(),
-            lb0 = new Vec3(),
-            rt1 = new Vec3(),
-            rb1 = new Vec3();
-          var pivot0 = new Vec3(),
-            pivot1 = new Vec3();
+          var positions = [],
+            normals = [],
+            uvs = [],
+            indices = [];
+          var lt = new Vec3(),
+            lb = new Vec3(),
+            rt = new Vec3(),
+            rb = new Vec3();
+          var pv0 = new Vec3(),
+            pv1 = new Vec3();
           var offN = this.pushAlongNormal;
-          for (var _i4 = 0, _infos = infos; _i4 < _infos.length; _i4++) {
-            var inf = _infos[_i4];
-            var _g = inf.g;
-            var gw = Math.max(1e-4, _g.width * S);
+          for (var _i = 0, _infos = infos; _i < _infos.length; _i++) {
+            var inf = _infos[_i];
+            var _g = inf.g,
+              gw = Math.max(1e-4, _g.width * S);
             var cols = Math.ceil(_g.width / Math.max(1, Math.floor(this.segmentWidthPx)));
             cols = Math.max(this.minSegmentsPerGlyph, Math.min(this.maxSegmentsPerGlyph, cols));
             for (var ci = 0; ci < cols; ci++) {
               var t0 = ci / cols,
                 t1 = (ci + 1) / cols;
-              var gx0 = inf.left + gw * t0;
-              var gx1 = inf.left + gw * t1;
-              var theta0 = (startAngle + (gx0 - minX) / span * totalArc) * sign;
-              var theta1 = (startAngle + (gx1 - minX) / span * totalArc) * sign;
-              pointOnArcOut(theta0, R, C0);
-              pointOnArcOut(theta1, R, C1);
-              rotQuatDegOut(math.toDegree(theta0), tmpQ0);
-              rotQuatDegOut(math.toDegree(theta1), tmpQ1);
-              pivot0.set(gx0, baselineY, 0);
-              pivot1.set(gx1, baselineY, 0);
-              lt0.set(gx0, inf.yTop, 0);
-              lb0.set(gx0, inf.yBot, 0);
-              rt1.set(gx1, inf.yTop, 0);
-              rb1.set(gx1, inf.yBot, 0);
-              var p0 = new Vec3(lt0.x - pivot0.x, lt0.y - pivot0.y, 0);
-              Vec3.transformQuat(p0, p0, tmpQ0);
+              var gx0 = inf.left + gw * t0,
+                gx1 = inf.left + gw * t1;
+              var th0 = (startAngle + (gx0 - minX) / span * totalArc) * sign;
+              var th1 = (startAngle + (gx1 - minX) / span * totalArc) * sign;
+              pointOnArc(th0, R, C0);
+              pointOnArc(th1, R, C1);
+              rotDeg(math.toDegree(th0), Q0);
+              rotDeg(math.toDegree(th1), Q1);
+              pv0.set(gx0, baselineY, 0);
+              pv1.set(gx1, baselineY, 0);
+              lt.set(gx0, inf.yTop, 0);
+              lb.set(gx0, inf.yBot, 0);
+              rt.set(gx1, inf.yTop, 0);
+              rb.set(gx1, inf.yBot, 0);
+              var p0 = new Vec3(lt.x - pv0.x, lt.y - pv0.y, 0);
+              Vec3.transformQuat(p0, p0, Q0);
               p0.add(C0).subtract(anchor);
-              var p3 = new Vec3(lb0.x - pivot0.x, lb0.y - pivot0.y, 0);
-              Vec3.transformQuat(p3, p3, tmpQ0);
+              var p3 = new Vec3(lb.x - pv0.x, lb.y - pv0.y, 0);
+              Vec3.transformQuat(p3, p3, Q0);
               p3.add(C0).subtract(anchor);
-              var p1 = new Vec3(rt1.x - pivot1.x, rt1.y - pivot1.y, 0);
-              Vec3.transformQuat(p1, p1, tmpQ1);
+              var p1 = new Vec3(rt.x - pv1.x, rt.y - pv1.y, 0);
+              Vec3.transformQuat(p1, p1, Q1);
               p1.add(C1).subtract(anchor);
-              var p2 = new Vec3(rb1.x - pivot1.x, rb1.y - pivot1.y, 0);
-              Vec3.transformQuat(p2, p2, tmpQ1);
+              var p2 = new Vec3(rb.x - pv1.x, rb.y - pv1.y, 0);
+              Vec3.transformQuat(p2, p2, Q1);
               p2.add(C1).subtract(anchor);
-
-              // слот вверх/вниз
-              p0.x += offX;
-              p0.y += offY;
-              p0.z += offZ;
-              p1.x += offX;
-              p1.y += offY;
-              p1.z += offZ;
-              p2.x += offX;
-              p2.y += offY;
-              p2.z += offZ;
-              p3.x += offX;
-              p3.y += offY;
-              p3.z += offZ;
-
-              // нормали
-              Vec3.transformQuat(n0, baseNormal, tmpQ0);
-              Vec3.transformQuat(n1, baseNormal, tmpQ1);
-
-              // отступ от поверхности
+              Vec3.transformQuat(n0, baseN, Q0);
+              Vec3.transformQuat(n1, baseN, Q1);
               if (offN !== 0) {
                 p0.x += n0.x * offN;
                 p0.y += n0.y * offN;
@@ -980,18 +790,17 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
                 p3.z += n0.z * offN;
               }
 
-              // UV
+              // --- UV: без инверсий по умолчанию (BMFont.y от ВЕРХА)
               var u0 = (_g.x + _g.width * t0) / texW;
               var u1 = (_g.x + _g.width * t1) / texW;
-              var v0 = _g.y / texH;
-              var v1 = (_g.y + _g.height) / texH;
-              if (!this.invertV) {
-                v0 = 1 - v0;
-                v1 = 1 - v1;
+              var v0 = _g.y / texH; // верх глифа
+              var v1 = (_g.y + _g.height) / texH; // низ глифа
+
+              if (this.invertV) {
                 var tv = v0;
                 v0 = v1;
                 v1 = tv;
-              }
+              } // просто меняем местами
               if (this.mirrorX) {
                 var tu = u0;
                 u0 = u1;
@@ -1013,10 +822,10 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           // bounds
           var min = new Vec3(1e9, 1e9, 1e9),
             max = new Vec3(-1e9, -1e9, -1e9);
-          for (var _i5 = 0; _i5 < positions.length; _i5 += 3) {
-            var x = positions[_i5],
-              y = positions[_i5 + 1],
-              z = positions[_i5 + 2];
+          for (var _i2 = 0; _i2 < positions.length; _i2 += 3) {
+            var x = positions[_i2],
+              y = positions[_i2 + 1],
+              z = positions[_i2 + 2];
             if (x < min.x) min.x = x;
             if (y < min.y) min.y = y;
             if (z < min.z) min.z = z;
@@ -1033,39 +842,200 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             maxPos: max
           };
         };
-        _proto._applyMatProps = function _applyMatProps(mat, json, atlas) {
+        _proto.setTextColors = function setTextColors() {
+          for (var _len2 = arguments.length, inputs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            inputs[_key2] = arguments[_key2];
+          }
+          for (var _i3 = 0, _inputs = inputs; _i3 < _inputs.length; _i3++) {
+            var it = _inputs[_i3];
+            var c = this._coerceColor(it);
+            if (c) {
+              this.setColor(c);
+              return c;
+            }
+          }
+          // если ничего не подошло — не меняем цвет
+          return this.color;
+        }
+
+        // ---- helpers
+        ;
+
+        _proto._coerceColor = function _coerceColor(v) {
+          if (v == null) return null;
+
+          // 1) уже Color
+          if (v instanceof Color) return new Color(v.r, v.g, v.b, v.a);
+
+          // 2) строка: #hex или rgb/rgba
+          if (typeof v === 'string') {
+            var s = v.trim();
+            // #RGB / #RRGGBB / #RRGGBBAA
+            if (s[0] === '#') {
+              var hex = s.slice(1);
+              var toPair = function toPair(i) {
+                return parseInt(hex.slice(i, i + 2), 16);
+              };
+              if (hex.length === 3) {
+                var r = parseInt(hex[0] + hex[0], 16),
+                  g = parseInt(hex[1] + hex[1], 16),
+                  b = parseInt(hex[2] + hex[2], 16);
+                return new Color(r, g, b, 255);
+              } else if (hex.length === 6 || hex.length === 8) {
+                var _r = toPair(0),
+                  _g2 = toPair(2),
+                  _b = toPair(4),
+                  a = hex.length === 8 ? toPair(6) : 255;
+                return new Color(_r, _g2, _b, a);
+              }
+            }
+            // rgb()/rgba()
+            var m = s.match(/^rgba?\s*\(\s*([.\d]+)\s*,\s*([.\d]+)\s*,\s*([.\d]+)\s*(?:,\s*([.\d]+)\s*)?\)$/i);
+            if (m) {
+              var _r2 = Number(m[1]),
+                _g3 = Number(m[2]),
+                _b2 = Number(m[3]);
+              var _a = m[4] != null ? Number(m[4]) : 1;
+              return this._fromNormalizedOr255(_r2, _g3, _b2, _a);
+            }
+            return null;
+          }
+
+          // 3) число: 0xRRGGBB или 0xAARRGGBB
+          if (typeof v === 'number' && Number.isFinite(v)) {
+            var n = Math.max(0, Math.floor(v));
+            if (n <= 0xFFFFFF) {
+              var _r3 = n >> 16 & 255,
+                _g4 = n >> 8 & 255,
+                _b3 = n & 255;
+              return new Color(_r3, _g4, _b3, 255);
+            } else {
+              var _a2 = n >> 24 & 255,
+                _r4 = n >> 16 & 255,
+                _g5 = n >> 8 & 255,
+                _b4 = n & 255;
+              return new Color(_r4, _g5, _b4, _a2);
+            }
+          }
+
+          // 4) массив [r,g,b,(a)]
+          if (Array.isArray(v) && (v.length === 3 || v.length === 4)) {
+            var _v$map = v.map(Number),
+              _r5 = _v$map[0],
+              _g6 = _v$map[1],
+              _b5 = _v$map[2],
+              _v$map$ = _v$map[3],
+              _a3 = _v$map$ === void 0 ? 1 : _v$map$;
+            return this._fromNormalizedOr255(_r5, _g6, _b5, _a3);
+          }
+
+          // 5) объект {r,g,b,a?}
+          if (typeof v === 'object') {
+            var _ref2 = v,
+              _r6 = _ref2.r,
+              _g7 = _ref2.g,
+              _b6 = _ref2.b;
+            if (_r6 != null && _g7 != null && _b6 != null) {
+              var _a5;
+              var _a4 = (_a5 = v.a) != null ? _a5 : 1;
+              return this._fromNormalizedOr255(Number(_r6), Number(_g7), Number(_b6), Number(_a4));
+            }
+          }
+          return null;
+        };
+        _proto._fromNormalizedOr255 = function _fromNormalizedOr255(r, g, b, a) {
+          var looksNormalized = r <= 1 && g <= 1 && b <= 1 && a <= 1;
+          if (looksNormalized) {
+            return new Color(Math.round(this._clamp01(r) * 255), Math.round(this._clamp01(g) * 255), Math.round(this._clamp01(b) * 255), Math.round(this._clamp01(a) * 255));
+          }
+          // считаем значения в 0..255 (а может быть 0..100 для процентов — тоже ограничим)
+          return new Color(this._clamp255(r), this._clamp255(g), this._clamp255(b), this._clamp255(a <= 1 ? a * 255 : a));
+        };
+        _proto._clamp01 = function _clamp01(x) {
+          return Math.min(1, Math.max(0, x));
+        };
+        _proto._clamp255 = function _clamp255(x) {
+          return Math.min(255, Math.max(0, Math.round(x)));
+        };
+        _proto.applyApiData = function applyApiData(payload) {
+          var pickText = function pickText(o) {
+            if (!o || typeof o !== 'object') return null;
+            var keys = ['text', 'value', 'label', 'name', 'title'];
+            for (var _i4 = 0, _keys = keys; _i4 < _keys.length; _i4++) {
+              var k = _keys[_i4];
+              var v = o[k];
+              if (v != null) return String(v);
+            }
+            return null;
+          };
+          var next = null;
+          if (payload == null) {
+            next = '';
+          } else if (typeof payload === 'string' || typeof payload === 'number' || typeof payload === 'boolean') {
+            next = String(payload);
+          } else if (Array.isArray(payload)) {
+            next = payload.map(function (item) {
+              if (item == null) return '';
+              if (typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean') return String(item);
+              var picked = pickText(item);
+              return picked != null ? picked : String(item);
+            }).join('');
+          } else if (typeof payload === 'object') {
+            var _pickText;
+            next = (_pickText = pickText(payload)) != null ? _pickText : String(payload);
+          }
+          if (next == null) return false;
+
+          // Нормализуем переводы строк и убираем лишние невидимые символы по краям
+          next = next.replace(/\r\n/g, '\n').trim();
+          if (this.text === next) return false;
+          this.text = next;
+          this._requestRebuild();
+          return true;
+        }
+
+        // ---- материал
+        ;
+
+        _proto._applyMatProps = function _applyMatProps(mat, json, atlas, color) {
           if (!atlas) return;
           if (this.autoPxRange && json) {
-            var fd = this._getFontData(json);
+            var fd = this._getFont(json);
             if ((fd == null ? void 0 : fd.distanceRange) != null) {
               try {
                 mat.setProperty('pxRange', fd.distanceRange);
-              } catch (_unused2) {}
+              } catch (_unused) {}
             }
           }
           try {
             mat.setProperty('mainTexture', atlas);
+          } catch (_unused2) {}
+          try {
+            mat.setProperty('tintColor', color);
           } catch (_unused3) {}
-          // ❗ НЕ выставляем tintColor здесь — чтобы не перетирать цвет при каждой сборке
           try {
             mat.setProperty('softness', this.msdfSoftness);
           } catch (_unused4) {}
           try {
             mat.setProperty('alphaClip', this.alphaClip);
           } catch (_unused5) {}
-        };
-        _proto._getFontData = function _getFontData(json) {
-          var _uuid5, _data$distanceField;
+        }
+
+        // ---- шрифт
+        ;
+
+        _proto._getFont = function _getFont(json) {
+          var _uuid3, _data$distanceField;
           if (!json) return null;
-          var id = (_uuid5 = json.uuid) != null ? _uuid5 : String(json);
+          var id = (_uuid3 = json.uuid) != null ? _uuid3 : String(json);
           var cached = this._fontCache.get(id);
           if (cached) return cached;
           var data = json.json;
           var glyphMap = new Map();
           if (Array.isArray(data.chars)) {
             for (var _iterator2 = _createForOfIteratorHelperLoose(data.chars), _step2; !(_step2 = _iterator2()).done;) {
-              var c = _step2.value;
-              glyphMap.set(c.id, c);
+              var g = _step2.value;
+              glyphMap.set(g.id, g);
             }
           } else for (var k in data.chars) glyphMap.set(Number(k), data.chars[k]);
           var kernMap = new Map();
@@ -1074,7 +1044,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
               var _k = _step3.value;
               kernMap.set(_k.first << 16 | _k.second, _k.amount);
             }
-          } else if (data.kernings) for (var key in data.kernings) kernMap.set(Number(key), data.kernings[key]);
+          } else if (data.kernings) for (var _k2 in data.kernings) kernMap.set(Number(_k2), data.kernings[_k2]);
           var pack = {
             glyphMap: glyphMap,
             kernMap: kernMap,
@@ -1083,313 +1053,243 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           };
           this._fontCache.set(id, pack);
           return pack;
+        }
+
+        // удобные сеттеры
+        ;
+
+        _proto.setText = function setText(t) {
+          this.text = t != null ? t : '';
+          this._requestRebuild();
         };
-        _proto.setText1 = function setText1(text) {
-          var next = text && text.trim() ? text : '';
-          var wasEmpty = !this._line1Has;
-          var willEmpty = !(next.length > 0);
-          this.text1 = next;
-          this._line1Has = !willEmpty;
-          wasEmpty !== willEmpty ? this.rebuildNow() : this.requestRebuild();
+        _proto.setColor = function setColor(c) {
+          var _mr$getMaterialInstan;
+          this.color = c;
+          var mr = this.node.getComponent(MeshRenderer);
+          mr == null || (_mr$getMaterialInstan = mr.getMaterialInstance(0)) == null || _mr$getMaterialInstan.setProperty('tintColor', c);
         };
-        _proto.setText2 = function setText2(text) {
-          var next = text && text.trim() ? text : '';
-          var wasEmpty = !this._line2Has;
-          var willEmpty = !(next.length > 0);
-          this.text2 = next;
-          this._line2Has = !willEmpty;
-          wasEmpty !== willEmpty ? this.rebuildNow() : this.requestRebuild();
-        };
-        _proto.applyApiData = function applyApiData(data) {
-          var _data$title, _data$name;
-          this.setText1((_data$title = data.title) != null ? _data$title : '');
-          this.setText2((_data$name = data.name) != null ? _data$name : '');
-        };
-        _createClass(ArcTextMSDFTwoLinesSubmesh, [{
+        _createClass(ArcTextMSDF, [{
           key: "Force_Rebuild",
           get: function get() {
-            return this._forceRebuild;
+            return this._force;
           },
           set: function set(v) {
-            if (v) this.rebuildNow();
-            this._forceRebuild = false;
+            if (v) this.rebuildNow(true);
+            this._force = false;
           }
         }]);
-        return ArcTextMSDFTwoLinesSubmesh;
-      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "editorLiveUpdate", [_dec4], {
+        return ArcTextMSDF;
+      }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "text", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return true;
+          return 'Текст';
         }
-      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "buildOnStart", [_dec5], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return true;
-        }
-      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "freezeAfterBuild", [_dec6], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return true;
-        }
-      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "maxRebuildRate", [_dec7], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 60;
-        }
-      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec8], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "text1", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'Ура!';
-        }
-      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "fontJson1", [_dec9], {
+      }), _descriptor2 = _applyDecoratedDescriptor(_class2.prototype, "fontJson", [_dec4], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "atlas1", [_dec10], {
+      }), _descriptor3 = _applyDecoratedDescriptor(_class2.prototype, "atlas", [_dec5], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "material1", [_dec11], {
+      }), _descriptor4 = _applyDecoratedDescriptor(_class2.prototype, "material", [_dec6], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale1", [property], {
+      }), _descriptor5 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale1", [property], {
+      }), _descriptor6 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "color1", [_dec12], {
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "color", [_dec7], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return new Color(255, 255, 255, 255);
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "text2", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'Михалыч';
-        }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "fontJson2", [_dec13], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "atlas2", [_dec14], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "material2", [_dec15], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return null;
-        }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "pixelScale2", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 1.0;
-        }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "spacingScale2", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 1.0;
-        }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "color2", [_dec16], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return new Color(255, 255, 255, 255);
-        }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "lineSpacing", [property], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 80;
-        }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "invertV", [property], {
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "invertV", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "mirrorX", [property], {
+      }), _descriptor9 = _applyDecoratedDescriptor(_class2.prototype, "mirrorX", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "mirrorY", [property], {
+      }), _descriptor10 = _applyDecoratedDescriptor(_class2.prototype, "mirrorY", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "autoPxRange", [property], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "autoPxRange", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [property], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.5;
         }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [property], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return 0.1;
+          return 0.05;
         }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec17], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return BendMode.ArcAngle;
         }
-      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 40;
         }
-      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec18], {
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec9], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcPlane.XZ;
         }
-      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec19], {
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec10], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcAlign.Center;
         }
-      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec20], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec11], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcBend.Concave;
         }
-      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "lockRadius", [_dec21], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "lockRadius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "fixedRadius", [_dec22], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "fixedRadius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 200;
         }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "pushAlongNormal", [_dec23], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "pushAlongNormal", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec24], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec12], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec25], {
+      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec13], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec26], {
+      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec14], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 6;
         }
-      }), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "centerVertByBounds", [_dec27], {
+      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "editorLiveUpdate", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      })), _class2)) || _class) || _class) || _class));
+      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "buildOnStart", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "freezeAfterBuild", [property], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "maxRebuildRate", [_dec15], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 60;
+        }
+      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec16], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype)), _class2)) || _class) || _class) || _class));
       cclegacy._RF.pop();
     }
   };
@@ -1959,7 +1859,7 @@ System.register("chunks:///_virtual/CameraTuner.ts", ['./rollupPluginModLoBabelH
 });
 
 System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ArcTextMesh.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Node, MeshRenderer, Animation, tween, Vec3, Component, ParticleSystem, ArcTextMSDFTwoLinesSubmesh;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Node, MeshRenderer, Animation, tween, Vec3, Component, ParticleSystem, ArcTextMSDF;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -1981,7 +1881,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       Component = module.Component;
       ParticleSystem = module.ParticleSystem;
     }, function (module) {
-      ArcTextMSDFTwoLinesSubmesh = module.ArcTextMSDFTwoLinesSubmesh;
+      ArcTextMSDF = module.ArcTextMSDF;
     }],
     execute: function () {
       var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15;
@@ -1997,7 +1897,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       }), _dec5 = property({
         type: Node
       }), _dec6 = property({
-        type: ArcTextMSDFTwoLinesSubmesh
+        type: ArcTextMSDF
       }), _dec7 = property({
         type: Node,
         tooltip: 'Объект c партиклом для выезда кусочка'
@@ -2973,7 +2873,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           // красим в СЛЕДУЮЩИЙ кадр — когда инстансы материалов точно будут
           this.scheduleOnce(function () {
             try {
-              t.setTextColors(theme.textColor, theme.textColor);
+              t.setTextColors(theme.textColor);
             } catch (_unused10) {}
             if (!wasEnabled && t.freezeAfterBuild) t.enabled = false;
           }, 0);
@@ -7632,7 +7532,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _class6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _class6;
       cclegacy._RF.push({}, "368ffNUv4lFSZtXbbDm9TB3", "TVS_SpawnLayout", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -7949,8 +7849,10 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         type: TowerScrollController,
         tooltip: 'Ссылка на контроллер скролла'
       }), _dec32 = property({
-        tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
+        type: [String]
       }), _dec33 = property({
+        tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
+      }), _dec34 = property({
         tooltip: 'Сколько текстов обновлять за кадр'
       }), _dec29(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerLayoutController, _Component);
@@ -7962,6 +7864,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
           _initializerDefineProperty(_this, "spawn", _descriptor31, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "scrollCtrl", _descriptor32, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "Falenames", _descriptor33, _assertThisInitialized(_this));
           /* пул: фикс. размер = vis*per; порядок — сверху вниз */
           _this.pool = [];
           _this.nodeLevelInfo = new Map();
@@ -7973,8 +7876,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           // чтобы не шлать дубли
           /* текстовая очередь */
           _this.textUpdateQueue = [];
-          _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor33, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "textsPerFrame", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor34, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "textsPerFrame", _descriptor35, _assertThisInitialized(_this));
           /* ring buffer состояние */
           _this.prevTopBase = -1;
           /* ===================== scroll events ===================== */
@@ -8301,24 +8204,24 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           return initApiData;
         }() /** Собрать массив на targetPieces: API + фейки (__fake=true) + стабильная выборка */;
         _proto.rebuildExpandedCakes = function rebuildExpandedCakes() {
-          var want = Math.max(0, Math.floor(this.spawn.targetPieces));
-          var src = this.cakesSource.filter(Boolean);
-          if (!want) {
-            this.cakesExpanded = [];
-            return;
-          }
-          var rng = this.mulberry32(this.spawn.rngSeed >>> 0);
+          var src = this.cakesSource.filter(Boolean); // порядок как в API
+          var wantRaw = Math.max(0, Math.floor(this.spawn.targetPieces));
+          var onlyApi = !this.spawn.allowFakePieces; // галка выключена → только API
+
+          // Когда только API — ЖЁСТКАЯ отсечка по размеру API
+          var want = onlyApi ? Math.min(wantRaw, src.length) : wantRaw;
           var out = [];
 
-          // 1) берём API-шные куски
-          while (out.length < Math.min(want, src.length)) {
-            out.push(src[Math.floor(rng() * src.length)]);
-          }
+          // 1) забираем из API строго по порядку
+          var take = Math.min(want, src.length);
+          out.push.apply(out, src.slice(0, take));
 
-          // 2) если разрешено — добиваем фейками
-          if (this.spawn.allowFakePieces) {
+          // 2) добивка фейками — ТОЛЬКО если галка включена
+          if (!onlyApi && out.length < want) {
             for (var i = out.length; i < want; i++) out.push(this.makeFakePiece(i));
           }
+
+          // важный момент: ПОЛНАЯ замена массива, без .push к старому
           this.cakesExpanded = out;
         };
         _proto.makeFakePiece = function makeFakePiece(i) {
@@ -8646,8 +8549,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         };
         _proto.makeFakeText = function makeFakeText(gidx) {
           var r = this.mulberry32((this.spawn.rngSeedColors ^ gidx * 2654435761) >>> 0);
-          var firsts = ['Алиса', 'Борис', 'Вика', 'Гриша', 'Даша', 'Егор', 'Жанна', 'Зоя', 'Илья', 'Катя', 'Лёва', 'Мила', 'Никита', 'Оля', 'Паша', 'Рита', 'Света', 'Таня', 'Федя', 'Юля', 'Яна'];
-          var name = firsts[Math.floor(r() * firsts.length)];
+          var name = this.Falenames[Math.floor(r() * this.Falenames.length)];
           return {
             name: name
           };
@@ -8842,14 +8744,21 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         initializer: function initializer() {
           return null;
         }
-      }), _descriptor33 = _applyDecoratedDescriptor(_class5.prototype, "textActivationMarginLevels", [_dec32], {
+      }), _descriptor33 = _applyDecoratedDescriptor(_class5.prototype, "Falenames", [_dec32], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return ['Алиса', 'Борис', 'Вика', 'Гриша', 'Даша', 'Егор', 'Жанна', 'Зоя', 'Илья', 'Катя', 'Лёва', 'Мила', 'Никита', 'Оля', 'Паша', 'Рита', 'Света', 'Таня', 'Федя', 'Юля', 'Яна'];
+        }
+      }), _descriptor34 = _applyDecoratedDescriptor(_class5.prototype, "textActivationMarginLevels", [_dec33], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1;
         }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class5.prototype, "textsPerFrame", [_dec33], {
+      }), _descriptor35 = _applyDecoratedDescriptor(_class5.prototype, "textsPerFrame", [_dec34], {
         configurable: true,
         enumerable: true,
         writable: true,
