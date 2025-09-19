@@ -15,8 +15,10 @@
         "0887a645c",
         "0a60b1e41",
         "0a80c7ffe",
-        "0b98d9ae0",
+        "0bfeddc0-39aa-43c0-8032-7ad4104057af",
+        "0bfeddc0-39aa-43c0-8032-7ad4104057af@6c48a",
         "0cf1981eb",
+        "0cf2a900d",
         "1263d74c-8167-4928-91a6-4e2672411f47@2e76e",
         "1263d74c-8167-4928-91a6-4e2672411f47@a804a",
         "134f2719-fa56-48f7-9948-3a38d08837a6",
@@ -123,7 +125,8 @@
         "db://assets/Scenes/MainScene.scene": "e0a4d539-c10e-42bd-a2f7-33dc5ffc2907"
     },
     "packs": {
-        "0b98d9ae0": [
+        "0cf2a900d": [
+            "0bfeddc0-39aa-43c0-8032-7ad4104057af@6c48a",
             "3bce6c90-ef1d-4cfb-b841-ddce7362e59b@6c48a",
             "13ff0d3d0@6c48a",
             "86fdd494-45eb-4b28-befd-08fb70bc3312@6c48a",
