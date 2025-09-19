@@ -6243,9 +6243,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
         var _proto = OpenPieceBridge.prototype;
         // ============================ Lifecycle ============================
         _proto.onEnable = function onEnable() {
-          this.safePostToParent({
-            type: 'IFRAME_READY'
-          });
+          // this.safePostToParent({ type: 'IFRAME_READY' });
           window.addEventListener('message', this.onMessage);
         };
         _proto.onDisable = function onDisable() {
@@ -6276,6 +6274,7 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
           if (targetOrigin === void 0) {
             targetOrigin = '*';
           }
+          console.log(msg);
           try {
             var _window$parent;
             (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
@@ -7970,6 +7969,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this.passedPieces = 0;
           _this.cakesSource = [];
           _this.cakesExpanded = [];
+          _this._sentReady = false;
+          // чтобы не шлать дубли
           /* текстовая очередь */
           _this.textUpdateQueue = [];
           _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor33, _assertThisInitialized(_this));
@@ -7992,6 +7993,41 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         /* ====== Детект мобильного устройства (ТОЛЬКО sys.isMobile) ====== */
         _proto.isMobileLike = function isMobileLike() {
           return !!sys.isMobile;
+        };
+        _proto.notifyCakeLoaded = function notifyCakeLoaded() {
+          if (this._sentReady) return;
+          this._sentReady = true;
+
+          // полезный payload — пусть родитель сразу знает цифры
+          var payload = {
+            type: 'CAKE_FULLY_LOADED',
+            totalPieces: this.getTotalPieces(),
+            totalLevels: this.getTotalLevels(),
+            objectsPerLevel: this.getObjectsPerLevel(),
+            visibleLevels: this.spawn.visibleLevels
+          };
+
+          // консольный лог (по просьбе «нужно отправить лог»)
+          console.log('[TowerLayoutController] Cake fully loaded:', payload);
+
+          // и сообщение в родителя (как в вашем примере с IFRAME_READY)
+          this.safePostToParent({
+            type: 'IFRAME_READY'
+          });
+        }
+
+        // ============================ Messaging ============================
+        ;
+
+        _proto.safePostToParent = function safePostToParent(msg, targetOrigin) {
+          if (targetOrigin === void 0) {
+            targetOrigin = '*';
+          }
+          console.log(msg);
+          try {
+            var _window$parent;
+            (_window$parent = window.parent) == null || _window$parent.postMessage(msg, targetOrigin);
+          } catch (_unused) {}
         }
 
         /* ====== Применить профиль и пересобрать при изменении ====== */;
@@ -8034,17 +8070,23 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
-                  // На всякий случай ещё раз до buildPool: при включении компонента сериалка может поверх дефолтов примениться
                   this.applyDeviceParamsAndRelayout(true);
                   this.buildPool();
                   this.prevTopBase = -1;
                   this.layoutByOffset((_this$scrollCtrl$offs = (_this$scrollCtrl2 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl2.offset) != null ? _this$scrollCtrl$offs : 0);
+
+                  // 1) грузим данные
                   _context.next = 6;
                   return this.initApiData();
                 case 6:
+                  // 2) формируем итоговый список кусков (API + фейки при нехватке)
                   this.rebuildExpandedCakes();
+
+                  // 3) полная привязка и первичное заполнение текстов
                   this.forceRebindVisibleNow();
                   this.primeVisibleTextsNow();
+
+                  // 4) кламп по нижней границе и финальная раскладка
                   cur = (_this$scrollCtrl$offs2 = (_this$scrollCtrl3 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl3.offset) != null ? _this$scrollCtrl$offs2 : 0;
                   max = this.getMaxScrollableOffset();
                   clamped = Math.min(cur, max);
@@ -8052,8 +8094,11 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                     duration: 0
                   });
                   this.layoutByOffset(clamped);
+
+                  // === 5) торт полностью «готов к показу» — шлём лог/сообщение ===
+                  this.notifyCakeLoaded();
                   (_this$scrollCtrl4 = this.scrollCtrl) == null || _this$scrollCtrl4.events.on('offset-changed', this.onOffsetChanged, this);
-                case 15:
+                case 16:
                 case "end":
                   return _context.stop();
               }
