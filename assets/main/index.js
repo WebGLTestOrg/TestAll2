@@ -7802,7 +7802,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
 });
 
 System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './ColorLibrary.ts', './TowerScrollController.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, sys, instantiate, MeshRenderer, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, sys, instantiate, MeshRenderer, assetManager, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -7821,6 +7821,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       sys = module.sys;
       instantiate = module.instantiate;
       MeshRenderer = module.MeshRenderer;
+      assetManager = module.assetManager;
       Component = module.Component;
     }, function (module) {
       ClickMoveBinding = module.ClickMoveBinding;
@@ -8176,6 +8177,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _this.cakesExpanded = [];
           _this._sentReady = false;
           // чтобы не шлать дубли
+          _this.realPiecesCount = 0;
+          // ← новое поле: сколько реальных (API) попало в итоговый список
           /* текстовая очередь */
           _this.textUpdateQueue = [];
           _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor35, _assertThisInitialized(_this));
@@ -8202,23 +8205,13 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _proto.notifyCakeLoaded = function notifyCakeLoaded() {
           if (this._sentReady) return;
           this._sentReady = true;
-
-          // полезный payload — пусть родитель сразу знает цифры
           var payload = {
-            type: 'CAKE_FULLY_LOADED',
-            totalPieces: this.getTotalPieces(),
-            totalLevels: this.getTotalLevels(),
-            objectsPerLevel: this.getObjectsPerLevel(),
-            visibleLevels: this.spawn.visibleLevels
+            type: 'IFRAME_READY',
+            totalPieces: this.getTotalPieces()
           };
 
-          // консольный лог (по просьбе «нужно отправить лог»)
-          console.log('[TowerLayoutController] Cake fully loaded:', payload);
-
-          // и сообщение в родителя (как в вашем примере с IFRAME_READY)
-          this.safePostToParent({
-            type: 'IFRAME_READY'
-          });
+          //console.log('[TowerLayoutController] IFRAME_READY:', payload);
+          this.safePostToParent(payload);
         }
 
         // ============================ Messaging ============================
@@ -8309,10 +8302,14 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                   });
                   this.layoutByOffset(clamped);
 
-                  // === 5) торт полностью «готов к показу» — шлём лог/сообщение ===
+                  // === 5) Ждём загрузки всех картинок нулевого уровня → применяем их → шлём IFRAME_READY
+                  _context.next = 16;
+                  return this.waitUntilFirstLevelImagesLoaded();
+                case 16:
+                  this.forceApplyMediaForLevel0();
                   this.notifyCakeLoaded();
                   (_this$scrollCtrl4 = this.scrollCtrl) == null || _this$scrollCtrl4.events.on('offset-changed', this.onOffsetChanged, this);
-                case 16:
+                case 19:
                 case "end":
                   return _context.stop();
               }
@@ -8534,6 +8531,11 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
           // важный момент: ПОЛНАЯ замена массива, без .push к старому
           this.cakesExpanded = out;
+
+          // количество реальных (тех, что пришли из API и попали в итоговый список)
+          this.realPiecesCount = out.filter(function (p) {
+            return !p.__fake;
+          }).length;
         }
 
         /* === ИЗМЕНЕНО: фейки теперь явно задают show_name === */;
@@ -8697,8 +8699,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
         /** Привязать контент к узлу для указанного уровня/слота (только при входе уровня в окно) */
         /** Привязать контент к узлу для указанного уровня/слота. 
-        *  Медиа (URL) — только если absLevel===0, иначе — заглушка.
-        */;
+         *  Медиа (URL) — только если absLevel===0, иначе — заглушка.
+         */;
         _proto.bindNodeFor = function bindNodeFor(absLevel, slot, n, immediateText) {
           if (immediateText === void 0) {
             immediateText = false;
@@ -8736,10 +8738,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           cache.slot = slot;
         }
 
-        /** Мгновенно проставляет текст всем видимым уровням (обходит очередь/скролл). */
         /** Мгновенно проставляет текст всем видимым уровням.
-        *  Реальную картинку отдаёт ТОЛЬКО для абсолютного уровня 0, остальным — заглушку.
-        */;
+          *  Реальную картинку отдаёт ТОЛЬКО для уровня 0, остальным — заглушку.
+          */;
         _proto.primeVisibleTextsNow = function primeVisibleTextsNow() {
           var _this$scrollCtrl$offs3, _this$scrollCtrl7;
           if (!this.pool.length) return;
@@ -8879,9 +8880,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         }
 
         /** Обновляет текст и боковую картинку.
-        *  Если withMedia=false → всегда подставляем заглушку (theme.sideTexture) вместо URL.
-        *  Если withMedia=true  → передаём реальный URL из piece.file (если он есть).
-        */;
+         *  Если withMedia=false → всегда подставляем заглушку (theme.sideTexture) вместо URL.
+         *  Если withMedia=true  → передаём реальный URL из piece.file (если он есть).
+         */;
         _proto.applyPieceTextIfChanged = function applyPieceTextIfChanged(root, piece, gidx, withMedia) {
           var _piece$name;
           if (withMedia === void 0) {
@@ -9093,6 +9094,75 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           this.layoutByOffset(off); // и сразу же применяем
         }
 
+        /* ===================== PRELOAD изображений уровня 0 + форс-применение ===================== */;
+        _proto.preloadTexture = function preloadTexture(url) {
+          return new Promise(function (resolve, reject) {
+            assetManager.loadRemote(url, function (err) {
+              if (err) {
+                reject(err);
+                return;
+              }
+              resolve();
+            });
+          });
+        }
+
+        /** Ждём загрузки всех картинок нулевого уровня (если они есть). */;
+        _proto.waitUntilFirstLevelImagesLoaded = /*#__PURE__*/
+        function () {
+          var _waitUntilFirstLevelImagesLoaded = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(timeoutMs) {
+            var _this4 = this;
+            var urls, j, _piece$file, piece, u, uniq, all, timeout;
+            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+              while (1) switch (_context4.prev = _context4.next) {
+                case 0:
+                  if (timeoutMs === void 0) {
+                    timeoutMs = 5000;
+                  }
+                  urls = [];
+                  for (j = 0; j < this.per; j++) {
+                    piece = this.getPieceFor(0, j);
+                    u = piece == null || (_piece$file = piece.file) == null ? void 0 : _piece$file.trim();
+                    if (u) urls.push(u);
+                  }
+                  if (urls.length) {
+                    _context4.next = 5;
+                    break;
+                  }
+                  return _context4.abrupt("return");
+                case 5:
+                  uniq = Array.from(new Set(urls));
+                  all = Promise.all(uniq.map(function (u) {
+                    return _this4.preloadTexture(u);
+                  }));
+                  timeout = new Promise(function (resolve) {
+                    setTimeout(function () {
+                      return resolve();
+                    }, timeoutMs);
+                  });
+                  _context4.next = 10;
+                  return Promise.race([all, timeout]);
+                case 10:
+                case "end":
+                  return _context4.stop();
+              }
+            }, _callee4, this);
+          }));
+          function waitUntilFirstLevelImagesLoaded(_x2) {
+            return _waitUntilFirstLevelImagesLoaded.apply(this, arguments);
+          }
+          return waitUntilFirstLevelImagesLoaded;
+        }() /** После предзагрузки — принудительно применяем реальные URL для уровня 0. */;
+        _proto.forceApplyMediaForLevel0 = function forceApplyMediaForLevel0() {
+          for (var j = 0; j < this.per; j++) {
+            var n = this.findNodeByLevelSlot(0, j);
+            var piece = this.getPieceFor(0, j);
+            if (!n || !piece) continue;
+            var gidx = this.globalIndexOf(0, j);
+            this.applyPieceTextIfChanged(n, piece, gidx, true); // withMedia=true
+          }
+        }
+
         /* ===================== RNG ===================== */;
         _proto.mulberry32 = function mulberry32(a) {
           return function () {
@@ -9105,7 +9175,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         _proto.fisherYatesShuffle = function fisherYatesShuffle(arr, rng) {
           for (var i = arr.length - 1; i > 0; i--) {
             var j = Math.floor(rng() * (i + 1));
-            var _ref6 = [arr[j], arr[i]];
+            var _ref6 = [arr[j], arr[j] = arr[i]];
             arr[i] = _ref6[0];
             arr[j] = _ref6[1];
           }
