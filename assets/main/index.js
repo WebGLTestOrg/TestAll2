@@ -2417,13 +2417,14 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
 });
 
 System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc'], function (exports) {
-  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Color, Texture2D, director, MeshRenderer, Component, assetManager;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Color, Texture2D, director, ImageAsset, MeshRenderer, Component, assetManager;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
       _initializerDefineProperty = module.initializerDefineProperty;
       _inheritsLoose = module.inheritsLoose;
       _assertThisInitialized = module.assertThisInitialized;
+      _createForOfIteratorHelperLoose = module.createForOfIteratorHelperLoose;
       _createClass = module.createClass;
       _asyncToGenerator = module.asyncToGenerator;
       _regeneratorRuntime = module.regeneratorRuntime;
@@ -2433,6 +2434,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
       Color = module.Color;
       Texture2D = module.Texture2D;
       director = module.director;
+      ImageAsset = module.ImageAsset;
       MeshRenderer = module.MeshRenderer;
       Component = module.Component;
       assetManager = module.assetManager;
@@ -2558,6 +2560,24 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           }
           ColorTextureLibrary._i = this;
           director.addPersistRootNode(this.node);
+
+          // ── Создаём общий placeholder 1×1, чтобы прогреть инстансы материалов ещё до реальных картинок
+          try {
+            var canvas = document.createElement('canvas');
+            canvas.width = 1;
+            canvas.height = 1;
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 1, 1);
+            var img = new ImageAsset(canvas);
+            var tex = new Texture2D();
+            tex.image = img;
+
+            // если у темы нет sideTexture — пусть хотя бы будет этот placeholder
+            for (var _iterator = _createForOfIteratorHelperLoose(this.themes), _step; !(_step = _iterator()).done;) {
+              var t = _step.value;
+              if (!t.sideTexture) t.sideTexture = tex;
+            }
+          } catch (_unused) {/* ничего страшного, просто не будет преварма */}
         }
 
         // ===================== ТЕМЫ =====================
@@ -2605,13 +2625,13 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
             try {
               mat0.setProperty(this.color1Uniform, theme.color1);
               mat0.setProperty(this.color2Uniform, theme.color2);
-            } catch (_unused) {}
+            } catch (_unused2) {}
             var patternTex = this.resolvePatternTexture(seedForPattern, gidx, apiPatternIndex);
             if (patternTex) {
               try {
                 mat0.setProperty(this.textureUniform, patternTex);
                 this._swapAppliedRecord(mr, this.patternMatIndex, this.textureUniform, null);
-              } catch (_unused2) {}
+              } catch (_unused3) {}
             } else {
               this._applyNull(mr, this.patternMatIndex, this.textureUniform);
             }
@@ -2624,7 +2644,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
               try {
                 mat1.setProperty(this.sideTextureUniform, theme.sideTexture);
                 this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, null);
-              } catch (_unused3) {}
+              } catch (_unused4) {}
             } else {
               this._applyNull(mr, this.sideMatIndex, this.sideTextureUniform);
             }
@@ -2681,7 +2701,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                   }
                   return _context.abrupt("return", 'skipped');
                 case 6:
-                  themeTex = (_theme$sideTexture = theme == null ? void 0 : theme.sideTexture) != null ? _theme$sideTexture : null;
+                  themeTex = (_theme$sideTexture = theme == null ? void 0 : theme.sideTexture) != null ? _theme$sideTexture : null; // URL пустой → ставим тему или чистим
                   if (!(!url || url.trim() === '')) {
                     _context.next = 21;
                     break;
@@ -2703,6 +2723,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                   this._applyNull(mr, this.sideMatIndex, this.sideTextureUniform);
                   return _context.abrupt("return", 'cleared');
                 case 21:
+                  // защита от гонок
                   token = ((_this$_lastReqToken$g = this._lastReqToken.get(mr)) != null ? _this$_lastReqToken$g : 0) + 1;
                   this._lastReqToken.set(mr, token);
                   _context.next = 25;
@@ -2717,37 +2738,44 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                   return _context.abrupt("return", 'skipped');
                 case 29:
                   if (!tex) {
-                    _context.next = 39;
+                    _context.next = 41;
                     break;
                   }
                   _context.prev = 30;
+                  _context.next = 33;
+                  return new Promise(function (resolve) {
+                    if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(function () {
+                      return resolve();
+                    });else setTimeout(resolve, 0);
+                  });
+                case 33:
                   mat.setProperty(this.sideTextureUniform, tex);
                   this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, url);
                   return _context.abrupt("return", 'applied');
-                case 36:
-                  _context.prev = 36;
+                case 38:
+                  _context.prev = 38;
                   _context.t1 = _context["catch"](30);
                   this._release(url);
-                case 39:
+                case 41:
                   if (!themeTex) {
-                    _context.next = 48;
+                    _context.next = 50;
                     break;
                   }
-                  _context.prev = 40;
+                  _context.prev = 42;
                   mat.setProperty(this.sideTextureUniform, themeTex);
                   this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, null);
                   return _context.abrupt("return", 'theme');
-                case 46:
-                  _context.prev = 46;
-                  _context.t2 = _context["catch"](40);
                 case 48:
+                  _context.prev = 48;
+                  _context.t2 = _context["catch"](42);
+                case 50:
                   this._applyNull(mr, this.sideMatIndex, this.sideTextureUniform);
                   return _context.abrupt("return", 'cleared');
-                case 50:
+                case 52:
                 case "end":
                   return _context.stop();
               }
-            }, _callee, this, [[9, 15], [30, 36], [40, 46]]);
+            }, _callee, this, [[9, 15], [30, 38], [42, 48]]);
           }));
           function applyMainTextureFromUrlOrThemeSide(_x, _x2, _x3) {
             return _applyMainTextureFromUrlOrThemeSide.apply(this, arguments);
@@ -2761,7 +2789,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           if (!mat) return;
           try {
             mat.setProperty(uniform, null);
-          } catch (_unused7) {}
+          } catch (_unused8) {}
         };
         _proto._key = function _key(mi, u) {
           return mi + "|" + u;
@@ -2783,12 +2811,17 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           map.set(k, {
             url: url
           });
-        };
-        _proto._acquire = /*#__PURE__*/function () {
-          var _acquire2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(url, fallbackExt) {
-            var e, opts, tex;
-            return _regeneratorRuntime().wrap(function _callee2$(_context2) {
-              while (1) switch (_context2.prev = _context2.next) {
+        }
+
+        // ColorLibrary.ts — внутри ColorTextureLibrary
+        ;
+
+        _proto._acquire = /*#__PURE__*/
+        function () {
+          var _acquire2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(url, fallbackExt) {
+            var e, tex;
+            return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+              while (1) switch (_context3.prev = _context3.next) {
                 case 0:
                   e = this._urlEntry.get(url);
                   if (!e) {
@@ -2798,43 +2831,92 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                     this._urlEntry.set(url, e);
                   }
                   if (!e.tex) {
-                    _context2.next = 5;
+                    _context3.next = 5;
                     break;
                   }
                   e.refs++;
-                  return _context2.abrupt("return", e.tex);
+                  return _context3.abrupt("return", e.tex);
                 case 5:
                   if (!e.loading) {
-                    opts = /\.(png|jpg|jpeg|webp|bmp|gif)(\?|#|$)/i.test(url) ? undefined : {
-                      ext: fallbackExt
-                    };
-                    e.loading = new Promise(function (resolve) {
-                      assetManager.loadRemote(url, opts, function (err, imageAsset) {
-                        if (err || !imageAsset) {
-                          resolve(null);
-                          return;
+                    e.loading = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+                      var resp, blob, bmp, imageAsset, _tex;
+                      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                        while (1) switch (_context2.prev = _context2.next) {
+                          case 0:
+                            _context2.prev = 0;
+                            _context2.next = 3;
+                            return fetch(url, {
+                              cache: 'force-cache'
+                            });
+                          case 3:
+                            resp = _context2.sent;
+                            if (resp.ok) {
+                              _context2.next = 6;
+                              break;
+                            }
+                            return _context2.abrupt("return", null);
+                          case 6:
+                            _context2.next = 8;
+                            return resp.blob();
+                          case 8:
+                            blob = _context2.sent;
+                            _context2.next = 11;
+                            return createImageBitmap(blob, {
+                              premultiplyAlpha: 'premultiply',
+                              colorSpaceConversion: 'none'
+                              // при желании можно ограничить размер:
+                              // resizeWidth: 1024, resizeHeight: 1024, resizeQuality: 'high'
+                            });
+
+                          case 11:
+                            bmp = _context2.sent;
+                            // 3) заворачиваем в ImageAsset → Texture2D
+                            imageAsset = new ImageAsset(bmp);
+                            _tex = new Texture2D();
+                            _tex.image = imageAsset;
+                            return _context2.abrupt("return", _tex);
+                          case 18:
+                            _context2.prev = 18;
+                            _context2.t0 = _context2["catch"](0);
+                            _context2.next = 22;
+                            return new Promise(function (resolve) {
+                              var opts = /\.(png|jpg|jpeg|webp|bmp|gif)(\?|#|$)/i.test(url) ? undefined : {
+                                ext: fallbackExt
+                              };
+                              assetManager.loadRemote(url, opts, function (err, imageAsset) {
+                                if (err || !imageAsset) {
+                                  resolve(null);
+                                  return;
+                                }
+                                var tex = new Texture2D();
+                                tex.image = imageAsset;
+                                resolve(tex);
+                              });
+                            });
+                          case 22:
+                            return _context2.abrupt("return", _context2.sent);
+                          case 23:
+                          case "end":
+                            return _context2.stop();
                         }
-                        var tex = new Texture2D();
-                        tex.image = imageAsset;
-                        resolve(tex);
-                      });
-                    }).then(function (tex) {
+                      }, _callee2, null, [[0, 18]]);
+                    }))().then(function (tex) {
                       e.loading = undefined;
                       if (tex) e.tex = tex;
                       return tex;
                     });
                   }
-                  _context2.next = 8;
+                  _context3.next = 8;
                   return e.loading;
                 case 8:
-                  tex = _context2.sent;
+                  tex = _context3.sent;
                   if (tex) e.refs++;
-                  return _context2.abrupt("return", tex);
+                  return _context3.abrupt("return", tex);
                 case 11:
                 case "end":
-                  return _context2.stop();
+                  return _context3.stop();
               }
-            }, _callee2, this);
+            }, _callee3, this);
           }));
           function _acquire(_x4, _x5) {
             return _acquire2.apply(this, arguments);
@@ -2848,7 +2930,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           if (e.refs === 0 && e.tex) {
             try {
               e.tex.destroy();
-            } catch (_unused8) {}
+            } catch (_unused10) {}
             e.tex = undefined;
             this._urlEntry["delete"](url);
           }
@@ -2868,13 +2950,13 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           // если нужно — можно форснуть сборку до кадра
           try {
             t.rebuildNow == null || t.rebuildNow();
-          } catch (_unused9) {}
+          } catch (_unused11) {}
 
           // красим в СЛЕДУЮЩИЙ кадр — когда инстансы материалов точно будут
           this.scheduleOnce(function () {
             try {
               t.setTextColors(theme.textColor);
-            } catch (_unused10) {}
+            } catch (_unused12) {}
             if (!wasEnabled && t.freezeAfterBuild) t.enabled = false;
           }, 0);
         }
@@ -2885,13 +2967,13 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
          * Применить тему к биндингу: паттерн/боковая + цвет текста (если есть arcText).
          */;
         _proto.applyThemeToBinding = function applyThemeToBinding(binding, nameFromApi, gidx, seedForPattern, apiPatternIndex, seedForThemePick) {
-          var _ref, _ref2, _ref3, _getPreferredMeshRend, _binding$model, _binding$node;
+          var _ref2, _ref3, _ref4, _getPreferredMeshRend, _binding$model, _binding$node;
           if (!binding) return 'no-binding';
           var theme = this.resolveTheme(nameFromApi, seedForThemePick != null ? seedForThemePick : seedForPattern, gidx);
           if (!theme) return 'no-theme';
 
           // выберем MeshRenderer понадежнее (если нет getPreferredMeshRenderer)
-          var mr = (_ref = (_ref2 = (_ref3 = (_getPreferredMeshRend = binding.getPreferredMeshRenderer == null ? void 0 : binding.getPreferredMeshRenderer()) != null ? _getPreferredMeshRend : binding.meshRenderer) != null ? _ref3 : (_binding$model = binding.model) == null ? void 0 : _binding$model.getComponent(MeshRenderer)) != null ? _ref2 : (_binding$node = binding.node) == null ? void 0 : _binding$node.getComponent(MeshRenderer)) != null ? _ref : null;
+          var mr = (_ref2 = (_ref3 = (_ref4 = (_getPreferredMeshRend = binding.getPreferredMeshRenderer == null ? void 0 : binding.getPreferredMeshRenderer()) != null ? _getPreferredMeshRend : binding.meshRenderer) != null ? _ref4 : (_binding$model = binding.model) == null ? void 0 : _binding$model.getComponent(MeshRenderer)) != null ? _ref3 : (_binding$node = binding.node) == null ? void 0 : _binding$node.getComponent(MeshRenderer)) != null ? _ref2 : null;
           if (mr) {
             this.applyThemeForPiece(mr, theme, gidx, seedForPattern, apiPatternIndex);
           }
@@ -2902,14 +2984,14 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
         }
 
         /**
-         * Прокинуть текст из API в arcText через биндинг.
-         */;
+        * Прокинуть текст из API в arcText через биндинг.
+        * ВАЖНО: теперь ВСЕГДА применяем, даже если строки пустые — чтобы затереть старый текст.
+        */;
         _proto.applyApiTextToBinding = function applyApiTextToBinding(binding, data) {
           var _data$title, _data$name, _binding$arcText;
           if (!binding) return 'no-binding';
-          var t = ((_data$title = data.title) != null ? _data$title : '').trim();
-          var n = ((_data$name = data.name) != null ? _data$name : '').trim();
-          if (!t && !n) return 'no-text';
+          var t = (_data$title = data.title) != null ? _data$title : ''; // не trim — пустая строка должна сохраниться как есть
+          var n = (_data$name = data.name) != null ? _data$name : '';
           (_binding$arcText = binding.arcText) == null || _binding$arcText.applyApiData({
             title: t,
             name: n
@@ -2922,35 +3004,35 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
          */;
         _proto.applySideUrlOrThemeToBinding = /*#__PURE__*/
         function () {
-          var _applySideUrlOrThemeToBinding = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(binding, url, nameFromApiForTheme, gidx, seedForThemePick) {
+          var _applySideUrlOrThemeToBinding = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(binding, url, nameFromApiForTheme, gidx, seedForThemePick) {
             var _binding$getPreferred;
             var mr, theme;
-            return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-              while (1) switch (_context3.prev = _context3.next) {
+            return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+              while (1) switch (_context4.prev = _context4.next) {
                 case 0:
                   if (binding) {
-                    _context3.next = 2;
+                    _context4.next = 2;
                     break;
                   }
-                  return _context3.abrupt("return", 'no-binding');
+                  return _context4.abrupt("return", 'no-binding');
                 case 2:
                   mr = (_binding$getPreferred = binding.getPreferredMeshRenderer == null ? void 0 : binding.getPreferredMeshRenderer()) != null ? _binding$getPreferred : null;
                   if (mr) {
-                    _context3.next = 5;
+                    _context4.next = 5;
                     break;
                   }
-                  return _context3.abrupt("return", 'skipped');
+                  return _context4.abrupt("return", 'skipped');
                 case 5:
                   theme = this.resolveTheme(nameFromApiForTheme, seedForThemePick, gidx);
-                  _context3.next = 8;
+                  _context4.next = 8;
                   return this.applyMainTextureFromUrlOrThemeSide(mr, url, theme != null ? theme : undefined);
                 case 8:
-                  return _context3.abrupt("return", _context3.sent);
+                  return _context4.abrupt("return", _context4.sent);
                 case 9:
                 case "end":
-                  return _context3.stop();
+                  return _context4.stop();
               }
-            }, _callee3, this);
+            }, _callee4, this);
           }));
           function applySideUrlOrThemeToBinding(_x6, _x7, _x8, _x9, _x10) {
             return _applySideUrlOrThemeToBinding.apply(this, arguments);
@@ -3128,7 +3210,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       ColorTextureLibrary = module.ColorTextureLibrary;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _descriptor42, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _dec36, _dec37, _dec38, _dec39, _dec40, _dec41, _dec42, _dec43, _dec44, _dec45, _dec46, _dec47, _dec48, _dec49, _dec50, _dec51, _dec52, _dec53, _dec54, _dec55, _dec56, _dec57, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _descriptor37, _descriptor38, _descriptor39, _descriptor40, _descriptor41, _descriptor42, _descriptor43, _descriptor44, _descriptor45, _descriptor46, _descriptor47, _descriptor48, _descriptor49, _descriptor50, _descriptor51, _descriptor52, _descriptor53, _descriptor54, _descriptor55, _descriptor56;
       cclegacy._RF.push({}, "4bd86blOoRLpq75wEwnh3v5", "GlobalClickManager", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -3293,223 +3375,251 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         },
         displayOrder: 2
       }), _dec22 = property({
-        tooltip: 'Мировое расстояние выезда (ед.) ПК',
+        tooltip: 'Мировое расстояние выезда по X (ПК)',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 1
       }), _dec23 = property({
-        tooltip: 'Мировое расстояние выезда (ед.) Мобилка',
+        tooltip: 'Мировое расстояние выезда по X (Мобилка)',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 2
       }), _dec24 = property({
-        tooltip: 'Easing для выезда/заезда',
+        tooltip: 'Доп. смещение по Y (мир) для ПК',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 3
       }), _dec25 = property({
-        tooltip: 'Длительность выезда/заезда',
+        tooltip: 'Доп. смещение по Y (мир) для мобилки',
         group: {
           name: 'SLIDE',
           id: 'slide'
         },
         displayOrder: 4
       }), _dec26 = property({
+        tooltip: 'Доп. смещение по Z (мир) для ПК',
+        group: {
+          name: 'SLIDE',
+          id: 'slide'
+        },
+        displayOrder: 5
+      }), _dec27 = property({
+        tooltip: 'Доп. смещение по Z (мир) для мобилки',
+        group: {
+          name: 'SLIDE',
+          id: 'slide'
+        },
+        displayOrder: 6
+      }), _dec28 = property({
+        tooltip: 'Easing для выезда/заезда',
+        group: {
+          name: 'SLIDE',
+          id: 'slide'
+        },
+        displayOrder: 7
+      }), _dec29 = property({
+        tooltip: 'Длительность выезда/заезда',
+        group: {
+          name: 'SLIDE',
+          id: 'slide'
+        },
+        displayOrder: 8
+      }), _dec30 = property({
         tooltip: 'Локальный угол «лицом» (0=+Z, 90=+X)',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 1
-      }), _dec27 = property({
+      }), _dec31 = property({
         tooltip: '+180° инверт оси модели',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 2
-      }), _dec28 = property({
+      }), _dec32 = property({
         tooltip: 'Фазовый сдвиг слота',
         group: {
           name: 'ROOT ROTATION',
           id: 'rootrot'
         },
         displayOrder: 3
-      }), _dec29 = property({
+      }), _dec33 = property({
         tooltip: 'Длительность возврата модели к базе',
         group: {
           name: 'MODEL CLOSE',
           id: 'mclose'
         },
         displayOrder: 1
-      }), _dec30 = property({
+      }), _dec34 = property({
         tooltip: 'Easing возврата модели',
         group: {
           name: 'MODEL CLOSE',
           id: 'mclose'
         },
         displayOrder: 2
-      }), _dec31 = property({
+      }), _dec35 = property({
         tooltip: 'Origin родителя для postMessage; пусто = *',
         group: {
           name: 'INTEGRATION',
           id: 'events'
         },
         displayOrder: 1
-      }), _dec32 = property({
+      }), _dec36 = property({
         tooltip: 'Грузить картинку при клике на кусок',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 1
-      }), _dec33 = property({
+      }), _dec37 = property({
         tooltip: 'Индекс материала для MainTexture',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 2
-      }), _dec34 = property({
+      }), _dec38 = property({
         tooltip: 'Имя юниформа текстуры в шейдере',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 3
-      }), _dec35 = property({
+      }), _dec39 = property({
         tooltip: 'Подсказка расширения, если URL без него',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 4
-      }), _dec36 = property({
+      }), _dec40 = property({
         tooltip: 'Очищать MainTexture при закрытии',
         group: {
           name: 'IMAGE LOADER',
           id: 'img'
         },
         displayOrder: 5
-      }), _dec37 = property({
+      }), _dec41 = property({
         tooltip: 'Длительность полного оборота (360°)',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 1
-      }), _dec38 = property({
+      }), _dec42 = property({
         tooltip: 'Доп. доворот после 360° (deg)',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 2
-      }), _dec39 = property({
+      }), _dec43 = property({
         tooltip: 'Длительность доп. доворота',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 3
-      }), _dec40 = property({
+      }), _dec44 = property({
         tooltip: 'Easing для 360°+extra',
         group: {
           name: 'OPEN SPIN',
           id: 'ospin'
         },
         displayOrder: 4
-      }), _dec41 = property({
+      }), _dec45 = property({
         tooltip: 'Включать idle-анимацию после открытия',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 1
-      }), _dec42 = property({
+      }), _dec46 = property({
         tooltip: 'Амплитуда idle по X (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 2
-      }), _dec43 = property({
+      }), _dec47 = property({
         tooltip: 'Амплитуда idle по Y (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 3
-      }), _dec44 = property({
+      }), _dec48 = property({
         tooltip: 'Амплитуда idle по Z (градусы)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 4
-      }), _dec45 = property({
+      }), _dec49 = property({
         tooltip: 'Длительность одного полного idle-цикла (сек)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 5
-      }), _dec46 = property({
+      }), _dec50 = property({
         tooltip: 'Включить доп.пинг-понг по Y (поверх синуса)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 6
-      }), _dec47 = property({
+      }), _dec51 = property({
         tooltip: 'Минимальный относительный угол по Y (deg) для пинг-понга',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 7
-      }), _dec48 = property({
+      }), _dec52 = property({
         tooltip: 'Максимальный относительный угол по Y (deg) для пинг-понга',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 8
-      }), _dec49 = property({
+      }), _dec53 = property({
         tooltip: 'Фазовый сдвиг синуса по Y (рад)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 9
-      }), _dec50 = property({
+      }), _dec54 = property({
         tooltip: 'Длительность плавного входа в idle (сек)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 10
-      }), _dec51 = property({
+      }), _dec55 = property({
         tooltip: 'Кривизна easing при входе (0..1)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 11
-      }), _dec52 = property({
+      }), _dec56 = property({
         tooltip: 'Скорость именно пинг-понга по Y (множитель)',
         group: {
           name: 'IDLE',
           id: 'idle'
         },
         displayOrder: 12
-      }), _dec53 = property({
+      }), _dec57 = property({
         tooltip: 'Idle: стартовать к дальнему углу (а не к ближайшему)',
         group: {
           name: 'IDLE',
@@ -3552,42 +3662,46 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           // ===================== [SLIDE OUT/IN] =====================
           _initializerDefineProperty(_this, "openWorldDistance", _descriptor21, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "openWorldDistanceMobile", _descriptor22, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideEasing", _descriptor23, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slideDuration", _descriptor24, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldOffsetYDesktop", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldOffsetYMobile", _descriptor24, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldOffsetZDesktop", _descriptor25, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "openWorldOffsetZMobile", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideEasing", _descriptor27, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slideDuration", _descriptor28, _assertThisInitialized(_this));
           // ===================== [ROOT FACING / SLOT ALIGN] =====================
-          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor25, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor26, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor27, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceYawLocalDeg", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "invertPieceAxis", _descriptor30, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "slotPhaseShift", _descriptor31, _assertThisInitialized(_this));
           // ===================== [MODEL CLOSE BACK TO BASE] =====================
-          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor28, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateDuration", _descriptor32, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelRotateEasing", _descriptor33, _assertThisInitialized(_this));
           // ===================== [EVENTS / INTEGRATION] =====================
-          _initializerDefineProperty(_this, "parentOrigin", _descriptor30, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "parentOrigin", _descriptor34, _assertThisInitialized(_this));
           // ===================== [IMAGE LOADER] =====================
-          _initializerDefineProperty(_this, "loadImageOnClick", _descriptor31, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageMatIndex", _descriptor32, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageUniform", _descriptor33, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "imageFallbackExt", _descriptor34, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "clearImageOnClose", _descriptor35, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "loadImageOnClick", _descriptor35, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageMatIndex", _descriptor36, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageUniform", _descriptor37, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imageFallbackExt", _descriptor38, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "clearImageOnClose", _descriptor39, _assertThisInitialized(_this));
           // ===================== [OPEN SPIN (360° + EXTRA)] =====================
-          _initializerDefineProperty(_this, "modelSpin360Duration", _descriptor36, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelExtraYawDeg", _descriptor37, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelExtraYawDuration", _descriptor38, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "modelSpinEasing", _descriptor39, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelSpin360Duration", _descriptor40, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelExtraYawDeg", _descriptor41, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelExtraYawDuration", _descriptor42, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "modelSpinEasing", _descriptor43, _assertThisInitialized(_this));
           // ===================== [IDLE ANIMATION] =====================
-          _initializerDefineProperty(_this, "enableIdleAnimation", _descriptor40, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpX", _descriptor41, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpY", _descriptor42, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleAmpZ", _descriptor43, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleCycleSeconds", _descriptor44, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeEnabled", _descriptor45, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeMinDeg", _descriptor46, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeMaxDeg", _descriptor47, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idlePhaseY", _descriptor48, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleBlendInSeconds", _descriptor49, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleBlendCurve", _descriptor50, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleYRangeSpeed", _descriptor51, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "idleStartFar", _descriptor52, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "enableIdleAnimation", _descriptor44, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpX", _descriptor45, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpY", _descriptor46, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleAmpZ", _descriptor47, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleCycleSeconds", _descriptor48, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeEnabled", _descriptor49, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeMinDeg", _descriptor50, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeMaxDeg", _descriptor51, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idlePhaseY", _descriptor52, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleBlendInSeconds", _descriptor53, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleBlendCurve", _descriptor54, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleYRangeSpeed", _descriptor55, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "idleStartFar", _descriptor56, _assertThisInitialized(_this));
           // ======= STATE =======
           _this.fsm = State.Idle;
           _this.clickedLevel = 0;
@@ -3595,6 +3709,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           _this.currentPiece = null;
           _this.currentBinding = null;
           _this.baseLocalX = new Map();
+          // оставлено для совместимости
+          _this.baseLocalPos = new Map();
+          // новая база (x,y,z)
           _this.modelBaseEuler = new Map();
           _this.rotateTween = null;
           _this.modelTween = null;
@@ -3943,14 +4060,14 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           });
         }
 
-        // ====== SLIDE WITH SCALE COMP ======
+        // ====== SLIDE WITH SCALE COMP (X,Y,Z) ======
         ;
 
         _proto.slideOutWithScaleComp = /*#__PURE__*/
         function () {
           var _slideOutWithScaleComp = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
-            var _this$currentBinding$, _parent$worldScale$x;
-            var target, parent, sx, worldDx, localDx, baseX, toX, pullPs, pullObj, _pullPs, _pullPs2, _pullPs3;
+            var _this$currentBinding$, _parent$worldScale;
+            var target, parent, ws, worldDx, worldDy, worldDz, localDx, localDy, localDz, base, to, pullPs, pullObj, _pullPs, _pullPs2, _pullPs3;
             return _regeneratorRuntime().wrap(function _callee4$(_context4) {
               while (1) switch (_context4.prev = _context4.next) {
                 case 0:
@@ -3962,15 +4079,19 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                 case 2:
                   target = (_this$currentBinding$ = this.currentBinding.target) != null ? _this$currentBinding$ : this.currentPiece;
                   parent = target.parent;
-                  sx = (_parent$worldScale$x = parent == null ? void 0 : parent.worldScale.x) != null ? _parent$worldScale$x : 1;
+                  ws = (_parent$worldScale = parent == null ? void 0 : parent.worldScale) != null ? _parent$worldScale : new Vec3(1, 1, 1); // Мировые смещения для X/Y/Z (разные для ПК/мобилки)
                   worldDx = this.isMobile ? this.openWorldDistanceMobile : this.openWorldDistance;
-                  localDx = worldDx / Math.max(1e-6, sx);
-                  if (!this.baseLocalX.has(target)) this.baseLocalX.set(target, target.position.x);
-                  baseX = this.baseLocalX.get(target);
-                  toX = baseX + localDx;
-                  _context4.next = 12;
-                  return this.tweenLocalX(target, toX, this.slideDuration, this.slideEasing);
-                case 12:
+                  worldDy = this.isMobile ? this.openWorldOffsetYMobile : this.openWorldOffsetYDesktop;
+                  worldDz = this.isMobile ? this.openWorldOffsetZMobile : this.openWorldOffsetZDesktop; // Пересчёт в локальные с учётом неравномерного скейла родителя
+                  localDx = worldDx / Math.max(1e-6, ws.x);
+                  localDy = worldDy / Math.max(1e-6, ws.y);
+                  localDz = worldDz / Math.max(1e-6, ws.z); // Запоминание базовой локальной позиции
+                  if (!this.baseLocalPos.has(target)) this.baseLocalPos.set(target, target.position.clone());
+                  base = this.baseLocalPos.get(target).clone();
+                  to = new Vec3(base.x + localDx, base.y + localDy, base.z + localDz);
+                  _context4.next = 16;
+                  return this.tweenLocalPos(target, to, this.slideDuration, this.slideEasing);
+                case 16:
                   // партикл выезда — берём из биндинга
                   pullPs = null;
                   pullObj = this.currentBinding.pullParticleObject;
@@ -3985,7 +4106,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                       (_pullPs3 = pullPs) == null || _pullPs3.play();
                     } catch (_unused4) {}
                   }
-                case 15:
+                case 19:
                 case "end":
                   return _context4.stop();
               }
@@ -4008,7 +4129,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.closeAndInsert = /*#__PURE__*/function () {
           var _closeAndInsert = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee5(emitToParent) {
             var _this$currentBinding$2, _this$currentBinding3, _this$currentBinding4;
-            var pullObj, ps, L, S, _this$currentBinding$3, _this$baseLocalX$get, target, baseX, ctl, _this$currentBinding$4, targetNode;
+            var pullObj, ps, L, S, _this$currentBinding$3, _this$baseLocalPos$ge, target, base, ctl, _this$currentBinding$4, targetNode;
             return _regeneratorRuntime().wrap(function _callee5$(_context5) {
               while (1) switch (_context5.prev = _context5.next) {
                 case 0:
@@ -4047,9 +4168,9 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                     break;
                   }
                   target = (_this$currentBinding$3 = this.currentBinding.target) != null ? _this$currentBinding$3 : this.currentPiece;
-                  baseX = (_this$baseLocalX$get = this.baseLocalX.get(target)) != null ? _this$baseLocalX$get : target.position.x;
+                  base = (_this$baseLocalPos$ge = this.baseLocalPos.get(target)) != null ? _this$baseLocalPos$ge : target.position.clone();
                   _context5.next = 21;
-                  return this.tweenLocalX(target, baseX, this.slideDuration, this.slideEasing);
+                  return this.tweenLocalPos(target, base.clone(), this.slideDuration, this.slideEasing);
                 case 21:
                   if (this.clearImageOnClose) {
                     ctl = ColorTextureLibrary.instance;
@@ -4110,6 +4231,35 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
               onUpdate: function onUpdate() {
                 var p = node.position.clone();
                 p.x = start.x + (toX - start.x) * drv.t;
+                node.setPosition(p);
+              }
+            }).call(function () {
+              return resolve();
+            }).start();
+          });
+        }
+
+        // === Новый универсальный твинг локальной позиции (x,y,z)
+        ;
+
+        _proto.tweenLocalPos = function tweenLocalPos(node, to, duration, easing) {
+          return new Promise(function (resolve) {
+            var start = node.position.clone();
+            var delta = to.clone().subtract(start);
+            if (delta.length() < 1e-4 || duration <= 0) {
+              node.setPosition(to);
+              resolve();
+              return;
+            }
+            var drv = {
+              t: 0
+            };
+            tween(drv).to(duration, {
+              t: 1
+            }, {
+              easing: easing,
+              onUpdate: function onUpdate() {
+                var p = new Vec3(start.x + (to.x - start.x) * drv.t, start.y + (to.y - start.y) * drv.t, start.z + (to.z - start.z) * drv.t);
                 node.setPosition(p);
               }
             }).call(function () {
@@ -4495,7 +4645,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           return g;
         }
 
-        /** Простой FNV-1a 32-bit для строк (стабильный и быстрый) */;
+        /** Простой FNV-1а 32-bit для строк (стабильный и быстрый) */;
         _proto._fnv1a32 = function _fnv1a32(s) {
           var h = 0x811c9dc5 >>> 0;
           for (var i = 0; i < s.length; i++) {
@@ -4670,210 +4820,238 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         initializer: function initializer() {
           return 0.6;
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [_dec24], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'quadOut';
-        }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [_dec25], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0.25;
-        }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [_dec26], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0;
-        }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [_dec27], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return false;
-        }
-      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [_dec28], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0;
-        }
-      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [_dec29], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0.25;
-        }
-      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [_dec30], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'quadOut';
-        }
-      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec31], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return '';
-        }
-      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "loadImageOnClick", [_dec32], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return true;
-        }
-      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "imageMatIndex", [_dec33], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 1;
-        }
-      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "imageUniform", [_dec34], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'MainTexture';
-        }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "imageFallbackExt", [_dec35], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return '.jpg';
-        }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "clearImageOnClose", [_dec36], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return false;
-        }
-      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "modelSpin360Duration", [_dec37], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0.6;
-        }
-      }), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDeg", [_dec38], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 30;
-        }
-      }), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDuration", [_dec39], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0.25;
-        }
-      }), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "modelSpinEasing", [_dec40], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 'quadOut';
-        }
-      }), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "enableIdleAnimation", [_dec41], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return true;
-        }
-      }), _descriptor41 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpX", [_dec42], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 5;
-        }
-      }), _descriptor42 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpY", [_dec43], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 10;
-        }
-      }), _descriptor43 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpZ", [_dec44], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 5;
-        }
-      }), _descriptor44 = _applyDecoratedDescriptor(_class2.prototype, "idleCycleSeconds", [_dec45], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 3.0;
-        }
-      }), _descriptor45 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeEnabled", [_dec46], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return true;
-        }
-      }), _descriptor46 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMinDeg", [_dec47], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return -10;
-        }
-      }), _descriptor47 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMaxDeg", [_dec48], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 10;
-        }
-      }), _descriptor48 = _applyDecoratedDescriptor(_class2.prototype, "idlePhaseY", [_dec49], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return Math.PI / 3;
-        }
-      }), _descriptor49 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendInSeconds", [_dec50], {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        initializer: function initializer() {
-          return 0.4;
-        }
-      }), _descriptor50 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendCurve", [_dec51], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "openWorldOffsetYDesktop", [_dec24], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0.0;
         }
-      }), _descriptor51 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeSpeed", [_dec52], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "openWorldOffsetYMobile", [_dec25], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.0;
+        }
+      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "openWorldOffsetZDesktop", [_dec26], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.0;
+        }
+      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "openWorldOffsetZMobile", [_dec27], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.0;
+        }
+      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "slideEasing", [_dec28], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 'quadOut';
+        }
+      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "slideDuration", [_dec29], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.25;
+        }
+      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "faceYawLocalDeg", [_dec30], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0;
+        }
+      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "invertPieceAxis", [_dec31], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "slotPhaseShift", [_dec32], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0;
+        }
+      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateDuration", [_dec33], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.25;
+        }
+      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "modelRotateEasing", [_dec34], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 'quadOut';
+        }
+      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "parentOrigin", [_dec35], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return '';
+        }
+      }), _descriptor35 = _applyDecoratedDescriptor(_class2.prototype, "loadImageOnClick", [_dec36], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor36 = _applyDecoratedDescriptor(_class2.prototype, "imageMatIndex", [_dec37], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1;
+        }
+      }), _descriptor37 = _applyDecoratedDescriptor(_class2.prototype, "imageUniform", [_dec38], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 'MainTexture';
+        }
+      }), _descriptor38 = _applyDecoratedDescriptor(_class2.prototype, "imageFallbackExt", [_dec39], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return '.jpg';
+        }
+      }), _descriptor39 = _applyDecoratedDescriptor(_class2.prototype, "clearImageOnClose", [_dec40], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return false;
+        }
+      }), _descriptor40 = _applyDecoratedDescriptor(_class2.prototype, "modelSpin360Duration", [_dec41], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.6;
+        }
+      }), _descriptor41 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDeg", [_dec42], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 30;
+        }
+      }), _descriptor42 = _applyDecoratedDescriptor(_class2.prototype, "modelExtraYawDuration", [_dec43], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.25;
+        }
+      }), _descriptor43 = _applyDecoratedDescriptor(_class2.prototype, "modelSpinEasing", [_dec44], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 'quadOut';
+        }
+      }), _descriptor44 = _applyDecoratedDescriptor(_class2.prototype, "enableIdleAnimation", [_dec45], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor45 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpX", [_dec46], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 5;
+        }
+      }), _descriptor46 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpY", [_dec47], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 10;
+        }
+      }), _descriptor47 = _applyDecoratedDescriptor(_class2.prototype, "idleAmpZ", [_dec48], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 5;
+        }
+      }), _descriptor48 = _applyDecoratedDescriptor(_class2.prototype, "idleCycleSeconds", [_dec49], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 3.0;
+        }
+      }), _descriptor49 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeEnabled", [_dec50], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return true;
+        }
+      }), _descriptor50 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMinDeg", [_dec51], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return -10;
+        }
+      }), _descriptor51 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeMaxDeg", [_dec52], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 10;
+        }
+      }), _descriptor52 = _applyDecoratedDescriptor(_class2.prototype, "idlePhaseY", [_dec53], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return Math.PI / 3;
+        }
+      }), _descriptor53 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendInSeconds", [_dec54], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.4;
+        }
+      }), _descriptor54 = _applyDecoratedDescriptor(_class2.prototype, "idleBlendCurve", [_dec55], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.0;
+        }
+      }), _descriptor55 = _applyDecoratedDescriptor(_class2.prototype, "idleYRangeSpeed", [_dec56], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1.0;
         }
-      }), _descriptor52 = _applyDecoratedDescriptor(_class2.prototype, "idleStartFar", [_dec53], {
+      }), _descriptor56 = _applyDecoratedDescriptor(_class2.prototype, "idleStartFar", [_dec57], {
         configurable: true,
         enumerable: true,
         writable: true,
@@ -5655,7 +5833,7 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
       MOUSE_ID = module.MOUSE_ID;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8;
       cclegacy._RF.push({}, "717452jV8ZDv7JZnElpm+X0", "RotateYByKeys", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -5671,6 +5849,10 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
         tooltip: 'Плавность вращения (сек) — и разгон, и отпускание'
       }), _dec7 = property({
         tooltip: 'Инвертировать направление вращения'
+      }), _dec8 = property({
+        tooltip: 'Градусов на 1 «тик» колесика/тачпада (delta=120). Для трекпада подберите 0.5–2.5'
+      }), _dec9 = property({
+        tooltip: 'Фильтр мелких движений трекпада: минимальный поворот (°) за событие'
       }), _dec(_class = (_class2 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(RotateYByKeys, _Component);
         function RotateYByKeys() {
@@ -5685,10 +5867,15 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           _initializerDefineProperty(_this, "startMoveOffsetDeg", _descriptor4, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "angularSmoothTime", _descriptor5, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "invert", _descriptor6, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "degPerWheelTick", _descriptor7, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "wheelMinStepDeg", _descriptor8, _assertThisInitialized(_this));
           // --- клавиатура
           _this.keyDir = 0;
           _this.kbAccumDeg = 0;
           _this.kbActive = false;
+          // удержания для A/← и D/→
+          _this.keyLeftHeld = false;
+          _this.keyRightHeld = false;
           // --- тач
           _this.activeTouchId = null;
           _this.touchStartX = null;
@@ -5712,7 +5899,15 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           return _this;
         }
         var _proto = RotateYByKeys.prototype;
-        // градусы за кадр из поинтера
+        _proto._recalcKeyDir = function _recalcKeyDir() {
+          var dir = (this.keyRightHeld ? 1 : 0) + (this.keyLeftHeld ? -1 : 0);
+          this.keyDir = dir;
+          if (this.keyDir === 0) {
+            this.kbAccumDeg = 0;
+            this.kbActive = false;
+          }
+        };
+        // градусы за кадр из поинтера (drag/тач/тачпад)
         _proto._resetInteractionIfStuck = function _resetInteractionIfStuck() {
           InteractionState.hardReset();
         }
@@ -5724,6 +5919,8 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           this.keyDir = 0;
           this.kbAccumDeg = 0;
           this.kbActive = false;
+          this.keyLeftHeld = false;
+          this.keyRightHeld = false;
           this.mouseHeld = false;
           this.mouseDragging = false;
           this.mouseAccumDeg = 0;
@@ -5745,6 +5942,9 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
           input.on(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
           input.on(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+
+          // НОВОЕ: трекпад/колесо с горизонтальным скроллом
+          input.on(Input.EventType.MOUSE_WHEEL, this.onWheel, this);
         };
         _proto.onDisable = function onDisable() {
           input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
@@ -5756,21 +5956,45 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
           input.off(Input.EventType.MOUSE_MOVE, this.onMouseMove, this);
           input.off(Input.EventType.MOUSE_UP, this.onMouseUp, this);
+          input.off(Input.EventType.MOUSE_WHEEL, this.onWheel, this);
         }
 
         // === клавиатура
         ;
 
         _proto.onKeyDown = function onKeyDown(e) {
-          if (e.keyCode === KeyCode.KEY_A) this.keyDir = -1;else if (e.keyCode === KeyCode.KEY_D) this.keyDir = 1;
+          var _e$event;
+          (_e$event = e.event) == null || _e$event.preventDefault == null || _e$event.preventDefault();
+          switch (e.keyCode) {
+            case KeyCode.KEY_A:
+            case KeyCode.ARROW_LEFT:
+              this.keyLeftHeld = true;
+              break;
+            case KeyCode.KEY_D:
+            case KeyCode.ARROW_RIGHT:
+              this.keyRightHeld = true;
+              break;
+            default:
+              return;
+          }
+          this._recalcKeyDir();
         };
         _proto.onKeyUp = function onKeyUp(e) {
-          var wasDir = e.keyCode === KeyCode.KEY_A && this.keyDir === -1 || e.keyCode === KeyCode.KEY_D && this.keyDir === 1;
-          if (wasDir) {
-            this.keyDir = 0;
-            this.kbAccumDeg = 0;
-            this.kbActive = false;
+          var _e$event2;
+          (_e$event2 = e.event) == null || _e$event2.preventDefault == null || _e$event2.preventDefault();
+          switch (e.keyCode) {
+            case KeyCode.KEY_A:
+            case KeyCode.ARROW_LEFT:
+              this.keyLeftHeld = false;
+              break;
+            case KeyCode.KEY_D:
+            case KeyCode.ARROW_RIGHT:
+              this.keyRightHeld = false;
+              break;
+            default:
+              return;
           }
+          this._recalcKeyDir();
         }
 
         // === тач (ленивый захват)
@@ -5891,11 +6115,44 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           this.mouseClaimed = false;
         }
 
+        // === ТРЕКПАД/КОЛЕСО: горизонтальный двухпальцевый скролл → поворот
+        ;
+
+        _proto.onWheel = function onWheel(e) {
+          var _e$event3;
+          // В вебе гасим дефолт (чтобы страница не уезжала вбок)
+          (_e$event3 = e.event) == null || _e$event3.preventDefault == null || _e$event3.preventDefault();
+
+          // На трекпадах горизонтальный жест приходит в getScrollX().
+          // У классических мышей тоже может быть tilt колеса.
+          var rawDx = e.getScrollX();
+          if (rawDx === 0) return;
+
+          // Нормализуем «тиковость»: 120 — стандартное колесо.
+          var ticks = rawDx / 120;
+
+          // Знак: Cocos даёт положительный dx при скролле вправо.
+          var sign = this.invert ? -1 : 1;
+          var deg = -ticks * this.degPerWheelTick * sign; // минус — чтобы dx>0 соответствовал повороту вправо
+
+          // Отсечём микродребезг трекпада
+          if (Math.abs(deg) < this.wheelMinStepDeg) return;
+
+          // Кидаем в ту же трубу, что и drag/тач — сглаживание общее
+          this.pendingDegFromPointer += deg;
+
+          // Помечаем «локальную активность», чтобы корректно сбрасывалась инерция
+          this.mouseActive = true;
+          // Быстрый автосброс флага активности после одного кадра обрабатывается в update(), где мы проверяем локальную активность по скорости/вводу
+        }
+
         // === апдейт / инерция
         ;
 
         _proto.update = function update(dt) {
           var sign = this.invert ? -1 : 1;
+
+          // клавиатура с порогом старта
           if (this.keyDir !== 0) {
             if (!this.kbActive) {
               this.kbAccumDeg += Math.abs(this.rotateSpeed * dt);
@@ -5920,6 +6177,9 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
           if (!InteractionState.inGesture && !localActive && InteractionState.isRotating) {
             InteractionState.isRotating = false;
           }
+
+          // авто-затухание «активности мыши» после обработки событий колеса
+          this.mouseActive = false;
           if (!localActive && Math.abs(this.angVel) < 0.05) this.angVel = 0;
         };
         return RotateYByKeys;
@@ -5964,6 +6224,20 @@ System.register("chunks:///_virtual/RotateYByKeys.ts", ['./rollupPluginModLoBabe
         writable: true,
         initializer: function initializer() {
           return true;
+        }
+      }), _descriptor7 = _applyDecoratedDescriptor(_class2.prototype, "degPerWheelTick", [_dec8], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1.2;
+        }
+      }), _descriptor8 = _applyDecoratedDescriptor(_class2.prototype, "wheelMinStepDeg", [_dec9], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.1;
         }
       })), _class2)) || _class));
       cclegacy._RF.pop();
@@ -7461,14 +7735,37 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
         ;
 
         _proto.onKeyDown = function onKeyDown(e) {
+          var _e$event, _e$event$bind;
           if (!this._inputEnabled) return;
-          if (e.keyCode === KeyCode.KEY_W) this.keyHeldW = true;
-          if (e.keyCode === KeyCode.KEY_S) this.keyHeldS = true;
+
+          // чтобы браузер не скроллил страницу при нажатии стрелок/пробела на вебе
+          // (в Cocos Creator в e.event лежит исходное DOM-событие)
+          (_e$event = e.event) == null || (_e$event = _e$event.preventDefault) == null || (_e$event$bind = _e$event.bind(e.event)) == null || _e$event$bind();
+          switch (e.keyCode) {
+            case KeyCode.KEY_W:
+            case KeyCode.ARROW_UP:
+              this.keyHeldW = true;
+              break;
+            case KeyCode.KEY_S:
+            case KeyCode.ARROW_DOWN:
+              this.keyHeldS = true;
+              break;
+          }
         };
         _proto.onKeyUp = function onKeyUp(e) {
+          var _e$event2, _e$event2$bind;
           if (!this._inputEnabled) return;
-          if (e.keyCode === KeyCode.KEY_W) this.keyHeldW = false;
-          if (e.keyCode === KeyCode.KEY_S) this.keyHeldS = false;
+          (_e$event2 = e.event) == null || (_e$event2 = _e$event2.preventDefault) == null || (_e$event2$bind = _e$event2.bind(e.event)) == null || _e$event2$bind();
+          switch (e.keyCode) {
+            case KeyCode.KEY_W:
+            case KeyCode.ARROW_UP:
+              this.keyHeldW = false;
+              break;
+            case KeyCode.KEY_S:
+            case KeyCode.ARROW_DOWN:
+              this.keyHeldS = false;
+              break;
+          }
         };
         _createClass(TowerScrollController, [{
           key: "offset",
@@ -7505,7 +7802,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
 });
 
 System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './ColorLibrary.ts', './TowerScrollController.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, sys, instantiate, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
+  var _applyDecoratedDescriptor, _initializerDefineProperty, _inheritsLoose, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Prefab, Label, sys, instantiate, MeshRenderer, Component, ClickMoveBinding, ColorTextureLibrary, TowerScrollController;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -7523,6 +7820,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       Label = module.Label;
       sys = module.sys;
       instantiate = module.instantiate;
+      MeshRenderer = module.MeshRenderer;
       Component = module.Component;
     }, function (module) {
       ClickMoveBinding = module.ClickMoveBinding;
@@ -7532,7 +7830,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       TowerScrollController = module.TowerScrollController;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _class6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _dec24, _dec25, _dec26, _dec27, _dec28, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _dec29, _dec30, _dec31, _dec32, _dec33, _dec34, _dec35, _class4, _class5, _descriptor31, _descriptor32, _descriptor33, _descriptor34, _descriptor35, _descriptor36, _class6;
       cclegacy._RF.push({}, "368ffNUv4lFSZtXbbDm9TB3", "TVS_SpawnLayout", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property;
@@ -7851,8 +8149,10 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
       }), _dec32 = property({
         type: [String]
       }), _dec33 = property({
-        tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
+        tooltip: 'Сколько реальных картинок (GPU upload) можно ставить за кадр'
       }), _dec34 = property({
+        tooltip: 'Сколько уровней дополнительно вокруг окна, где реально ставим текст'
+      }), _dec35 = property({
         tooltip: 'Сколько текстов обновлять за кадр'
       }), _dec29(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(TowerLayoutController, _Component);
@@ -7865,6 +8165,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           _initializerDefineProperty(_this, "spawn", _descriptor31, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "scrollCtrl", _descriptor32, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "Falenames", _descriptor33, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "imagesPerFrame", _descriptor34, _assertThisInitialized(_this));
+          _this._imagesBudget = 0;
           /* пул: фикс. размер = vis*per; порядок — сверху вниз */
           _this.pool = [];
           _this.nodeLevelInfo = new Map();
@@ -7876,8 +8178,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           // чтобы не шлать дубли
           /* текстовая очередь */
           _this.textUpdateQueue = [];
-          _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor34, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "textsPerFrame", _descriptor35, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "textActivationMarginLevels", _descriptor35, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "textsPerFrame", _descriptor36, _assertThisInitialized(_this));
           /* ring buffer состояние */
           _this.prevTopBase = -1;
           /* ===================== scroll events ===================== */
@@ -7965,6 +8267,15 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (!this.lib) console.warn('[TowerLayoutController] ColorTextureLibrary.instance не найден — добавьте компонент на сцену.');
           // ПЕРЕД любой сборкой пула — переписываем профиль (чтобы не залипали старые значения)
           this.applyDeviceParamsAndRelayout(true);
+        };
+        _proto.boolFromYesNo = function boolFromYesNo(v) {
+          if (typeof v === 'string') {
+            var s = v.trim().toLowerCase();
+            if (s === 'yes') return true;
+            if (s === 'no') return false;
+          }
+          if (typeof v === 'boolean') return v;
+          return null;
         };
         _proto.onEnable = /*#__PURE__*/function () {
           var _onEnable = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
@@ -8223,7 +8534,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
           // важный момент: ПОЛНАЯ замена массива, без .push к старому
           this.cakesExpanded = out;
-        };
+        }
+
+        /* === ИЗМЕНЕНО: фейки теперь явно задают show_name === */;
         _proto.makeFakePiece = function makeFakePiece(i) {
           var _this$makeFakeText = this.makeFakeText(i),
             name = _this$makeFakeText.name;
@@ -8232,8 +8545,11 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             hex_color: null,
             name: name,
             filling_id: null,
-            file: null
+            file: null,
+            greeting_text: null,
+            show_name: true // фейки всегда с именем
           };
+
           fake.__fake = true;
           return fake;
         }
@@ -8439,12 +8755,23 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
               if (!n || !piece) continue;
               var gidx = this.globalIndexOf(abs, j);
 
-              // Цвет/паттерны из библиотеки можно применять сразу
+              // Цвет/паттерны из библиотеки — сразу
               this.applyLibrarySetForIndex(n, gidx, piece);
 
-              // Реальные изображения — только для уровня 0
-              var withMedia = this.shouldLoadApiImage(abs);
+              // Реальные изображения — только для уровня 0 И только если есть бюджет
+              var wantsMedia = this.shouldLoadApiImage(abs);
+              var withMedia = wantsMedia && this._imagesBudget > 0;
               this.applyPieceTextIfChanged(n, piece, gidx, withMedia);
+              if (withMedia) this._imagesBudget--;else {
+                // если картинка нужна, но бюджета нет — пусть останется в очереди
+                var _cache = this._getNodeCache(n);
+                _cache.textEnqueued = true;
+                this.textUpdateQueue.push({
+                  node: n,
+                  piece: piece,
+                  absLevel: abs
+                });
+              }
               this.nodeLevelInfo.set(n, {
                 level: abs,
                 slot: j
@@ -8461,8 +8788,8 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
         /* ===================== цвет/текстуры ===================== */;
         _proto._getNodeCache = function _getNodeCache(n) {
-          var _cache;
-          return (_cache = n.__cache) != null ? _cache : n.__cache = {
+          var _cache2;
+          return (_cache2 = n.__cache) != null ? _cache2 : n.__cache = {
             bindings: null,
             mrs: null,
             lastBaseSet: -1,
@@ -8509,6 +8836,9 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         /** Только самая верхушка башни (абсолютный уровень 0) может грузить изображение из API */;
         _proto.shouldLoadApiImage = function shouldLoadApiImage(absLevel) {
           return absLevel === 0;
+        };
+        _proto.update = function update() {
+          this._imagesBudget = Math.max(0, this.imagesPerFrame | 0);
         }
 
         /** Применяет тексты из очереди. Реальные картинки — только для абсолютного уровня 0. */;
@@ -8531,10 +8861,16 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             }
             var slot = (_this$nodeLevelInfo$g7 = (_this$nodeLevelInfo$g8 = this.nodeLevelInfo.get(item.node)) == null ? void 0 : _this$nodeLevelInfo$g8.slot) != null ? _this$nodeLevelInfo$g7 : 0;
             var gidx = this.globalIndexOf(item.absLevel, slot);
+            var wantsMedia = this.shouldLoadApiImage(item.absLevel);
+            var canUseMedia = wantsMedia && this._imagesBudget > 0;
 
-            // Только уровень 0 получает медиа (URL), остальные — заглушки
-            var withMedia = this.shouldLoadApiImage(item.absLevel);
-            this.applyPieceTextIfChanged(item.node, item.piece, gidx, withMedia);
+            // Если хотим медиа, но бюджет исчерпан — подождём следующий кадр
+            if (wantsMedia && !canUseMedia) {
+              i++;
+              continue;
+            }
+            this.applyPieceTextIfChanged(item.node, item.piece, gidx, canUseMedia);
+            if (canUseMedia) this._imagesBudget--;
             this.textUpdateQueue.splice(i, 1);
             updated++;
           }
@@ -8542,7 +8878,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (this.textUpdateQueue.length > HARD_LIMIT) this.textUpdateQueue.length = HARD_LIMIT;
         }
 
-        /** Обновляет текст и боковую картинку. 
+        /** Обновляет текст и боковую картинку.
         *  Если withMedia=false → всегда подставляем заглушку (theme.sideTexture) вместо URL.
         *  Если withMedia=true  → передаём реальный URL из piece.file (если он есть).
         */;
@@ -8557,15 +8893,22 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           // НЕ присваиваем __piece, чтобы не запускать сторонние загрузчики
           root.__piece = null;
 
-          // ---- Текст (можно всегда) ----
+          // ---- Текст: обязательно отправляем даже пустую строку ----
           var nextName = (_piece$name = piece == null ? void 0 : piece.name) != null ? _piece$name : '';
           if (piece && piece.__fake === true) {
+            // фейки всегда с именем
             nextName = this.makeFakeText(gidx).name;
+          } else {
+            var _piece$show_name;
+            // если API прислал show_name = "no" → подставляем ПУСТУЮ СТРОКУ
+            var show = (_piece$show_name = piece == null ? void 0 : piece.show_name) != null ? _piece$show_name : true;
+            if (!show) nextName = '';
           }
           if (cache.lastName !== nextName) {
             if (!cache.bindings) cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
             for (var _i = 0, _arr = cache.bindings; _i < _arr.length; _i++) {
               var b = _arr[_i];
+              // ВАЖНО: передаём пустую строку, чтобы затереть старый текст
               lib == null || lib.applyApiTextToBinding(b, {
                 title: '',
                 name: nextName
@@ -8575,8 +8918,6 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
 
           // ---- Боковая картинка ----
-          // Если withMedia=false → отдаём url=null, и библиотека поставит theme.sideTexture (заглушку).
-          // Если withMedia=true  → отдаём реальный URL (если есть).
           if (!cache.bindings) cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
           var urlForThisNode = withMedia && piece != null && piece.file ? piece.file : null;
           for (var _i2 = 0, _arr2 = cache.bindings; _i2 < _arr2.length; _i2++) {
@@ -8646,9 +8987,11 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         };
         _proto.isUuidLoose = function isUuidLoose(s) {
           return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
-        };
+        }
+
+        /* === ИЗМЕНЕНО: нормализация нового поля show_name + остальное без изменений === */;
         _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
-          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _raw$filling_id, _ref3, _ref4, _raw$file, _ref5, _raw$greeting_text;
+          var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _raw$filling_id, _ref3, _ref4, _raw$file, _ref5, _raw$greeting_text, _this$boolFromYesNo, _raw$show_name;
           // uniq_id (UUID-строка)
           var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
           if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
@@ -8682,13 +9025,17 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
 
           // greeting_text
           var greeting_text = this.strOrNull((_ref5 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref5 : raw == null ? void 0 : raw.greeting);
+
+          // show_name: "yes"/"no" → boolean (default: true)
+          var show_name = (_this$boolFromYesNo = this.boolFromYesNo((_raw$show_name = raw == null ? void 0 : raw.show_name) != null ? _raw$show_name : raw == null ? void 0 : raw.showName)) != null ? _this$boolFromYesNo : true;
           return {
             uniq_id: uniq_id,
             hex_color: hex_color,
             name: name,
             filling_id: filling_id,
             file: file,
-            greeting_text: greeting_text
+            greeting_text: greeting_text,
+            show_name: show_name
           };
         }
 
@@ -8712,13 +9059,29 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             console.warn('TowerLayoutController: prefab не назначен');
             return;
           }
-
-          // Пересобираем всегда (чтобы сбросить старые кеши/размеры)
           this.pool.length = 0;
           for (var i = 0; i < need; i++) {
             var n = instantiate(this.spawn.prefab);
             n.setParent(this.node);
             n.active = true;
+
+            // ── Преварм: создаём инстансы материалов сейчас,
+            // чтобы их создание не случилось в "горячем" кадре прокрутки
+            try {
+              var mrs = n.getComponentsInChildren(MeshRenderer);
+              for (var _iterator3 = _createForOfIteratorHelperLoose(mrs), _step3; !(_step3 = _iterator3()).done;) {
+                var mr = _step3.value;
+                // получить инстансы (pattern/side), индексы берём из библиотеки
+                var lib = this.lib;
+                if (lib) {
+                  mr.getMaterialInstance(lib.patternMatIndex);
+                  mr.getMaterialInstance(lib.sideMatIndex);
+                } else {
+                  // хотя бы первый материал «разбудим»
+                  mr.getMaterialInstance(0);
+                }
+              }
+            } catch (_unused3) {/* безопасно пропускаем */}
             this.pool.push(n);
           }
           this.nodeLevelInfo.clear();
@@ -8798,14 +9161,21 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
         initializer: function initializer() {
           return ['Алиса', 'Борис', 'Вика', 'Гриша', 'Даша', 'Егор', 'Жанна', 'Зоя', 'Илья', 'Катя', 'Лёва', 'Мила', 'Никита', 'Оля', 'Паша', 'Рита', 'Света', 'Таня', 'Федя', 'Юля', 'Яна'];
         }
-      }), _descriptor34 = _applyDecoratedDescriptor(_class5.prototype, "textActivationMarginLevels", [_dec33], {
+      }), _descriptor34 = _applyDecoratedDescriptor(_class5.prototype, "imagesPerFrame", [_dec33], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 1;
         }
-      }), _descriptor35 = _applyDecoratedDescriptor(_class5.prototype, "textsPerFrame", [_dec34], {
+      }), _descriptor35 = _applyDecoratedDescriptor(_class5.prototype, "textActivationMarginLevels", [_dec34], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 1;
+        }
+      }), _descriptor36 = _applyDecoratedDescriptor(_class5.prototype, "textsPerFrame", [_dec35], {
         configurable: true,
         enumerable: true,
         writable: true,
