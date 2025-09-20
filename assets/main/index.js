@@ -3832,44 +3832,49 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   this.lockControls();
                   this.fsm = State.Aligning;
 
-                  // 1) высота с биасом
+                  // 1) вычисляем целевую высоту центрирования (с учётом bias под ПК/мобилу)
                   biasTop = this.isMobile ? this.levelBiasTopMobile : this.levelBiasTop;
                   biasRest = this.isMobile ? this.levelBiasRestMobile : this.levelBiasRest;
                   bias = L <= 1 ? biasTop : biasRest;
                   step = this.layoutCtrl.getLevelStep();
-                  targetHeight = (L + bias) * step;
-                  _context.next = 25;
-                  return this.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, this.heightCenterDuration, this.heightNudgeDuration, 'quadOut', true);
-                case 25:
-                  _context.next = 27;
+                  targetHeight = (L + bias) * step; // 1.1) гарантируем, что targetHeight ДОСТИЖИМ:
+                  //      при необходимости динамически расширяем нижний паддинг (виртуальный "низ" башни).
+                  //      небольшой запас extraLevels=1, чтобы центр не прилипал к самой границе.
+                  this.layoutCtrl.ensureBottomPaddingForHeight(targetHeight, /* extraLevels: */0);
+
+                  // 1.2) скроллим точно к целевой высоте, БЕЗ внутреннего клампа
+                  _context.next = 26;
+                  return this.scrollCtrl.scrollToHeightWithNudgeAsync(targetHeight, this.heightCenterDuration, this.heightNudgeDuration, 'quadOut', /* clamp */false);
+                case 26:
+                  _context.next = 28;
                   return this.rotateRootToBringSlotToCamera(this.clickedSlot);
-                case 27:
-                  // 3) актуальный видимый
+                case 28:
+                  // 3) актуальный видимый узел + биндинг
                   resolved = this.layoutCtrl.findNodeByLevelSlot(this.clickedLevel, this.clickedSlot);
                   owner = resolved != null ? resolved : picked.n;
                   b = owner.getComponent(ClickMoveBinding) || owner.getComponentInChildren(ClickMoveBinding) || picked.binding;
                   this.currentPiece = owner;
                   this.currentBinding = b;
 
-                  // 3.5) загрузка картинки
+                  // 3.5) загрузка картинки (если включено)
                   this.applyImageToCurrentPiece(this.clickedLevel, this.clickedSlot);
 
-                  // 4) выезд + бортик + поворот модели
-                  _context.next = 35;
+                  // 4) выезд куска + бортик + анимация поворота модели
+                  _context.next = 36;
                   return this.slideOutWithScaleComp();
-                case 35:
+                case 36:
                   this.setRimActive(true);
                   void this.showBloor();
 
-                  // плавный 360° + доворот
-                  _context.next = 39;
+                  // 5) плавный 360°+доворот и вход в idle
+                  _context.next = 40;
                   return this.rotateModelOpen();
-                case 39:
+                case 40:
                   (_this$currentBinding = this.currentBinding) == null || _this$currentBinding.playSequence == null || _this$currentBinding.playSequence();
                   this.postPieceEvent('OPENED', this.clickedLevel, this.clickedSlot);
                   this._emitOnThisAction = false;
                   this.fsm = State.LockedOut;
-                case 43:
+                case 44:
                 case "end":
                   return _context.stop();
               }
@@ -9105,6 +9110,44 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
               resolve();
             });
           });
+        }
+
+        /** Гарантирует, что высота `height` достижима: при необходимости
+        *  увеличивает padAfterLevels так, чтобы maxTopBase >= ceil(height/step). */;
+        _proto.ensureBottomPaddingForHeight = function ensureBottomPaddingForHeight(height, extraLevels) {
+          if (extraLevels === void 0) {
+            extraLevels = 0;
+          }
+          var step = this.getLevelStep();
+          if (step <= 0) return;
+
+          // глубина, куда хотим прокрутиться (в "уровнях", может быть дробной)
+          var depthRaw = height / step;
+          var totalLevels = this.getTotalLevels();
+          if (totalLevels <= 0) return;
+
+          // какой maxTopBase нужен, чтобы добраться до этой глубины
+          var needMaxTopBase = Math.max(0, Math.ceil(depthRaw));
+
+          // базовый maxTopBase без паддинга = totalLevels - vis
+          var baseMaxTop = Math.max(0, totalLevels - this.vis);
+
+          // сколько паддинга нужно, с учётом дополнительного запаса
+          var requiredPad = Math.max(0, needMaxTopBase + Math.max(0, extraLevels) - baseMaxTop);
+          if (requiredPad > this.spawn.padAfterLevels) {
+            var _this$scrollCtrl$offs5, _this$scrollCtrl9, _this$scrollCtrl$offs6, _this$scrollCtrl10;
+            this.spawn.padAfterLevels = requiredPad;
+
+            // обновим раскладку и верхний кламп (он теперь дальше)
+            var cur = (_this$scrollCtrl$offs5 = (_this$scrollCtrl9 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl9.offset) != null ? _this$scrollCtrl$offs5 : 0;
+            var max = this.getMaxScrollableOffset();
+            // если внезапно текущая позиция оказалась "выше" нового max — подсинхронимся
+            if (this.scrollCtrl && cur > max) this.scrollCtrl.scrollToHeight(max, {
+              duration: 0
+            });
+            // перелэйаутим на текущем оффсете
+            this.layoutByOffset((_this$scrollCtrl$offs6 = (_this$scrollCtrl10 = this.scrollCtrl) == null ? void 0 : _this$scrollCtrl10.offset) != null ? _this$scrollCtrl$offs6 : 0);
+          }
         }
 
         /** Ждём загрузки всех картинок нулевого уровня (если они есть). */;
