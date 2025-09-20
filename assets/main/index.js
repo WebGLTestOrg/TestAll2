@@ -3731,12 +3731,14 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           this._activeCamera = next != null ? next : null;
           if ((_this$sceneCamera2 = this.sceneCamera) != null && _this$sceneCamera2.node) this.sceneCamera.node.active = this._activeCamera === this.sceneCamera;
           if ((_this$sceneCameraMobi2 = this.sceneCameraMobile) != null && _this$sceneCameraMobi2.node) this.sceneCameraMobile.node.active = this._activeCamera === this.sceneCameraMobile;
-          if (this.bloor) {
-            this.bloor.active = false;
-            // Y фиксируем = 1, X/Z = 0 в скрытом состоянии
-            this.bloor.setScale(0, 1, 0);
-          }
+
+          //if (this.bloor) {
+          //    this.bloor.active = false;
+          //    // Y фиксируем = 1, X/Z = 0 в скрытом состоянии
+          //    this.bloor.setScale(0, 1, 0);
+          //}
         };
+
         _proto.onEnable = function onEnable() {
           this.updateActiveCamera();
           input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
