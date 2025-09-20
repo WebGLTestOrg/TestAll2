@@ -8379,7 +8379,10 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           this.flushTextQueue(topBase);
         }
 
-        /** Привязать контент к узлу для указанного уровня/слота (только при входе уровня в окно) */;
+        /** Привязать контент к узлу для указанного уровня/слота (только при входе уровня в окно) */
+        /** Привязать контент к узлу для указанного уровня/слота. 
+        *  Медиа (URL) — только если absLevel===0, иначе — заглушка.
+        */;
         _proto.bindNodeFor = function bindNodeFor(absLevel, slot, n, immediateText) {
           if (immediateText === void 0) {
             immediateText = false;
@@ -8394,9 +8397,12 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           if (!n.active) n.active = true;
           var gidx = this.globalIndexOf(absLevel, slot);
           var cache = this._getNodeCache(n);
+
+          // тема/паттерны применяем сразу
           this.applyLibrarySetForIndex(n, gidx, piece);
           if (immediateText) {
-            this.applyPieceTextIfChanged(n, piece, gidx);
+            // даже при немедленном обновлении: медиа только для уровня 0
+            this.applyPieceTextIfChanged(n, piece, gidx, this.shouldLoadApiImage(absLevel));
           } else {
             cache.textEnqueued = true;
             this.textUpdateQueue.push({
@@ -8414,7 +8420,10 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           cache.slot = slot;
         }
 
-        /** Мгновенно проставляет текст всем видимым уровням (обходит очередь/скролл). */;
+        /** Мгновенно проставляет текст всем видимым уровням (обходит очередь/скролл). */
+        /** Мгновенно проставляет текст всем видимым уровням.
+        *  Реальную картинку отдаёт ТОЛЬКО для абсолютного уровня 0, остальным — заглушку.
+        */;
         _proto.primeVisibleTextsNow = function primeVisibleTextsNow() {
           var _this$scrollCtrl$offs3, _this$scrollCtrl7;
           if (!this.pool.length) return;
@@ -8429,8 +8438,13 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
               var piece = this.getPieceFor(abs, j);
               if (!n || !piece) continue;
               var gidx = this.globalIndexOf(abs, j);
+
+              // Цвет/паттерны из библиотеки можно применять сразу
               this.applyLibrarySetForIndex(n, gidx, piece);
-              this.applyPieceTextIfChanged(n, piece, gidx);
+
+              // Реальные изображения — только для уровня 0
+              var withMedia = this.shouldLoadApiImage(abs);
+              this.applyPieceTextIfChanged(n, piece, gidx, withMedia);
               this.nodeLevelInfo.set(n, {
                 level: abs,
                 slot: j
@@ -8492,7 +8506,12 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           }
         }
 
-        /* ===================== текст: очередь + фейки ===================== */;
+        /** Только самая верхушка башни (абсолютный уровень 0) может грузить изображение из API */;
+        _proto.shouldLoadApiImage = function shouldLoadApiImage(absLevel) {
+          return absLevel === 0;
+        }
+
+        /** Применяет тексты из очереди. Реальные картинки — только для абсолютного уровня 0. */;
         _proto.flushTextQueue = function flushTextQueue(topBase) {
           var margin = Math.max(0, this.textActivationMarginLevels);
           var minL = Math.max(0, topBase - margin);
@@ -8512,39 +8531,63 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             }
             var slot = (_this$nodeLevelInfo$g7 = (_this$nodeLevelInfo$g8 = this.nodeLevelInfo.get(item.node)) == null ? void 0 : _this$nodeLevelInfo$g8.slot) != null ? _this$nodeLevelInfo$g7 : 0;
             var gidx = this.globalIndexOf(item.absLevel, slot);
-            this.applyPieceTextIfChanged(item.node, item.piece, gidx);
+
+            // Только уровень 0 получает медиа (URL), остальные — заглушки
+            var withMedia = this.shouldLoadApiImage(item.absLevel);
+            this.applyPieceTextIfChanged(item.node, item.piece, gidx, withMedia);
             this.textUpdateQueue.splice(i, 1);
             updated++;
           }
           var HARD_LIMIT = this.vis * this.per * 4;
           if (this.textUpdateQueue.length > HARD_LIMIT) this.textUpdateQueue.length = HARD_LIMIT;
-        };
-        _proto.applyPieceTextIfChanged = function applyPieceTextIfChanged(root, piece, gidx) {
-          var _piece$name;
-          var cache = this._getNodeCache(root);
-          root.__piece = piece != null ? piece : null;
+        }
 
-          // единственный пользовательский текст — имя
+        /** Обновляет текст и боковую картинку. 
+        *  Если withMedia=false → всегда подставляем заглушку (theme.sideTexture) вместо URL.
+        *  Если withMedia=true  → передаём реальный URL из piece.file (если он есть).
+        */;
+        _proto.applyPieceTextIfChanged = function applyPieceTextIfChanged(root, piece, gidx, withMedia) {
+          var _piece$name;
+          if (withMedia === void 0) {
+            withMedia = false;
+          }
+          var cache = this._getNodeCache(root);
+          var lib = this.lib; // ColorTextureLibrary.instance
+
+          // НЕ присваиваем __piece, чтобы не запускать сторонние загрузчики
+          root.__piece = null;
+
+          // ---- Текст (можно всегда) ----
           var nextName = (_piece$name = piece == null ? void 0 : piece.name) != null ? _piece$name : '';
-          var isFake = !!(piece && piece.__fake === true);
-          if (isFake) {
-            var f = this.makeFakeText(gidx);
-            nextName = f.name;
+          if (piece && piece.__fake === true) {
+            nextName = this.makeFakeText(gidx).name;
           }
-          if (cache.lastName === nextName) {
-            cache.textEnqueued = false;
-            return;
+          if (cache.lastName !== nextName) {
+            if (!cache.bindings) cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
+            for (var _i = 0, _arr = cache.bindings; _i < _arr.length; _i++) {
+              var b = _arr[_i];
+              lib == null || lib.applyApiTextToBinding(b, {
+                title: '',
+                name: nextName
+              });
+            }
+            cache.lastName = nextName;
           }
+
+          // ---- Боковая картинка ----
+          // Если withMedia=false → отдаём url=null, и библиотека поставит theme.sideTexture (заглушку).
+          // Если withMedia=true  → отдаём реальный URL (если есть).
           if (!cache.bindings) cache.bindings = root.getComponentsInChildren(ClickMoveBinding);
-          for (var _i = 0, _arr = cache.bindings; _i < _arr.length; _i++) {
-            var b = _arr[_i];
-            // совместимость: updateFromApi ожидает { title, name }
-            b.updateFromApi({
-              title: '',
-              name: nextName
-            });
+          var urlForThisNode = withMedia && piece != null && piece.file ? piece.file : null;
+          for (var _i2 = 0, _arr2 = cache.bindings; _i2 < _arr2.length; _i2++) {
+            var _piece$hex_color3;
+            var _b = _arr2[_i2];
+            lib == null || lib.applySideUrlOrThemeToBinding(_b, urlForThisNode,
+            // null → поставит theme.sideTexture (placeholder)
+            (_piece$hex_color3 = piece == null ? void 0 : piece.hex_color) != null ? _piece$hex_color3 : null,
+            // имя темы для выбора заглушки
+            gidx, this.spawn.rngSeedColors >>> 0);
           }
-          cache.lastName = nextName;
           cache.textEnqueued = false;
         };
         _proto.makeFakeText = function makeFakeText(gidx) {
@@ -8596,6 +8639,10 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             return Number.isFinite(n) ? n : null;
           }
           return null;
+        };
+        _proto.shouldActivateMedia = function shouldActivateMedia(absLevel) {
+          // медиа только у самой-самой верхушки башни
+          return absLevel === 0;
         };
         _proto.isUuidLoose = function isUuidLoose(s) {
           return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
