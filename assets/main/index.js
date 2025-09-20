@@ -3169,7 +3169,7 @@ System.register("chunks:///_virtual/DebugPanelToggle.ts", ['./rollupPluginModLoB
 });
 
 System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ClickMoveBinding.ts', './InteractionState.ts', './PointerIds.ts', './RotateYByKeys.ts', './TVS_SpawnLayout.ts', './TowerScrollController.ts', './ColorLibrary.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Camera, Node, Vec3, input, Input, geometry, PhysicsSystem, tween, MeshRenderer, Component, sys, ParticleSystem, ClickMoveBinding, InteractionState, MOUSE_ID, RotateYByKeys, TowerLayoutController, TowerScrollController, ColorTextureLibrary;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Camera, Node, input, Input, geometry, PhysicsSystem, Vec3, tween, MeshRenderer, Component, sys, ParticleSystem, ClickMoveBinding, InteractionState, MOUSE_ID, RotateYByKeys, TowerLayoutController, TowerScrollController, ColorTextureLibrary;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -3184,11 +3184,11 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
       _decorator = module._decorator;
       Camera = module.Camera;
       Node = module.Node;
-      Vec3 = module.Vec3;
       input = module.input;
       Input = module.Input;
       geometry = module.geometry;
       PhysicsSystem = module.PhysicsSystem;
+      Vec3 = module.Vec3;
       tween = module.tween;
       MeshRenderer = module.MeshRenderer;
       Component = module.Component;
@@ -3733,7 +3733,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
           if ((_this$sceneCameraMobi2 = this.sceneCameraMobile) != null && _this$sceneCameraMobi2.node) this.sceneCameraMobile.node.active = this._activeCamera === this.sceneCameraMobile;
           if (this.bloor) {
             this.bloor.active = false;
-            this.bloor.setScale(new Vec3(0, 0, 0));
+            // Y фиксируем = 1, X/Z = 0 в скрытом состоянии
+            this.bloor.setScale(0, 1, 0);
           }
         };
         _proto.onEnable = function onEnable() {
@@ -3908,7 +3909,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   }
                   targetLocal = this.getBloorTargetScale();
                   n.active = true;
-                  n.setScale(0, 0, 0);
+                  // старт: X/Z = 0, Y = 1
+                  n.setScale(0, 1, 0);
                   drv = {
                     t: 0
                   };
@@ -3920,7 +3922,8 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                       easing: _this2.bloorScaleEasing,
                       onUpdate: function onUpdate() {
                         var s = drv.t * targetLocal;
-                        n.setScale(s, s, s);
+                        // масштабируем только X и Z, Y держим = 1
+                        n.setScale(s, 1, s);
                       }
                     }).call(function () {
                       _this2.bloorTween = null;
@@ -3942,7 +3945,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
         _proto.hideBloor = /*#__PURE__*/function () {
           var _hideBloor = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
             var _this3 = this;
-            var n, startLocal, drv;
+            var n, startX, startZ, drv;
             return _regeneratorRuntime().wrap(function _callee3$(_context3) {
               while (1) switch (_context3.prev = _context3.next) {
                 case 0:
@@ -3957,30 +3960,35 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                     this.bloorTween.stop();
                     this.bloorTween = null;
                   }
-                  startLocal = n.scale.x; // локальный scale — без worldScale
+
+                  // текущие X/Z (могут быть неравными, учитываем оба)
+                  startX = n.scale.x;
+                  startZ = n.scale.z;
                   drv = {
                     t: 0
                   };
-                  _context3.next = 8;
+                  _context3.next = 9;
                   return new Promise(function (resolve) {
                     var _this3$bloorHideDurat;
                     _this3.bloorTween = tween(drv).to((_this3$bloorHideDurat = _this3.bloorHideDuration) != null ? _this3$bloorHideDurat : _this3.bloorScaleDuration, {
                       t: 1
                     }, {
-                      // fallback на show-длительность
                       easing: _this3.bloorScaleEasing,
                       onUpdate: function onUpdate() {
-                        var s = (1 - drv.t) * startLocal;
-                        n.setScale(s, s, s);
+                        var sx = (1 - drv.t) * startX;
+                        var sz = (1 - drv.t) * startZ;
+                        // Y остаётся 1
+                        n.setScale(sx, 1, sz);
                       }
                     }).call(function () {
                       _this3.bloorTween = null;
                       n.active = false;
-                      n.setScale(0, 0, 0);
+                      // итоговое скрытое состояние: X/Z = 0, Y = 1
+                      n.setScale(0, 1, 0);
                       resolve();
                     }).start();
                   });
-                case 8:
+                case 9:
                 case "end":
                   return _context3.stop();
               }
