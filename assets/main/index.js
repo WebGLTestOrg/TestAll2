@@ -368,7 +368,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
       Component = module.Component;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _dec19, _dec20, _dec21, _dec22, _dec23, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _descriptor17, _descriptor18, _descriptor19, _descriptor20, _descriptor21, _descriptor22, _descriptor23, _descriptor24, _descriptor25, _descriptor26, _descriptor27, _descriptor28, _descriptor29, _descriptor30, _descriptor31, _descriptor32, _descriptor33, _descriptor34;
       cclegacy._RF.push({}, "28184xX3rNPcJTTJ6RRKcou", "ArcTextMesh", undefined);
       var ccclass = _decorator.ccclass,
         property = _decorator.property,
@@ -400,7 +400,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
         return BendMode;
       }(BendMode || {});
       Enum(BendMode);
-      var ArcTextMSDF = exports('ArcTextMSDF', (_dec = ccclass('ArcTextMSDFOneLine'), _dec2 = executeInEditMode(), _dec3 = disallowMultiple(), _dec4 = property({
+      var ArcTextMSDFOneLine = exports('ArcTextMSDFOneLine', (_dec = ccclass('ArcTextMSDFOneLine'), _dec2 = executeInEditMode(), _dec3 = disallowMultiple(), _dec4 = property({
         type: JsonAsset
       }), _dec5 = property({
         type: Texture2D
@@ -409,93 +409,112 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
       }), _dec7 = property({
         type: Color
       }), _dec8 = property({
-        type: BendMode
+        tooltip: 'true → взять pxRange из JSON'
       }), _dec9 = property({
-        type: ArcPlane
+        tooltip: 'Если useJsonPxRange=false'
       }), _dec10 = property({
-        type: ArcAlign
+        tooltip: 'Глобальная мягкость края'
       }), _dec11 = property({
-        type: ArcBend
+        tooltip: 'Отсечь ореол'
       }), _dec12 = property({
+        tooltip: 'Мин. толщина края (px) при даунскейле'
+      }), _dec13 = property({
+        tooltip: 'Гейт усиления AA'
+      }), _dec14 = property({
+        tooltip: 'Поддуть заливку (px)'
+      }), _dec15 = property({
+        type: BendMode
+      }), _dec16 = property({
+        type: ArcPlane
+      }), _dec17 = property({
+        type: ArcAlign
+      }), _dec18 = property({
+        type: ArcBend
+      }), _dec19 = property({
         slide: true,
         range: [2, 64],
         step: 1
-      }), _dec13 = property({
+      }), _dec20 = property({
         slide: true,
         range: [1, 32],
         step: 1
-      }), _dec14 = property({
+      }), _dec21 = property({
         slide: true,
         range: [1, 128],
         step: 1
-      }), _dec15 = property({
+      }), _dec22 = property({
         slide: true,
         range: [0, 240],
         step: 1
-      }), _dec16 = property({
+      }), _dec23 = property({
         tooltip: 'Поставь true → пересборка прямо сейчас'
       }), _dec(_class = _dec2(_class = _dec3(_class = (_class2 = /*#__PURE__*/function (_Component) {
-        _inheritsLoose(ArcTextMSDF, _Component);
-        function ArcTextMSDF() {
+        _inheritsLoose(ArcTextMSDFOneLine, _Component);
+        function ArcTextMSDFOneLine() {
           var _this;
           for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
             args[_key] = arguments[_key];
           }
           _this = _Component.call.apply(_Component, [this].concat(args)) || this;
-          // ---- входные данные
+          // ---- шрифт/вход
           _initializerDefineProperty(_this, "text", _descriptor, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "fontJson", _descriptor2, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "atlas", _descriptor3, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "material", _descriptor4, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "pixelScale", _descriptor5, _assertThisInitialized(_this));
-          // пиксели шрифта -> мировые единицы
           _initializerDefineProperty(_this, "spacingScale", _descriptor6, _assertThisInitialized(_this));
-          // множитель xadvance
           _initializerDefineProperty(_this, "color", _descriptor7, _assertThisInitialized(_this));
-          // UV / MSDF
+          // ---- UV ориентация
           _initializerDefineProperty(_this, "invertV", _descriptor8, _assertThisInitialized(_this));
-          // ВАЖНО: по умолчанию НЕ инвертируем (BMFont.y от верха)
           _initializerDefineProperty(_this, "mirrorX", _descriptor9, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "mirrorY", _descriptor10, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "autoPxRange", _descriptor11, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "msdfSoftness", _descriptor12, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "alphaClip", _descriptor13, _assertThisInitialized(_this));
-          //@property({ tooltip:'Показать градиент UV вместо текста (диагностика)' }) debugUV = false;
-          // геометрия дуги
-          _initializerDefineProperty(_this, "bendMode", _descriptor14, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "radius", _descriptor15, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor16, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "plane", _descriptor17, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "align", _descriptor18, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "bend", _descriptor19, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "faceOutward", _descriptor20, _assertThisInitialized(_this));
+          // ---- ПАРАМЕТРЫ ШЕЙДЕРА (единый источник — компонент)
+          _initializerDefineProperty(_this, "useJsonPxRange", _descriptor11, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pxRangeOverride", _descriptor12, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "msdfSoftness", _descriptor13, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "alphaClip", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "minAAMinPx", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "minifyGate", _descriptor16, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fillBiasPx", _descriptor17, _assertThisInitialized(_this));
+          // ---- геометрия дуги
+          _initializerDefineProperty(_this, "bendMode", _descriptor18, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "radius", _descriptor19, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "arcAngleDeg", _descriptor20, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "plane", _descriptor21, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "align", _descriptor22, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "bend", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "faceOutward", _descriptor24, _assertThisInitialized(_this));
           // фикс-радиус/отступ
-          _initializerDefineProperty(_this, "lockRadius", _descriptor21, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "fixedRadius", _descriptor22, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "pushAlongNormal", _descriptor23, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "lockRadius", _descriptor25, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "fixedRadius", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "pushAlongNormal", _descriptor27, _assertThisInitialized(_this));
           // сегментация
-          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor24, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor25, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor26, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "segmentWidthPx", _descriptor28, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "minSegmentsPerGlyph", _descriptor29, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "maxSegmentsPerGlyph", _descriptor30, _assertThisInitialized(_this));
           // поведение
-          _initializerDefineProperty(_this, "editorLiveUpdate", _descriptor27, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "buildOnStart", _descriptor28, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "freezeAfterBuild", _descriptor29, _assertThisInitialized(_this));
-          _initializerDefineProperty(_this, "maxRebuildRate", _descriptor30, _assertThisInitialized(_this));
-          // кнопка Force_Rebuild
+          _initializerDefineProperty(_this, "editorLiveUpdate", _descriptor31, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "buildOnStart", _descriptor32, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "freezeAfterBuild", _descriptor33, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "maxRebuildRate", _descriptor34, _assertThisInitialized(_this));
+          // Force_Rebuild
           _this._force = false;
-          // внутрянка
+          // внутреннее
           _this._lastSig = '';
           _this._queued = false;
           _this._lastAt = 0;
+          _this._lastMI = null;
+          // слежение за пересозданием MI
+          _this._lastMIHash = 0;
           _this._fontCache = new Map();
           return _this;
         }
-        var _proto = ArcTextMSDF.prototype;
-        // ---- lifecycle
+        var _proto = ArcTextMSDFOneLine.prototype;
+        // ===== lifecycle
         _proto.onLoad = function onLoad() {
           this.node.layer = 1 << Layers.Enum.DEFAULT;
           if (!this.node.getComponent(MeshRenderer)) this.node.addComponent(MeshRenderer);
+          this._applyToCurrentMI();
         };
         _proto.start = function start() {
           if (this.buildOnStart) {
@@ -503,9 +522,19 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             if (this.freezeAfterBuild) this.enabled = false;
           }
         };
-        _proto.onValidate = function onValidate() {}
+        _proto.onValidate = function onValidate() {
+          // мгновенно пробрасываем юниформы (без ребилда)
+          this._applyToCurrentMI();
+        }
 
-        // ---- пересборка
+        // ===== Editor Live Update — сторож
+        ;
+
+        _proto.update = function update() {
+          return;
+        }
+
+        // ===== пересборка
         ;
 
         _proto._signature = function _signature() {
@@ -513,7 +542,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           var jj = (_uuid = (_this$fontJson = this.fontJson) == null ? void 0 : _this$fontJson.uuid) != null ? _uuid : '0';
           var aa = this._texSig(this.atlas);
           var mm = (_uuid2 = (_this$material = this.material) == null ? void 0 : _this$material.uuid) != null ? _uuid2 : '0';
-          return [this.text, jj, aa, mm, this.pixelScale, this.spacingScale, this.invertV, this.mirrorX, this.mirrorY, this.autoPxRange, this.msdfSoftness, this.alphaClip, this.debugUV, this.bendMode, this.radius, this.arcAngleDeg, this.plane, this.align, this.bend, this.faceOutward, this.lockRadius, this.fixedRadius, this.pushAlongNormal, this.segmentWidthPx, this.minSegmentsPerGlyph, this.maxSegmentsPerGlyph].join('|');
+          return [this.text, jj, aa, mm, this.pixelScale, this.spacingScale, this.invertV, this.mirrorX, this.mirrorY, this.useJsonPxRange ? 'J' : this.pxRangeOverride, this.msdfSoftness, this.alphaClip, this.minAAMinPx, this.minifyGate, this.fillBiasPx, this.bendMode, this.radius, this.arcAngleDeg, this.plane, this.align, this.bend, this.faceOutward, this.lockRadius, this.fixedRadius, this.pushAlongNormal, this.segmentWidthPx, this.minSegmentsPerGlyph, this.maxSegmentsPerGlyph].join('|');
         };
         _proto._texSig = function _texSig(t) {
           var _ref, _format;
@@ -522,12 +551,12 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           return t.width + "x" + t.height + ":" + f;
         };
         _proto._requestRebuild = function _requestRebuild() {
-          var _globalThis$performan,
-            _globalThis$performan2,
+          var _globalThis$performan3,
+            _globalThis$performan4,
             _this2 = this;
           if (this._queued) return;
           this._queued = true;
-          var now = (_globalThis$performan = (_globalThis$performan2 = globalThis.performance) == null || _globalThis$performan2.now == null ? void 0 : _globalThis$performan2.now()) != null ? _globalThis$performan : Date.now();
+          var now = (_globalThis$performan3 = (_globalThis$performan4 = globalThis.performance) == null || _globalThis$performan4.now == null ? void 0 : _globalThis$performan4.now()) != null ? _globalThis$performan3 : Date.now();
           var delay = this.maxRebuildRate > 0 ? Math.max(0, this._lastAt + 1000 / this.maxRebuildRate - now) : 0;
           if (delay <= 0) this.scheduleOnce(function () {
             _this2._queued = false;
@@ -540,7 +569,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           }, delay);
         };
         _proto.rebuildNow = function rebuildNow(ignore) {
-          var _globalThis$performan3, _globalThis$performan4;
+          var _globalThis$performan5, _globalThis$performan6;
           if (ignore === void 0) {
             ignore = false;
           }
@@ -548,10 +577,10 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           if (!ignore && sig === this._lastSig) return;
           this._build();
           this._lastSig = sig;
-          this._lastAt = (_globalThis$performan3 = (_globalThis$performan4 = globalThis.performance) == null || _globalThis$performan4.now == null ? void 0 : _globalThis$performan4.now()) != null ? _globalThis$performan3 : Date.now();
+          this._lastAt = (_globalThis$performan5 = (_globalThis$performan6 = globalThis.performance) == null || _globalThis$performan6.now == null ? void 0 : _globalThis$performan6.now()) != null ? _globalThis$performan5 : Date.now();
         }
 
-        // ---- сборка меша
+        // ===== сборка меша (как в рабочей версии)
         ;
 
         _proto._build = function _build() {
@@ -562,8 +591,6 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             return;
           }
           var geo = this._buildLine(this.text, this.fontJson, this.atlas, this.pixelScale, this.spacingScale);
-
-          // VB: pos3 normal3 uv2
           var stride = 8 * 4,
             vc = geo.positions.length / 3;
           var ab = new ArrayBuffer(vc * stride);
@@ -617,12 +644,18 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           });
           mr.mesh = mesh;
           mr.materials = [this.material];
+          this._applyToCurrentMI(); // пробросить юниформы сразу после ребилда
+        };
+
+        _proto._applyToCurrentMI = function _applyToCurrentMI() {
+          var mr = this.node.getComponent(MeshRenderer);
+          if (!mr) return;
           var mi = mr.getMaterialInstance(0);
+          if (!mi) return;
           this._applyMatProps(mi, this.fontJson, this.atlas, this.color);
-          //try { mi.setProperty('debugMode', this.debugUV ? 1 : 0); } catch {}
         }
 
-        // ---- геометрия линии
+        // ===== геометрия (без изменений)
         ;
 
         _proto._buildLine = function _buildLine(text, json, atlas, pixelScale, spacingScale) {
@@ -670,8 +703,6 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             penX += adv;
           }
           var span = Math.max(1e-4, maxX - minX);
-
-          // кривизна
           var totalArc = 0,
             R = this.radius;
           if (this.lockRadius) {
@@ -790,17 +821,16 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
                 p3.z += n0.z * offN;
               }
 
-              // --- UV: без инверсий по умолчанию (BMFont.y от ВЕРХА)
+              // UV (BMFont.y от ВЕРХА)
               var u0 = (_g.x + _g.width * t0) / texW;
               var u1 = (_g.x + _g.width * t1) / texW;
-              var v0 = _g.y / texH; // верх глифа
-              var v1 = (_g.y + _g.height) / texH; // низ глифа
-
+              var v0 = _g.y / texH; // верх
+              var v1 = (_g.y + _g.height) / texH; // низ
               if (this.invertV) {
                 var tv = v0;
                 v0 = v1;
                 v1 = tv;
-              } // просто меняем местами
+              }
               if (this.mirrorX) {
                 var tu = u0;
                 u0 = u1;
@@ -818,8 +848,6 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
               indices.push(baseIdx, baseIdx + 1, baseIdx + 2, baseIdx, baseIdx + 2, baseIdx + 3);
             }
           }
-
-          // bounds
           var min = new Vec3(1e9, 1e9, 1e9),
             max = new Vec3(-1e9, -1e9, -1e9);
           for (var _i2 = 0; _i2 < positions.length; _i2 += 3) {
@@ -842,127 +870,12 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             maxPos: max
           };
         };
-        _proto.setTextColors = function setTextColors() {
-          for (var _len2 = arguments.length, inputs = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            inputs[_key2] = arguments[_key2];
-          }
-          for (var _i3 = 0, _inputs = inputs; _i3 < _inputs.length; _i3++) {
-            var it = _inputs[_i3];
-            var c = this._coerceColor(it);
-            if (c) {
-              this.setColor(c);
-              return c;
-            }
-          }
-          // если ничего не подошло — не меняем цвет
-          return this.color;
-        }
-
-        // ---- helpers
-        ;
-
-        _proto._coerceColor = function _coerceColor(v) {
-          if (v == null) return null;
-
-          // 1) уже Color
-          if (v instanceof Color) return new Color(v.r, v.g, v.b, v.a);
-
-          // 2) строка: #hex или rgb/rgba
-          if (typeof v === 'string') {
-            var s = v.trim();
-            // #RGB / #RRGGBB / #RRGGBBAA
-            if (s[0] === '#') {
-              var hex = s.slice(1);
-              var toPair = function toPair(i) {
-                return parseInt(hex.slice(i, i + 2), 16);
-              };
-              if (hex.length === 3) {
-                var r = parseInt(hex[0] + hex[0], 16),
-                  g = parseInt(hex[1] + hex[1], 16),
-                  b = parseInt(hex[2] + hex[2], 16);
-                return new Color(r, g, b, 255);
-              } else if (hex.length === 6 || hex.length === 8) {
-                var _r = toPair(0),
-                  _g2 = toPair(2),
-                  _b = toPair(4),
-                  a = hex.length === 8 ? toPair(6) : 255;
-                return new Color(_r, _g2, _b, a);
-              }
-            }
-            // rgb()/rgba()
-            var m = s.match(/^rgba?\s*\(\s*([.\d]+)\s*,\s*([.\d]+)\s*,\s*([.\d]+)\s*(?:,\s*([.\d]+)\s*)?\)$/i);
-            if (m) {
-              var _r2 = Number(m[1]),
-                _g3 = Number(m[2]),
-                _b2 = Number(m[3]);
-              var _a = m[4] != null ? Number(m[4]) : 1;
-              return this._fromNormalizedOr255(_r2, _g3, _b2, _a);
-            }
-            return null;
-          }
-
-          // 3) число: 0xRRGGBB или 0xAARRGGBB
-          if (typeof v === 'number' && Number.isFinite(v)) {
-            var n = Math.max(0, Math.floor(v));
-            if (n <= 0xFFFFFF) {
-              var _r3 = n >> 16 & 255,
-                _g4 = n >> 8 & 255,
-                _b3 = n & 255;
-              return new Color(_r3, _g4, _b3, 255);
-            } else {
-              var _a2 = n >> 24 & 255,
-                _r4 = n >> 16 & 255,
-                _g5 = n >> 8 & 255,
-                _b4 = n & 255;
-              return new Color(_r4, _g5, _b4, _a2);
-            }
-          }
-
-          // 4) массив [r,g,b,(a)]
-          if (Array.isArray(v) && (v.length === 3 || v.length === 4)) {
-            var _v$map = v.map(Number),
-              _r5 = _v$map[0],
-              _g6 = _v$map[1],
-              _b5 = _v$map[2],
-              _v$map$ = _v$map[3],
-              _a3 = _v$map$ === void 0 ? 1 : _v$map$;
-            return this._fromNormalizedOr255(_r5, _g6, _b5, _a3);
-          }
-
-          // 5) объект {r,g,b,a?}
-          if (typeof v === 'object') {
-            var _ref2 = v,
-              _r6 = _ref2.r,
-              _g7 = _ref2.g,
-              _b6 = _ref2.b;
-            if (_r6 != null && _g7 != null && _b6 != null) {
-              var _a5;
-              var _a4 = (_a5 = v.a) != null ? _a5 : 1;
-              return this._fromNormalizedOr255(Number(_r6), Number(_g7), Number(_b6), Number(_a4));
-            }
-          }
-          return null;
-        };
-        _proto._fromNormalizedOr255 = function _fromNormalizedOr255(r, g, b, a) {
-          var looksNormalized = r <= 1 && g <= 1 && b <= 1 && a <= 1;
-          if (looksNormalized) {
-            return new Color(Math.round(this._clamp01(r) * 255), Math.round(this._clamp01(g) * 255), Math.round(this._clamp01(b) * 255), Math.round(this._clamp01(a) * 255));
-          }
-          // считаем значения в 0..255 (а может быть 0..100 для процентов — тоже ограничим)
-          return new Color(this._clamp255(r), this._clamp255(g), this._clamp255(b), this._clamp255(a <= 1 ? a * 255 : a));
-        };
-        _proto._clamp01 = function _clamp01(x) {
-          return Math.min(1, Math.max(0, x));
-        };
-        _proto._clamp255 = function _clamp255(x) {
-          return Math.min(255, Math.max(0, Math.round(x)));
-        };
         _proto.applyApiData = function applyApiData(payload) {
           var pickText = function pickText(o) {
             if (!o || typeof o !== 'object') return null;
             var keys = ['text', 'value', 'label', 'name', 'title'];
-            for (var _i4 = 0, _keys = keys; _i4 < _keys.length; _i4++) {
-              var k = _keys[_i4];
+            for (var _i3 = 0, _keys = keys; _i3 < _keys.length; _i3++) {
+              var k = _keys[_i3];
               var v = o[k];
               if (v != null) return String(v);
             }
@@ -992,36 +905,42 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           this.text = next;
           this._requestRebuild();
           return true;
-        }
-
-        // ---- материал
-        ;
-
-        _proto._applyMatProps = function _applyMatProps(mat, json, atlas, color) {
-          if (!atlas) return;
-          if (this.autoPxRange && json) {
-            var fd = this._getFont(json);
-            if ((fd == null ? void 0 : fd.distanceRange) != null) {
-              try {
-                mat.setProperty('pxRange', fd.distanceRange);
-              } catch (_unused) {}
-            }
+        };
+        _proto._applyMatProps = function _applyMatProps(mi, json, atlas, color) {
+          if (atlas) {
+            try {
+              mi.setProperty('mainTexture', atlas);
+            } catch (_unused) {}
           }
           try {
-            mat.setProperty('mainTexture', atlas);
+            mi.setProperty('tintColor', color);
           } catch (_unused2) {}
+          var px = this.pxRangeOverride;
+          if (this.useJsonPxRange && json) {
+            var fd = this._getFont(json);
+            if ((fd == null ? void 0 : fd.distanceRange) != null) px = fd.distanceRange;
+          }
           try {
-            mat.setProperty('tintColor', color);
+            mi.setProperty('pxRange', px);
           } catch (_unused3) {}
           try {
-            mat.setProperty('softness', this.msdfSoftness);
+            mi.setProperty('softness', this.msdfSoftness);
           } catch (_unused4) {}
           try {
-            mat.setProperty('alphaClip', this.alphaClip);
+            mi.setProperty('alphaClip', this.alphaClip);
           } catch (_unused5) {}
+          try {
+            mi.setProperty('minAAMinPx', this.minAAMinPx);
+          } catch (_unused6) {}
+          try {
+            mi.setProperty('minifyGate', this.minifyGate);
+          } catch (_unused7) {}
+          try {
+            mi.setProperty('fillBiasPx', this.fillBiasPx);
+          } catch (_unused8) {}
         }
 
-        // ---- шрифт
+        // ===== шрифт
         ;
 
         _proto._getFont = function _getFont(json) {
@@ -1063,12 +982,10 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           this._requestRebuild();
         };
         _proto.setColor = function setColor(c) {
-          var _mr$getMaterialInstan;
           this.color = c;
-          var mr = this.node.getComponent(MeshRenderer);
-          mr == null || (_mr$getMaterialInstan = mr.getMaterialInstance(0)) == null || _mr$getMaterialInstan.setProperty('tintColor', c);
+          this._applyToCurrentMI();
         };
-        _createClass(ArcTextMSDF, [{
+        _createClass(ArcTextMSDFOneLine, [{
           key: "Force_Rebuild",
           get: function get() {
             return this._force;
@@ -1078,7 +995,7 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
             this._force = false;
           }
         }]);
-        return ArcTextMSDF;
+        return ArcTextMSDFOneLine;
       }(Component), (_descriptor = _applyDecoratedDescriptor(_class2.prototype, "text", [property], {
         configurable: true,
         enumerable: true,
@@ -1149,147 +1066,175 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "autoPxRange", [property], {
+      }), _descriptor11 = _applyDecoratedDescriptor(_class2.prototype, "useJsonPxRange", [_dec8], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [property], {
+      }), _descriptor12 = _applyDecoratedDescriptor(_class2.prototype, "pxRangeOverride", [_dec9], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return 0.5;
+          return 4.0;
         }
-      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [property], {
+      }), _descriptor13 = _applyDecoratedDescriptor(_class2.prototype, "msdfSoftness", [_dec10], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
-          return 0.05;
+          return 1.25;
         }
-      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec8], {
+      }), _descriptor14 = _applyDecoratedDescriptor(_class2.prototype, "alphaClip", [_dec11], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.04;
+        }
+      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "minAAMinPx", [_dec12], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.75;
+        }
+      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "minifyGate", [_dec13], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.15;
+        }
+      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "fillBiasPx", [_dec14], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return 0.00;
+        }
+      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "bendMode", [_dec15], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return BendMode.ArcAngle;
         }
-      }), _descriptor15 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
+      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "radius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor16 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
+      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "arcAngleDeg", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 40;
         }
-      }), _descriptor17 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec9], {
+      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "plane", [_dec16], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcPlane.XZ;
         }
-      }), _descriptor18 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec10], {
+      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "align", [_dec17], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcAlign.Center;
         }
-      }), _descriptor19 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec11], {
+      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "bend", [_dec18], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return ArcBend.Concave;
         }
-      }), _descriptor20 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
+      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "faceOutward", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor21 = _applyDecoratedDescriptor(_class2.prototype, "lockRadius", [property], {
+      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "lockRadius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return false;
         }
-      }), _descriptor22 = _applyDecoratedDescriptor(_class2.prototype, "fixedRadius", [property], {
+      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "fixedRadius", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 200;
         }
-      }), _descriptor23 = _applyDecoratedDescriptor(_class2.prototype, "pushAlongNormal", [property], {
+      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "pushAlongNormal", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 0;
         }
-      }), _descriptor24 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec12], {
+      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "segmentWidthPx", [_dec19], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor25 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec13], {
+      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "minSegmentsPerGlyph", [_dec20], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 2;
         }
-      }), _descriptor26 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec14], {
+      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "maxSegmentsPerGlyph", [_dec21], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 6;
         }
-      }), _descriptor27 = _applyDecoratedDescriptor(_class2.prototype, "editorLiveUpdate", [property], {
+      }), _descriptor31 = _applyDecoratedDescriptor(_class2.prototype, "editorLiveUpdate", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor28 = _applyDecoratedDescriptor(_class2.prototype, "buildOnStart", [property], {
+      }), _descriptor32 = _applyDecoratedDescriptor(_class2.prototype, "buildOnStart", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor29 = _applyDecoratedDescriptor(_class2.prototype, "freezeAfterBuild", [property], {
+      }), _descriptor33 = _applyDecoratedDescriptor(_class2.prototype, "freezeAfterBuild", [property], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return true;
         }
-      }), _descriptor30 = _applyDecoratedDescriptor(_class2.prototype, "maxRebuildRate", [_dec15], {
+      }), _descriptor34 = _applyDecoratedDescriptor(_class2.prototype, "maxRebuildRate", [_dec22], {
         configurable: true,
         enumerable: true,
         writable: true,
         initializer: function initializer() {
           return 60;
         }
-      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec16], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype)), _class2)) || _class) || _class) || _class));
+      }), _applyDecoratedDescriptor(_class2.prototype, "Force_Rebuild", [_dec23], Object.getOwnPropertyDescriptor(_class2.prototype, "Force_Rebuild"), _class2.prototype)), _class2)) || _class) || _class) || _class));
       cclegacy._RF.pop();
     }
   };
@@ -1859,7 +1804,7 @@ System.register("chunks:///_virtual/CameraTuner.ts", ['./rollupPluginModLoBabelH
 });
 
 System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoBabelHelpers.js', 'cc', './ArcTextMesh.ts'], function (exports) {
-  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Node, MeshRenderer, Animation, tween, Vec3, Component, ParticleSystem, ArcTextMSDF;
+  var _applyDecoratedDescriptor, _inheritsLoose, _initializerDefineProperty, _assertThisInitialized, _createForOfIteratorHelperLoose, _createClass, _asyncToGenerator, _regeneratorRuntime, cclegacy, _decorator, Node, MeshRenderer, Animation, tween, Vec3, Component, ParticleSystem, ArcTextMSDFOneLine;
   return {
     setters: [function (module) {
       _applyDecoratedDescriptor = module.applyDecoratedDescriptor;
@@ -1881,7 +1826,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       Component = module.Component;
       ParticleSystem = module.ParticleSystem;
     }, function (module) {
-      ArcTextMSDF = module.ArcTextMSDF;
+      ArcTextMSDFOneLine = module.ArcTextMSDFOneLine;
     }],
     execute: function () {
       var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _dec7, _dec8, _dec9, _dec10, _dec11, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15;
@@ -1897,7 +1842,7 @@ System.register("chunks:///_virtual/ClickMoveBinding.ts", ['./rollupPluginModLoB
       }), _dec5 = property({
         type: Node
       }), _dec6 = property({
-        type: ArcTextMSDF
+        type: ArcTextMSDFOneLine
       }), _dec7 = property({
         type: Node,
         tooltip: 'Объект c партиклом для выезда кусочка'
@@ -2990,7 +2935,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           // красим в СЛЕДУЮЩИЙ кадр — когда инстансы материалов точно будут
           this.scheduleOnce(function () {
             try {
-              t.setTextColors(theme.textColor);
+              t.setColor(theme.textColor);
             } catch (_unused14) {}
             if (!wasEnabled && t.freezeAfterBuild) t.enabled = false;
           }, 0);
