@@ -2440,7 +2440,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
       assetManager = module.assetManager;
     }],
     execute: function () {
-      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _class4, _class5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _class6;
+      var _dec, _dec2, _dec3, _dec4, _dec5, _dec6, _class, _class2, _descriptor, _descriptor2, _descriptor3, _descriptor4, _descriptor5, _dec7, _dec8, _dec9, _dec10, _dec11, _dec12, _dec13, _dec14, _dec15, _dec16, _dec17, _dec18, _class4, _class5, _descriptor6, _descriptor7, _descriptor8, _descriptor9, _descriptor10, _descriptor11, _descriptor12, _descriptor13, _descriptor14, _descriptor15, _descriptor16, _class6;
       cclegacy._RF.push({}, "8daf7NAKxNJnqCgflAGm7av", "ColorLibrary", undefined);
 
       // чтобы избежать циклической зависимости на уровне кода, импортим типом
@@ -2526,6 +2526,12 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
         tooltip: 'u-поле БОКОВОЙ ТЕКСТУРЫ (для mat1)'
       }), _dec16 = property({
         tooltip: 'Расширение по умолчанию для URL'
+      }), _dec17 = property({
+        type: Texture2D,
+        tooltip: 'Глобальная ТЕКСТУРА ПРИ ЗАГРУЗКЕ (для mat1)'
+      }), _dec18 = property({
+        type: Texture2D,
+        tooltip: 'Глобальная ТЕКСТУРА ОШИБКИ (для mat1)'
       }), _dec7(_class4 = (_class5 = (_class6 = /*#__PURE__*/function (_Component) {
         _inheritsLoose(ColorTextureLibrary, _Component);
         function ColorTextureLibrary() {
@@ -2546,6 +2552,8 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           _initializerDefineProperty(_this, "textureUniform", _descriptor12, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "sideTextureUniform", _descriptor13, _assertThisInitialized(_this));
           _initializerDefineProperty(_this, "defaultExt", _descriptor14, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "loadingSideTexture", _descriptor15, _assertThisInitialized(_this));
+          _initializerDefineProperty(_this, "errorSideTexture", _descriptor16, _assertThisInitialized(_this));
           // ---------- Внутренний кэш ----------
           _this._urlEntry = new Map();
           _this._applied = new WeakMap();
@@ -2560,8 +2568,6 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           }
           ColorTextureLibrary._i = this;
           director.addPersistRootNode(this.node);
-
-          // ── Создаём общий placeholder 1×1, чтобы прогреть инстансы материалов ещё до реальных картинок
           try {
             var canvas = document.createElement('canvas');
             canvas.width = 1;
@@ -2572,12 +2578,15 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
             var tex = new Texture2D();
             tex.image = img;
 
-            // если у темы нет sideTexture — пусть хотя бы будет этот placeholder
+            // если у темы нет sideTexture — пусть будет прозрачный placeholder
             for (var _iterator = _createForOfIteratorHelperLoose(this.themes), _step; !(_step = _iterator()).done;) {
               var t = _step.value;
               if (!t.sideTexture) t.sideTexture = tex;
             }
-          } catch (_unused) {/* ничего страшного, просто не будет преварма */}
+            // если не заданы плейсхолдеры — подставим прозрачный
+            if (!this.loadingSideTexture) this.loadingSideTexture = tex;
+            if (!this.errorSideTexture) this.errorSideTexture = tex;
+          } catch (_unused) {/* ок, просто без преварма */}
         }
 
         // ===================== ТЕМЫ =====================
@@ -2683,7 +2692,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
         function () {
           var _applyMainTextureFromUrlOrThemeSide = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(target, url, theme) {
             var _theme$sideTexture, _this$_lastReqToken$g;
-            var mr, mat, themeTex, token, tex;
+            var mr, mat, themeTex, _ref, _this$loadingSideText, loadTex, token, tex;
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
@@ -2701,7 +2710,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                   }
                   return _context.abrupt("return", 'skipped');
                 case 6:
-                  themeTex = (_theme$sideTexture = theme == null ? void 0 : theme.sideTexture) != null ? _theme$sideTexture : null; // URL пустой → ставим тему или чистим
+                  themeTex = (_theme$sideTexture = theme == null ? void 0 : theme.sideTexture) != null ? _theme$sideTexture : null; // URL пустой → тема или очистка
                   if (!(!url || url.trim() === '')) {
                     _context.next = 21;
                     break;
@@ -2723,59 +2732,85 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
                   this._applyNull(mr, this.sideMatIndex, this.sideTextureUniform);
                   return _context.abrupt("return", 'cleared');
                 case 21:
+                  // ── ставим плейсхолдер "loading" сразу
+                  try {
+                    loadTex = (_ref = (_this$loadingSideText = this.loadingSideTexture) != null ? _this$loadingSideText : themeTex) != null ? _ref : null;
+                    if (loadTex) {
+                      mat.setProperty(this.sideTextureUniform, loadTex);
+                      // не учитываем как внешний URL, поэтому url=null
+                      this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, null);
+                    }
+                  } catch (_unused6) {/* ignore */}
+
                   // защита от гонок
                   token = ((_this$_lastReqToken$g = this._lastReqToken.get(mr)) != null ? _this$_lastReqToken$g : 0) + 1;
                   this._lastReqToken.set(mr, token);
-                  _context.next = 25;
+                  _context.next = 26;
                   return this._acquire(url, this.defaultExt);
-                case 25:
+                case 26:
                   tex = _context.sent;
                   if (!(this._lastReqToken.get(mr) !== token)) {
-                    _context.next = 29;
+                    _context.next = 30;
                     break;
                   }
                   if (tex) this._release(url);
                   return _context.abrupt("return", 'skipped');
-                case 29:
+                case 30:
                   if (!tex) {
-                    _context.next = 41;
+                    _context.next = 42;
                     break;
                   }
-                  _context.prev = 30;
-                  _context.next = 33;
+                  _context.prev = 31;
+                  _context.next = 34;
                   return new Promise(function (resolve) {
                     if (typeof requestAnimationFrame !== 'undefined') requestAnimationFrame(function () {
                       return resolve();
                     });else setTimeout(resolve, 0);
                   });
-                case 33:
+                case 34:
                   mat.setProperty(this.sideTextureUniform, tex);
                   this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, url);
                   return _context.abrupt("return", 'applied');
-                case 38:
-                  _context.prev = 38;
-                  _context.t1 = _context["catch"](30);
+                case 39:
+                  _context.prev = 39;
+                  _context.t1 = _context["catch"](31);
                   this._release(url);
-                case 41:
-                  if (!themeTex) {
-                    _context.next = 50;
+                // провалимся в обработку ошибки ниже
+                case 42:
+                  _context.prev = 42;
+                  if (!this.errorSideTexture) {
+                    _context.next = 47;
                     break;
                   }
-                  _context.prev = 42;
+                  mat.setProperty(this.sideTextureUniform, this.errorSideTexture);
+                  this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, null);
+                  return _context.abrupt("return", 'error');
+                case 47:
+                  _context.next = 51;
+                  break;
+                case 49:
+                  _context.prev = 49;
+                  _context.t2 = _context["catch"](42);
+                case 51:
+                  if (!themeTex) {
+                    _context.next = 60;
+                    break;
+                  }
+                  _context.prev = 52;
                   mat.setProperty(this.sideTextureUniform, themeTex);
                   this._swapAppliedRecord(mr, this.sideMatIndex, this.sideTextureUniform, null);
                   return _context.abrupt("return", 'theme');
-                case 48:
-                  _context.prev = 48;
-                  _context.t2 = _context["catch"](42);
-                case 50:
+                case 58:
+                  _context.prev = 58;
+                  _context.t3 = _context["catch"](52);
+                case 60:
                   this._applyNull(mr, this.sideMatIndex, this.sideTextureUniform);
                   return _context.abrupt("return", 'cleared');
-                case 52:
+                case 62:
                 case "end":
                   return _context.stop();
               }
-            }, _callee, this, [[9, 15], [30, 38], [42, 48]]);
+            }, _callee, this, [[9, 15], [31, 39], [42, 49], [52, 58]]);
           }));
           function applyMainTextureFromUrlOrThemeSide(_x, _x2, _x3) {
             return _applyMainTextureFromUrlOrThemeSide.apply(this, arguments);
@@ -2789,7 +2824,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           if (!mat) return;
           try {
             mat.setProperty(uniform, null);
-          } catch (_unused8) {}
+          } catch (_unused10) {}
         };
         _proto._key = function _key(mi, u) {
           return mi + "|" + u;
@@ -2930,7 +2965,7 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           if (e.refs === 0 && e.tex) {
             try {
               e.tex.destroy();
-            } catch (_unused10) {}
+            } catch (_unused12) {}
             e.tex = undefined;
             this._urlEntry["delete"](url);
           }
@@ -2950,13 +2985,13 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
           // если нужно — можно форснуть сборку до кадра
           try {
             t.rebuildNow == null || t.rebuildNow();
-          } catch (_unused11) {}
+          } catch (_unused13) {}
 
           // красим в СЛЕДУЮЩИЙ кадр — когда инстансы материалов точно будут
           this.scheduleOnce(function () {
             try {
               t.setTextColors(theme.textColor);
-            } catch (_unused12) {}
+            } catch (_unused14) {}
             if (!wasEnabled && t.freezeAfterBuild) t.enabled = false;
           }, 0);
         }
@@ -2967,13 +3002,13 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
          * Применить тему к биндингу: паттерн/боковая + цвет текста (если есть arcText).
          */;
         _proto.applyThemeToBinding = function applyThemeToBinding(binding, nameFromApi, gidx, seedForPattern, apiPatternIndex, seedForThemePick) {
-          var _ref2, _ref3, _ref4, _getPreferredMeshRend, _binding$model, _binding$node;
+          var _ref3, _ref4, _ref5, _getPreferredMeshRend, _binding$model, _binding$node;
           if (!binding) return 'no-binding';
           var theme = this.resolveTheme(nameFromApi, seedForThemePick != null ? seedForThemePick : seedForPattern, gidx);
           if (!theme) return 'no-theme';
 
           // выберем MeshRenderer понадежнее (если нет getPreferredMeshRenderer)
-          var mr = (_ref2 = (_ref3 = (_ref4 = (_getPreferredMeshRend = binding.getPreferredMeshRenderer == null ? void 0 : binding.getPreferredMeshRenderer()) != null ? _getPreferredMeshRend : binding.meshRenderer) != null ? _ref4 : (_binding$model = binding.model) == null ? void 0 : _binding$model.getComponent(MeshRenderer)) != null ? _ref3 : (_binding$node = binding.node) == null ? void 0 : _binding$node.getComponent(MeshRenderer)) != null ? _ref2 : null;
+          var mr = (_ref3 = (_ref4 = (_ref5 = (_getPreferredMeshRend = binding.getPreferredMeshRenderer == null ? void 0 : binding.getPreferredMeshRenderer()) != null ? _getPreferredMeshRend : binding.meshRenderer) != null ? _ref5 : (_binding$model = binding.model) == null ? void 0 : _binding$model.getComponent(MeshRenderer)) != null ? _ref4 : (_binding$node = binding.node) == null ? void 0 : _binding$node.getComponent(MeshRenderer)) != null ? _ref3 : null;
           if (mr) {
             this.applyThemeForPiece(mr, theme, gidx, seedForPattern, apiPatternIndex);
           }
@@ -3000,8 +3035,8 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
         }
 
         /**
-         * Поставить боковую картинку из URL (или взять из темы, если URL пустой).
-         */;
+        * Поставить боковую картинку из URL (или взять из темы, если URL пустой).
+        */;
         _proto.applySideUrlOrThemeToBinding = /*#__PURE__*/
         function () {
           var _applySideUrlOrThemeToBinding = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(binding, url, nameFromApiForTheme, gidx, seedForThemePick) {
@@ -3108,6 +3143,20 @@ System.register("chunks:///_virtual/ColorLibrary.ts", ['./rollupPluginModLoBabel
         writable: true,
         initializer: function initializer() {
           return '.png';
+        }
+      }), _descriptor15 = _applyDecoratedDescriptor(_class5.prototype, "loadingSideTexture", [_dec17], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
+        }
+      }), _descriptor16 = _applyDecoratedDescriptor(_class5.prototype, "errorSideTexture", [_dec18], {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        initializer: function initializer() {
+          return null;
         }
       })), _class5)) || _class4));
       cclegacy._RF.pop();
@@ -3843,7 +3892,7 @@ System.register("chunks:///_virtual/GlobalClickManager.ts", ['./rollupPluginModL
                   targetHeight = (L + bias) * step; // 1.1) гарантируем, что targetHeight ДОСТИЖИМ:
                   //      при необходимости динамически расширяем нижний паддинг (виртуальный "низ" башни).
                   //      небольшой запас extraLevels=1, чтобы центр не прилипал к самой границе.
-                  this.layoutCtrl.ensureBottomPaddingForHeight(targetHeight, /* extraLevels: */0);
+                  this.layoutCtrl.ensureBottomPaddingForHeight(targetHeight, /* extraLevels: */5);
 
                   // 1.2) скроллим точно к целевой высоте, БЕЗ внутреннего клампа
                   _context.next = 26;
