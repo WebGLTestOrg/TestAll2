@@ -6364,59 +6364,53 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                   }
                   return _context.abrupt("return");
                 case 3:
-                  console.log("Part2:" + e.source + "/n" + window.parent);
-                  if (!(e.source !== window.parent)) {
-                    _context.next = 6;
-                    break;
-                  }
-                  return _context.abrupt("return");
-                case 6:
-                  // защита от посторонних окон
+                  // console.log("Part2:" + e.source + "/n" + window.parent);
+                  // if (e.source !== window.parent) return; // защита от посторонних окон
                   console.log(e);
                   data = e.data || {};
                   _context.t0 = data.type;
-                  _context.next = _context.t0 === 'QUERY_BUSY' ? 11 : _context.t0 === 'QUERY_INFO' ? 13 : _context.t0 === 'OPEN_RANDOM' ? 16 : _context.t0 === 'OPEN_BY_UNIQ' ? 21 : _context.t0 === 'OPEN_BY_USER' ? 29 : _context.t0 === 'CLOSE_OPENED' ? 35 : _context.t0 === 'CLOSE_ANY' ? 35 : 40;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 8 : _context.t0 === 'QUERY_INFO' ? 10 : _context.t0 === 'OPEN_RANDOM' ? 13 : _context.t0 === 'OPEN_BY_UNIQ' ? 18 : _context.t0 === 'OPEN_BY_USER' ? 26 : _context.t0 === 'CLOSE_OPENED' ? 32 : _context.t0 === 'CLOSE_ANY' ? 32 : 37;
                   break;
-                case 11:
+                case 8:
                   _this.reply(e, 'BUSY_STATE', {
                     busy: _this.isBusy()
                   });
-                  return _context.abrupt("break", 40);
-                case 13:
+                  return _context.abrupt("break", 37);
+                case 10:
                   count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
                   _this.reply(e, 'INFO', {
                     piecesCount: count
                   });
-                  return _context.abrupt("break", 40);
-                case 16:
-                  _context.next = 18;
+                  return _context.abrupt("break", 37);
+                case 13:
+                  _context.next = 15;
                   return _this.openRandom();
-                case 18:
+                case 15:
                   ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: ok,
                     mode: 'random'
                   });
-                  return _context.abrupt("break", 40);
-                case 21:
+                  return _context.abrupt("break", 37);
+                case 18:
                   console.log(data);
                   uniqId = (_ref2 = (_data$payload$uniqId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.uniqId) != null ? _data$payload$uniqId : data == null || (_data$payload2 = data.payload) == null ? void 0 : _data$payload2.uniq_id) != null ? _ref2 : '';
                   console.log(uniqId);
-                  _context.next = 26;
+                  _context.next = 23;
                   return _this.openByUniqId(uniqId);
-                case 26:
+                case 23:
                   _ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok,
                     mode: 'byUniq',
                     uniqId: uniqId
                   });
-                  return _context.abrupt("break", 40);
-                case 29:
+                  return _context.abrupt("break", 37);
+                case 26:
                   _uniqId = (_ref3 = (_ref4 = (_data$payload$userId = data == null || (_data$payload3 = data.payload) == null ? void 0 : _data$payload3.userId) != null ? _data$payload$userId : data == null || (_data$payload4 = data.payload) == null ? void 0 : _data$payload4.uniqId) != null ? _ref4 : data == null || (_data$payload5 = data.payload) == null ? void 0 : _data$payload5.uniq_id) != null ? _ref3 : '';
-                  _context.next = 32;
+                  _context.next = 29;
                   return _this.openByUniqId(_uniqId);
-                case 32:
+                case 29:
                   _ok2 = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok2,
@@ -6424,17 +6418,17 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     uniqId: _uniqId,
                     deprecated: 'OPEN_BY_USER'
                   });
-                  return _context.abrupt("break", 40);
-                case 35:
-                  _context.next = 37;
+                  return _context.abrupt("break", 37);
+                case 32:
+                  _context.next = 34;
                   return _this.closeOpened();
-                case 37:
+                case 34:
                   _ok3 = _context.sent;
                   _this.reply(e, 'CLOSE_RESULT', {
                     ok: _ok3
                   });
-                  return _context.abrupt("break", 40);
-                case 40:
+                  return _context.abrupt("break", 37);
+                case 37:
                 case "end":
                   return _context.stop();
               }
