@@ -7354,6 +7354,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
           var target = doClamp ? this.clamp(height, this.scroll.minOffset, this.scroll.maxOffset) : height;
           if (duration <= 0) {
             this._offset = target;
+            this.updateTopEdgeEntered(this._offset); // <-- важно
             this.events.emit('offset-changed', this._offset);
             this.events.emit('scroll-end');
             return;
@@ -7372,6 +7373,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             },
             onUpdate: function onUpdate() {
               _this2._offset = doClamp ? _this2.clamp(_this2._tweenDriver.value, _this2.scroll.minOffset, _this2.scroll.maxOffset) : _this2._tweenDriver.value;
+              _this2.updateTopEdgeEntered(_this2._offset); // <-- важно
               _this2.events.emit('offset-changed', _this2._offset);
             }
           }).call(function () {
@@ -7409,6 +7411,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
             var target = doClamp ? _this3.clamp(height, _this3.scroll.minOffset, _this3.scroll.maxOffset) : height;
             if (duration <= 0) {
               _this3._offset = target;
+              _this3.updateTopEdgeEntered(_this3._offset); // <-- важно
               _this3.events.emit('offset-changed', _this3._offset);
               _this3.events.emit('scroll-end');
               resolve();
@@ -7429,6 +7432,7 @@ System.register("chunks:///_virtual/TowerScrollController.ts", ['./rollupPluginM
               },
               onUpdate: function onUpdate() {
                 _this3._offset = doClamp ? _this3.clamp(_this3._tweenDriver.value, _this3.scroll.minOffset, _this3.scroll.maxOffset) : _this3._tweenDriver.value;
+                _this3.updateTopEdgeEntered(_this3._offset); // <-- важно
                 _this3.events.emit('offset-changed', _this3._offset);
               }
             }).call(function () {
