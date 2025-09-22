@@ -16,8 +16,9 @@ System.register(["./application.js"], function (_export, _context) {
       canvas.width = bcr.width;
       canvas.height = bcr.height;
 
-      // ==== Новый код для фокуса canvas ====
-      canvas.focus();         // сразу фокусируем
+      if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
+        canvas.focus();
+      }
 
       
       application = new Application();
