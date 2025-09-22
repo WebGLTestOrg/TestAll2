@@ -907,37 +907,52 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           return true;
         };
         _proto._applyMatProps = function _applyMatProps(mi, json, atlas, color) {
-          if (atlas) {
+          // ---- читаем декларацию свойств напрямую из эффекта ----
+          var hasPropInEffect = function hasPropInEffect(mat, name) {
+            var _ea$techniques, _ref2, _techIdx, _ea$techniques$techId, _tech$passes;
+            var ea = mat.effectAsset;
+            if (!(ea != null && (_ea$techniques = ea.techniques) != null && _ea$techniques.length)) return false;
+
+            // текущий индекс техники: в разных минорках по-разному
+            var techIdx = (_ref2 = (_techIdx = mat._techIdx) != null ? _techIdx : mat.technique) != null ? _ref2 : 0;
+            var tech = (_ea$techniques$techId = ea.techniques[techIdx]) != null ? _ea$techniques$techId : ea.techniques[0];
+            if (!(tech != null && (_tech$passes = tech.passes) != null && _tech$passes.length)) return false;
+
+            // проходим по пассам и смотрим, объявлено ли свойство в "properties"
+            for (var _iterator2 = _createForOfIteratorHelperLoose(tech.passes), _step2; !(_step2 = _iterator2()).done;) {
+              var p = _step2.value;
+              var props = p == null ? void 0 : p.properties;
+              if (props && Object.prototype.hasOwnProperty.call(props, name)) return true;
+            }
+            return false;
+          };
+          var setIfDeclared = function setIfDeclared(name, value) {
+            if (!hasPropInEffect(mi, name)) return false; // <- главная защита от "illegal property name"
             try {
-              mi.setProperty('mainTexture', atlas);
-            } catch (_unused) {}
-          }
-          try {
-            mi.setProperty('tintColor', color);
-          } catch (_unused2) {}
+              mi.setProperty(name, value);
+              return true;
+            } catch (_unused) {
+              return false;
+            }
+          };
+
+          // ---- значения (pxRange из JSON, если включено) ----
           var px = this.pxRangeOverride;
           if (this.useJsonPxRange && json) {
             var fd = this._getFont(json);
             if ((fd == null ? void 0 : fd.distanceRange) != null) px = fd.distanceRange;
           }
-          try {
-            mi.setProperty('pxRange', px);
-          } catch (_unused3) {}
-          try {
-            mi.setProperty('softness', this.msdfSoftness);
-          } catch (_unused4) {}
-          try {
-            mi.setProperty('alphaClip', this.alphaClip);
-          } catch (_unused5) {}
-          try {
-            mi.setProperty('minAAMinPx', this.minAAMinPx);
-          } catch (_unused6) {}
-          try {
-            mi.setProperty('minifyGate', this.minifyGate);
-          } catch (_unused7) {}
-          try {
-            mi.setProperty('fillBiasPx', this.fillBiasPx);
-          } catch (_unused8) {}
+
+          // ---- проставляем только то, что реально объявлено в .effect/.shader ----
+          if (atlas) setIfDeclared('mainTexture', atlas);
+          setIfDeclared('tintColor', this.color); // Color объект ок — движок сам сведёт к vec4
+
+          setIfDeclared('pxRange', px);
+          setIfDeclared('softness', this.msdfSoftness);
+          setIfDeclared('alphaClip', this.alphaClip);
+          setIfDeclared('minAAMinPx', this.minAAMinPx);
+          setIfDeclared('minifyGate', this.minifyGate);
+          setIfDeclared('fillBiasPx', this.fillBiasPx);
         }
 
         // ===== шрифт
@@ -952,15 +967,15 @@ System.register("chunks:///_virtual/ArcTextMesh.ts", ['./rollupPluginModLoBabelH
           var data = json.json;
           var glyphMap = new Map();
           if (Array.isArray(data.chars)) {
-            for (var _iterator2 = _createForOfIteratorHelperLoose(data.chars), _step2; !(_step2 = _iterator2()).done;) {
-              var g = _step2.value;
+            for (var _iterator3 = _createForOfIteratorHelperLoose(data.chars), _step3; !(_step3 = _iterator3()).done;) {
+              var g = _step3.value;
               glyphMap.set(g.id, g);
             }
           } else for (var k in data.chars) glyphMap.set(Number(k), data.chars[k]);
           var kernMap = new Map();
           if (Array.isArray(data.kernings)) {
-            for (var _iterator3 = _createForOfIteratorHelperLoose(data.kernings), _step3; !(_step3 = _iterator3()).done;) {
-              var _k = _step3.value;
+            for (var _iterator4 = _createForOfIteratorHelperLoose(data.kernings), _step4; !(_step4 = _iterator4()).done;) {
+              var _k = _step4.value;
               kernMap.set(_k.first << 16 | _k.second, _k.amount);
             }
           } else if (data.kernings) for (var _k2 in data.kernings) kernMap.set(Number(_k2), data.kernings[_k2]);
@@ -6342,62 +6357,66 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
             return _regeneratorRuntime().wrap(function _callee$(_context) {
               while (1) switch (_context.prev = _context.next) {
                 case 0:
+                  console.log("Part1:" + _this.allowedParents.size + "/n" + !_this.allowedParents.has(e.origin));
                   if (!(_this.allowedParents.size && !_this.allowedParents.has(e.origin))) {
-                    _context.next = 2;
+                    _context.next = 3;
                     break;
                   }
                   return _context.abrupt("return");
-                case 2:
+                case 3:
+                  console.log("Part2:" + e.source + "/n" + window.parent);
                   if (!(e.source !== window.parent)) {
-                    _context.next = 4;
+                    _context.next = 6;
                     break;
                   }
                   return _context.abrupt("return");
-                case 4:
+                case 6:
                   // защита от посторонних окон
+                  console.log(e);
                   data = e.data || {};
                   _context.t0 = data.type;
-                  _context.next = _context.t0 === 'QUERY_BUSY' ? 8 : _context.t0 === 'QUERY_INFO' ? 10 : _context.t0 === 'OPEN_RANDOM' ? 13 : _context.t0 === 'OPEN_BY_UNIQ' ? 18 : _context.t0 === 'OPEN_BY_USER' ? 24 : _context.t0 === 'CLOSE_OPENED' ? 31 : _context.t0 === 'CLOSE_ANY' ? 31 : 36;
+                  _context.next = _context.t0 === 'QUERY_BUSY' ? 11 : _context.t0 === 'QUERY_INFO' ? 13 : _context.t0 === 'OPEN_RANDOM' ? 16 : _context.t0 === 'OPEN_BY_UNIQ' ? 21 : _context.t0 === 'OPEN_BY_USER' ? 29 : _context.t0 === 'CLOSE_OPENED' ? 35 : _context.t0 === 'CLOSE_ANY' ? 35 : 40;
                   break;
-                case 8:
+                case 11:
                   _this.reply(e, 'BUSY_STATE', {
                     busy: _this.isBusy()
                   });
-                  return _context.abrupt("break", 36);
-                case 10:
+                  return _context.abrupt("break", 40);
+                case 13:
                   count = (_this$layoutCtrl$getP = (_this$layoutCtrl = _this.layoutCtrl) == null || _this$layoutCtrl.getPiecesCount == null ? void 0 : _this$layoutCtrl.getPiecesCount()) != null ? _this$layoutCtrl$getP : 0;
                   _this.reply(e, 'INFO', {
                     piecesCount: count
                   });
-                  return _context.abrupt("break", 36);
-                case 13:
-                  _context.next = 15;
+                  return _context.abrupt("break", 40);
+                case 16:
+                  _context.next = 18;
                   return _this.openRandom();
-                case 15:
+                case 18:
                   ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: ok,
                     mode: 'random'
                   });
-                  return _context.abrupt("break", 36);
-                case 18:
-                  uniqId = (_ref2 = (_data$payload$uniqId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.uniqId) != null ? _data$payload$uniqId : data == null || (_data$payload2 = data.payload) == null ? void 0 : _data$payload2.uniq_id) != null ? _ref2 : '';
-                  _context.next = 21;
-                  return _this.openByUniqId(uniqId);
+                  return _context.abrupt("break", 40);
                 case 21:
+                  console.log(data);
+                  uniqId = (_ref2 = (_data$payload$uniqId = data == null || (_data$payload = data.payload) == null ? void 0 : _data$payload.uniqId) != null ? _data$payload$uniqId : data == null || (_data$payload2 = data.payload) == null ? void 0 : _data$payload2.uniq_id) != null ? _ref2 : '';
+                  console.log(uniqId);
+                  _context.next = 26;
+                  return _this.openByUniqId(uniqId);
+                case 26:
                   _ok = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok,
                     mode: 'byUniq',
                     uniqId: uniqId
                   });
-                  return _context.abrupt("break", 36);
-                case 24:
-                  console.warn('[OpenPieceBridge] OPEN_BY_USER устарел — используйте OPEN_BY_UNIQ.');
+                  return _context.abrupt("break", 40);
+                case 29:
                   _uniqId = (_ref3 = (_ref4 = (_data$payload$userId = data == null || (_data$payload3 = data.payload) == null ? void 0 : _data$payload3.userId) != null ? _data$payload$userId : data == null || (_data$payload4 = data.payload) == null ? void 0 : _data$payload4.uniqId) != null ? _ref4 : data == null || (_data$payload5 = data.payload) == null ? void 0 : _data$payload5.uniq_id) != null ? _ref3 : '';
-                  _context.next = 28;
+                  _context.next = 32;
                   return _this.openByUniqId(_uniqId);
-                case 28:
+                case 32:
                   _ok2 = _context.sent;
                   _this.reply(e, 'OPEN_RESULT', {
                     ok: _ok2,
@@ -6405,17 +6424,17 @@ System.register("chunks:///_virtual/TowerQueriesTester.ts", ['./rollupPluginModL
                     uniqId: _uniqId,
                     deprecated: 'OPEN_BY_USER'
                   });
-                  return _context.abrupt("break", 36);
-                case 31:
-                  _context.next = 33;
+                  return _context.abrupt("break", 40);
+                case 35:
+                  _context.next = 37;
                   return _this.closeOpened();
-                case 33:
+                case 37:
                   _ok3 = _context.sent;
                   _this.reply(e, 'CLOSE_RESULT', {
                     ok: _ok3
                   });
-                  return _context.abrupt("break", 36);
-                case 36:
+                  return _context.abrupt("break", 40);
+                case 40:
                 case "end":
                   return _context.stop();
               }
@@ -8502,18 +8521,19 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
                   this.cakesSource = items.map(function (it) {
                     return _this2.normalizeCakePiece(it);
                   });
-                  _context2.next = 24;
+                  console.log(this.cakesSource);
+                  _context2.next = 25;
                   break;
-                case 20:
-                  _context2.prev = 20;
+                case 21:
+                  _context2.prev = 21;
                   _context2.t3 = _context2["catch"](0);
                   console.error('[API] Ошибка соединения:', _context2.t3);
                   this.cakesSource = [];
-                case 24:
+                case 25:
                 case "end":
                   return _context2.stop();
               }
-            }, _callee2, this, [[0, 20]]);
+            }, _callee2, this, [[0, 21]]);
           }));
           function initApiData() {
             return _initApiData.apply(this, arguments);
@@ -8545,6 +8565,7 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           this.realPiecesCount = out.filter(function (p) {
             return !p.__fake;
           }).length;
+          this.dlog('[EXPAND]', "targetPieces=" + wantRaw + ", allowFake=" + !onlyApi + ", API=" + src.length + ", " + ("\u0432\u0437\u044F\u0442\u043E\u0418\u0437API=" + take + ", \u0444\u0435\u0439\u043A\u043E\u0432\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u043E=" + (out.length - take) + ", \u0438\u0442\u043E\u0433\u0412\u0441\u0435\u0433\u043E=" + out.length + ", ") + ("\u0440\u0435\u0430\u043B\u044C\u043D\u044B\u0445\u0412\u0418\u0442\u043E\u0433\u0435=" + this.realPiecesCount));
         }
 
         /* === ИЗМЕНЕНО: фейки теперь явно задают show_name === */;
@@ -8995,16 +9016,25 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
           // медиа только у самой-самой верхушки башни
           return absLevel === 0;
         };
+        _proto.dlog = function dlog() {
+          var _console;
+          for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+          }
+          (_console = console).log.apply(_console, ['[TowerLayoutController]'].concat(args));
+        };
         _proto.isUuidLoose = function isUuidLoose(s) {
           return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s.trim());
         }
 
-        /* === ИЗМЕНЕНО: нормализация нового поля show_name + остальное без изменений === */;
+        /* === ИЗМЕНЕНО: нормализация нового поля show_name + остальное без изменений === */
+        // 2) В normalizeCakePiece ЗАМЕНИТЕ блок с uniq_id на этот (убрали isUuidLoose):
+        ;
+
         _proto.normalizeCakePiece = function normalizeCakePiece(raw) {
           var _ref, _ref2, _raw$uniq_id, _raw$hex_color, _raw$filling_id, _ref3, _ref4, _raw$file, _ref5, _raw$greeting_text, _this$boolFromYesNo, _raw$show_name;
-          // uniq_id (UUID-строка)
-          var uniq_id = this.strOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
-          if (uniq_id && !this.isUuidLoose(uniq_id)) uniq_id = null;
+          // uniq_id: берём как есть, БЕЗ проверки UUID, просто приводим к строке
+          var uniq_id = this.anyToStringOrNull((_ref = (_ref2 = (_raw$uniq_id = raw == null ? void 0 : raw.uniq_id) != null ? _raw$uniq_id : raw == null ? void 0 : raw.id) != null ? _ref2 : raw == null ? void 0 : raw.user_id) != null ? _ref : raw == null ? void 0 : raw.uniqId);
 
           // hex_color (#RRGGBB или #RGB → приводим к #RRGGBB, ВЕРХНИЙ РЕГИСТР)
           var hex_color = this.strOrNull((_raw$hex_color = raw == null ? void 0 : raw.hex_color) != null ? _raw$hex_color : raw == null ? void 0 : raw.color);
@@ -9023,20 +9053,12 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
               hex_color = null;
             }
           }
-
-          // name
           var name = this.strOrNull(raw == null ? void 0 : raw.name);
-
-          // filling_id
           var filling_id = this.numOrNull((_raw$filling_id = raw == null ? void 0 : raw.filling_id) != null ? _raw$filling_id : raw == null ? void 0 : raw.fillingId);
-
-          // file (url/base64/путь)
           var file = this.strOrNull((_ref3 = (_ref4 = (_raw$file = raw == null ? void 0 : raw.file) != null ? _raw$file : raw == null ? void 0 : raw.file_url) != null ? _ref4 : raw == null ? void 0 : raw.fileUrl) != null ? _ref3 : raw == null ? void 0 : raw.file_base64);
-
-          // greeting_text
           var greeting_text = this.strOrNull((_ref5 = (_raw$greeting_text = raw == null ? void 0 : raw.greeting_text) != null ? _raw$greeting_text : raw == null ? void 0 : raw.greetingText) != null ? _ref5 : raw == null ? void 0 : raw.greeting);
 
-          // show_name: "yes"/"no" → boolean (default: true)
+          // show_name: "yes"/"no" → boolean (default: true) — как было
           var show_name = (_this$boolFromYesNo = this.boolFromYesNo((_raw$show_name = raw == null ? void 0 : raw.show_name) != null ? _raw$show_name : raw == null ? void 0 : raw.showName)) != null ? _this$boolFromYesNo : true;
           return {
             uniq_id: uniq_id,
@@ -9199,7 +9221,16 @@ System.register("chunks:///_virtual/TVS_SpawnLayout.ts", ['./rollupPluginModLoBa
             return _waitUntilFirstLevelImagesLoaded.apply(this, arguments);
           }
           return waitUntilFirstLevelImagesLoaded;
-        }() /** После предзагрузки — принудительно применяем реальные URL для уровня 0. */;
+        }() // 1) ДОБАВЬТЕ хелпер рядом с остальными утилитами:
+        ;
+
+        _proto.anyToStringOrNull = function anyToStringOrNull(v) {
+          if (v === undefined || v === null) return null;
+          var s = String(v).trim();
+          return s ? s : null;
+        }
+
+        /** После предзагрузки — принудительно применяем реальные URL для уровня 0. */;
         _proto.forceApplyMediaForLevel0 = function forceApplyMediaForLevel0() {
           for (var j = 0; j < this.per; j++) {
             var n = this.findNodeByLevelSlot(0, j);
