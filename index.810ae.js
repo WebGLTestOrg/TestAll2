@@ -1,4 +1,4 @@
-System.register(["./application.js"], function (_export, _context) {
+System.register(["./application.ea986.js"], function (_export, _context) {
   "use strict";
 
   var Application, canvas, $p, bcr, application;
@@ -15,12 +15,9 @@ System.register(["./application.js"], function (_export, _context) {
       bcr = $p.getBoundingClientRect();
       canvas.width = bcr.width;
       canvas.height = bcr.height;
-
       if (!('ontouchstart' in window) && !navigator.maxTouchPoints) {
         canvas.focus();
       }
-
-      
       application = new Application();
       topLevelImport('cc').then(function (engine) {
         return application.init(engine);
